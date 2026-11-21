@@ -1,6 +1,10 @@
 # Changelog
 
 ## 21/11/2026
+- repo: manufacturing route fixed on JLCPCB only (PCBWay, ALLPCB, NextPCB, Seeed XIAO carrier variant and home assembly dropped); quote 97 EUR for 2 assembled and shipped v0.1 boards.
+- electronics: E73 nRF52840 module out of stock at JLCPCB; 2 units pre-ordered through the JLC Parts Manager into the JLC warehouse, board order to follow their arrival.
+- repo: `acquisti/spesa_amazon.md` added: shopping list for parts outside JLCPCB (LiPo 501520 candidate, 0820 vibration motor, epoxy kit, optional SWD probe and pogo connector), about 40 to 60 EUR (estimate).
+- docs: status, decisions (5 new rows), open questions and CLAUDE.md next steps updated; README and presentation page updated by the comunicazione agent (via count 115).
 - electronics: JLC pick-and-place file rotates both microphones by +180° (checked on the JLC preview); `kicad/genera_fab.py` now deletes only the folders it regenerates (jlcpcb, pcbway, allpcb).
 - electronics: NextPCB exports added in `kicad/fab_out/nextpcb/` (single 51 × 51 mm board) and `kicad/fab_out/nextpcb_pannello52/` (52 × 52 mm panel with one board); NextPCB was then discarded for v0.
 - repo: purchasing plan added in `acquisti/` (3-unit order, 10-unit estimate, other distributors for battery and vibration motor).

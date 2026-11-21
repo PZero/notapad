@@ -35,3 +35,8 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | Finitura ENIG (o HASL senza piombo) e pasta Sn42Bi58 per i ritocchi in casa | Piombo e bismuto insieme fondono a ~96 °C; la bassa temperatura (~170 °C sulla piastra) non rifonde le saldature SAC305 di JLC |
 | 21/11/2026 | Valutata la variante con XIAO nRF52840 Plus (20 GPIO, ~20,5 × 37 × 11 mm); email a Seeed Fusion inviata dall'utente (bozza in `docs/seeed_richiesta_en.md`) | Sconto 30% sul PCBA XIAO e possibile sponsorizzazione; la scheda con E73 resta l'alternativa pronta |
 | 21/11/2026 | Campioni gratuiti LCSC: solo per ordini > 50 $, max 10 $ e 3 codici al mese; utili MCP73831 (C424093) e LSM6DSV16X (C5267406) | E73, NAND e microfono non sono tra i campioni |
+| 21/11/2026 | Solo JLC per la v0 e i lotti successivi: abbandonate la variante XIAO/Seeed Fusion, PCBWay, ALLPCB, NextPCB | Preventivo JLC 97 € per 2 schede montate e spedite; nessun negozio italiano costa meno di LCSC per i chip; la XIAO costa più dell'E73, è larga 17,5 mm e ha 13 GPIO contro i ~20 necessari |
+| 21/11/2026 | Niente montaggio in casa: tutte le schede montate da JLC | L'utente non ha piastra, pasta e flussante; montare a metà aumenta solo i costi |
+| 21/11/2026 | Q2 resta il 2N7002DW (Extended), niente sostituzione con 2× AO3400A | Nessun 2N7002DW Basic; i due SOT-23 richiederebbero di ripiazzare la zona A e risbrogliare per ~3 € |
+| 21/11/2026 | NAND W25N02KV e caricatore MCP73831 restano Extended | Nessuna NAND e nessun caricatore SOT-23-5 (nemmeno i TP4054) nella libreria Basic JLC |
+| 21/11/2026 | E73: 2 pezzi (non 3) in pre-order dal Parts Manager JLC verso My Inventory | Senza montaggio in casa la scorta non serve; i pezzi restano a JLC per il PCBA |

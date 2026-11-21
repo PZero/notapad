@@ -1,4 +1,4 @@
-# Richiesta a Seeed Fusion (bozza da inviare a fusion@seeed.io)
+# Richiesta a Seeed Fusion (bozza, variante abbandonata il 21/11/2026)
 
 Bozza del 21/11/2026. Variante ipotizzata: scheda portante con **XIAO nRF52840 Plus**. Il progetto con questa variante non esiste ancora: le misure sono stime.
 

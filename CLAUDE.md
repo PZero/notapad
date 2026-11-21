@@ -36,8 +36,8 @@ Al 21/11: scheda chiusa, ERC 0, DRC 0 violazioni, 0 scollegati, parità 0 (115 v
 1. FATTO: KiCad 10.0.8, easyeda2kicad, Freerouting 2.5.0 (jar: variabile `FREEROUTING_JAR`, altrimenti `~/tools/freerouting/`).
 2. FATTO: pinout E73 verificato (rifatto), microfono sostituito con un top-port.
 3. FATTO: progetto KiCad generato, sbrogliato a 4 strati ed esportato.
-4. Preventivo: caricare `kicad/fab_out/jlcpcb/` su JLC; controllare nell'anteprima le rotazioni di D1–D3, MK1/MK2, Q2, E73. Confrontare con PCBWay e ALLPCB.
-5. Ordine v0 su JLC (NextPCB Rev 0 scartato): Economic PCBA, 4 strati, 1,0 mm, ENIG, 2 su 5 montate; E73 (C356849) da procurare in "My Inventory" (3 pezzi); coupon Black Friday JLC fino al 2 dicembre. Microfoni: rotazione +180° già nel CPL. Lotti successivi: montaggio in casa, piano in `acquisti/`.
+4. FATTO: preventivo JLC 97 € per 2 schede montate e spedite. SOLO JLC (21/11): XIAO/Seeed, PCBWay, ALLPCB, NextPCB e montaggio in casa abbandonati.
+5. Ordine v0 su JLC: E73 (C356849) 2 pezzi in pre-order verso "My Inventory" (coperti da coupon); quando arrivano, selezionarli su U1, controllare l'antenna e pagare (coupon Black Friday fino al 2/12). Pezzi fuori JLC: `acquisti/spesa_amazon.md`.
 Firmware (XIAO nRF52840, Zephyr) e app sono IN PAUSA per scelta dell'utente: si riparte dopo la scheda. Per l'app la proposta è Flutter, partendo da Android: nessuno dei due ha un Mac (c'è solo quello della sorella) e iOS si compila nel cloud.
 
 ## Metodo di lavoro e memoria
