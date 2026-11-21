@@ -26,3 +26,4 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | Piste di alimentazione lasciate a 0,2 mm (3V3 a 0,15 mm) | Bastano per i consumi (picco motorino compreso); allargarle avrebbe richiesto un nuovo sbroglio |
 | 21/11/2026 | Export per JLC, PCBWay e ALLPCB in `kicad/fab_out/` con `genera_fab.py`, che sostituisce `kicad/jlc_out/` | Confronto dei preventivi tra tre fornitori |
 | 21/11/2026 | Batteria LiPo 502025 scartata | 20 mm di larghezza: più del monolite (17,5 mm) |
+| 21/11/2026 | Modulo E73-2G4M08S1CX (C2764963) scartato | Datasheet: solo connettore IPEX, antenna esterna obbligatoria; la scheda è disegnata per l'antenna stampata del C |

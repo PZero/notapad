@@ -6,6 +6,7 @@
 - Rotazioni nel CPL: da controllare nell'anteprima JLC (D1–D3, MK1/MK2, Q2, E73).
 
 ## Produzione
+- E73-2G4M08S1C (C356849) esaurito su JLC (21/11): aspettare il riassortimento, comprarlo da LCSC o altrove e mandarlo a JLC ("My Inventory"), oppure montarlo a mano. Il CX non va bene (solo IPEX).
 - Pannello unico notªpad + tag SwimTimer: stesso spessore (ora 1,0 mm, 4 strati), mouse bites lontano dall'antenna; confrontare i preventivi.
 - Quale fornitore: JLC, PCBWay o ALLPCB (export pronti per tutti e tre).
 - Acquisto Pico (circa 4–5 € dai rivenditori ufficiali, non 16 € su Amazon) solo se servirà spesso; per ora basta il Pi 3.
