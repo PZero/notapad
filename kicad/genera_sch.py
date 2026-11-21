@@ -65,8 +65,6 @@ LB = blocks(lib)
 def pins_of(block, unit=None):
     """pin (x, y, angolo, lunghezza, numero) dell'unità richiesta (le unità 0 sono comuni)"""
     out = []
-    for sub in re.split(r'\(symbol "[^"]+_(\d+)_\d+"', block)[1:]:
-        pass
     parts = re.split(r'(\(symbol "[^"]+_\d+_\d+")', block)
     cur = 0
     for p in parts:

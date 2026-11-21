@@ -13,7 +13,7 @@
         "min_through_hole_diameter": 0.25,
         "min_hole_clearance": 0.2,
         "min_hole_to_hole": 0.2,
-        "min_copper_edge_clearance": 0.3,
+        "min_copper_edge_clearance": 0.25,
         "min_silk_clearance": 0.0,
         "solder_mask_to_copper_clearance": 0.0,
         "min_microvia_diameter": 0.2,
@@ -66,7 +66,7 @@
       {
         "name": "PWR",
         "clearance": 0.1,
-        "track_width": 0.25,
+        "track_width": 0.2,
         "via_diameter": 0.45,
         "via_drill": 0.25,
         "priority": 0
@@ -74,7 +74,7 @@
       {
         "name": "3V3",
         "clearance": 0.1,
-        "track_width": 0.2,
+        "track_width": 0.15,
         "via_diameter": 0.45,
         "via_drill": 0.25,
         "priority": 1

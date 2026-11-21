@@ -1,0 +1,2 @@
+Scheda NON pronta: 7 collegamenti mancanti e 0 errori DRC.
+BOM e CPL sono validi (dipendono solo dal piazzamento); i Gerber sono una bozza.

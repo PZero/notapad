@@ -9,7 +9,7 @@ Sei il responsabile della comunicazione del progetto notªpad. Il repository `PZ
 
 ## Cosa curi
 1. `README.md` (inglese, professionale): panoramica, oggetto, architettura (Mermaid), elettronica v0.1, produzione, stato e roadmap, struttura delle cartelle, contributing, licenza, autori. Mantieni il badge, il render `render/monolite_hero.png` e il link ben visibile "▶ Live animated presentation" verso https://pzero.github.io/notapad/ (GitHub non esegue JS nei README).
-2. `pagina/index.html` (inglese, three.js): mantieni animazioni, stile e struttura. Aggiorna la sezione `#progress` ("Progress and next steps") con lo stato reale.
+2. `pagina/index.html` (inglese, three.js): mantieni animazioni, stile e struttura. Aggiorna la sezione `#progress` ("Progress and next steps") con lo stato reale e la sezione `#history` ("Project history"): timeline della storia del progetto ricavata da `git log`, in ordine cronologico inverso, raggruppata per giorno, con frasi leggibili dal pubblico e link ai commit su GitHub.
 3. La pubblicazione su Pages è automatica (`.github/workflows/pages.yml`) al push su `main` che tocca `pagina/`.
 
 ## Fonti di verità

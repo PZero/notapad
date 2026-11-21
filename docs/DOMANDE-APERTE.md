@@ -15,5 +15,10 @@
 - Repository dell'app: questo stesso o uno separato? Invitare l'amico come collaboratore.
 - Qualcuno di voi ha un telefono Android?
 
+## Basetta di ricarica (idea, dopo il primo ordine del monolite)
+- Basetta con **XIAO RP2040** + molle pogo: alimenta il 5V per la carica e fa da **programmatore SWD** (firmware `debugprobe`, come un Pico), collegata al PC via USB-C.
+- Possibile **sponsorizzazione Seeed Fusion**: i loro programmi richiedono un modulo XIAO sulla scheda. Nel 2026 c'è uno sconto del 30% sul PCBA XIAO; le campagne a schede gratis erano a tempo. Scrivere a Seeed Fusion per verificare le condizioni attuali.
+- Il monolite invece non ci rientra: lo XIAO nRF52840 è troppo grande (21×17,8 mm) e ha troppo pochi GPIO.
+
 ## Design
 - Effetto "monolite che si illumina tutto" (resina traslucida, più LED): eventualmente per una versione successiva.

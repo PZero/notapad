@@ -34,8 +34,13 @@ def sch_uuids():
 def build():
     b = pcbnew.BOARD()
     ds = b.GetDesignSettings()
-    ds.SetCopperLayerCount(2)
-    ds.SetBoardThickness(FromMM(0.8))
+    ds.SetCopperLayerCount(D.STRATI)
+    b.SetCopperLayerCount(D.STRATI)
+    ds.SetBoardThickness(FromMM(D.SPESSORE))
+    if D.STRATI == 4:
+        # stackup: F.Cu segnali / In1.Cu piano GND / In2.Cu segnali+alimentazioni / B.Cu segnali+GND
+        b.SetLayerType(pcbnew.In1_Cu, pcbnew.LT_POWER)
+        b.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_SIGNAL)
     # regole JLC 2 strati (verificate su jlcpcb.com/capabilities)
     ds.m_MinClearance = FromMM(0.1)
     ds.m_TrackMinWidth = FromMM(0.1)
@@ -50,7 +55,7 @@ def build():
     nc.SetViaDiameter(FromMM(0.45))
     nc.SetViaDrill(FromMM(0.25))
     ns = ds.m_NetSettings
-    for name, width in (("PWR", 0.25), ("3V3", 0.2)):
+    for name, width in (("PWR", 0.2), ("3V3", 0.15)):
         c = pcbnew.NETCLASS(name)
         c.SetClearance(FromMM(0.1)); c.SetTrackWidth(FromMM(width))
         c.SetViaDiameter(FromMM(0.45)); c.SetViaDrill(FromMM(0.25))
@@ -107,8 +112,9 @@ def build():
         b.Add(fp)
 
     # --- keepout antenna: tutta la larghezza, dal bordo basso fino a dove finisce l'area pad del modulo ---
-    ant_top = 35.0 - 5.2
-    for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+    ant_top = D.H - 5.2
+    rame = (pcbnew.F_Cu, pcbnew.In1_Cu, pcbnew.In2_Cu, pcbnew.B_Cu) if D.STRATI == 4 else (pcbnew.F_Cu, pcbnew.B_Cu)
+    for layer in rame:
         z = pcbnew.ZONE(b)
         z.SetIsRuleArea(True)
         z.SetDoNotAllowTracks(True); z.SetDoNotAllowVias(True); z.SetDoNotAllowPads(False)
@@ -120,13 +126,123 @@ def build():
         z.SetZoneName("KEEPOUT_ANTENNA")
         b.Add(z)
 
+    if D.STRATI == 4:
+        z = pcbnew.ZONE(b); z.SetLayer(pcbnew.In1_Cu); z.SetNet(netobj["GND"])
+        z.SetLocalClearance(FromMM(0.15)); z.SetMinThickness(FromMM(0.15))
+        z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+        z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
+        ol = z.Outline(); ol.NewOutline()
+        for px, py in ((0, 0), (w, 0), (w, h), (0, h)):
+            ol.Append(FromMM(OX + px), FromMM(OY + py))
+        z.SetZoneName("GND_IN1"); b.Add(z)
+
     # --- testo sul retro ---
     t = pcbnew.PCB_TEXT(b)
     t.SetText("notªpad v0.1"); t.SetLayer(pcbnew.B_SilkS)
     t.SetTextSize(VECTOR2I(FromMM(0.8), FromMM(0.8))); t.SetTextThickness(FromMM(0.12))
     t.SetPosition(P(8.25, 22.5)); t.SetMirrored(True)
     b.Add(t)
+    add_preroutes(b)
+    place_previas(b)
     return b
+
+
+def add_preroutes(b):
+    """aggiunge (o riaggiunge dopo un import SES) i collegamenti PREROUTE"""
+    vias_done = set()
+    have_v = {(t.GetPosition().x, t.GetPosition().y) for t in b.GetTracks() if t.GetClass() == "PCB_VIA"}
+    have_t = {tuple(sorted([(t.GetStart().x, t.GetStart().y), (t.GetEnd().x, t.GetEnd().y)]))
+              for t in b.GetTracks() if t.GetClass() == "PCB_TRACK"}
+    for entry in D.PREROUTE:
+        net, (r1, n1), dst = entry[:3]
+        way = entry[3] if len(entry) > 3 else []
+        p1 = [p for p in b.FindFootprintByReference(r1).Pads() if p.GetNumber() == n1][0]
+        if isinstance(dst[0], str):
+            end = [p for p in b.FindFootprintByReference(dst[0]).Pads() if p.GetNumber() == dst[1]][0].GetPosition()
+        else:
+            dst = (dst[0], D.s(dst[1]))
+            end = P(*dst)
+            if dst not in vias_done and (end.x, end.y) not in have_v:
+                v = pcbnew.PCB_VIA(b); v.SetPosition(end); v.SetWidth(FromMM(0.45)); v.SetDrill(FromMM(0.25))
+                v.SetNet(b.FindNet(net)); v.SetViaType(pcbnew.VIATYPE_THROUGH)
+                v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu); v.SetLocked(True); b.Add(v); vias_done.add(dst)
+        pts = [p1.GetPosition()] + [P(w[0], D.s(w[1])) for w in way] + [end]
+        key = tuple(sorted([(pts[0].x, pts[0].y), (pts[1].x, pts[1].y)]))
+        if key in have_t:
+            continue
+        for a, c in zip(pts, pts[1:]):
+            t = pcbnew.PCB_TRACK(b); t.SetStart(a); t.SetEnd(c)
+            t.SetWidth(FromMM(0.15)); t.SetLayer(pcbnew.F_Cu); t.SetNet(b.FindNet(net))
+            t.SetLocked(True)
+            b.Add(t)
+
+
+PREVIA_POS = {}   # (ref, pad) -> (x, y) scelti al primo build, riusati dopo ogni import SES
+
+
+def place_previas(b):
+    """via GND accanto ai pad di D.PREVIA: punto libero più vicino (solo pad e altre via come ostacoli)"""
+    import math
+    gnd = b.FindNet("GND")
+    pads = [p for fp in b.GetFootprints() for p in fp.Pads()]
+    vias = [(ToMM(t.GetPosition().x) - OX, ToMM(t.GetPosition().y) - OY) for t in b.GetTracks() if t.GetClass() == "PCB_VIA"]
+    lista = list(D.PREVIA)
+    if getattr(D, "PREVIA_TUTTI_GND", False):
+        for fp in b.GetFootprints():
+            if fp.GetReference() == "U1": continue
+            for q in fp.Pads():
+                key = (fp.GetReference(), q.GetNumber())
+                if q.GetNetname() == "GND" and q.IsOnLayer(pcbnew.F_Cu) and q.GetDrillSize().x == 0                         and key != ("U2", "9") and key not in lista:
+                    lista.append(key)
+    for ref, num in lista:
+        pad = [p for p in b.FindFootprintByReference(ref).Pads() if p.GetNumber() == num][0]
+        layer = pcbnew.B_Cu if not pad.IsOnLayer(pcbnew.F_Cu) else pcbnew.F_Cu
+        if (ref, num) not in PREVIA_POS:
+            px, py = ToMM(pad.GetPosition().x) - OX, ToMM(pad.GetPosition().y) - OY
+            bb = pad.GetBoundingBox(); r0 = max(ToMM(bb.GetWidth()), ToMM(bb.GetHeight())) / 2
+            best = None; r = r0 + 0.28
+            while best is None and r < r0 + 1.6:
+                for k in range(48):
+                    a = 2 * math.pi * k / 48
+                    x, y = px + r * math.cos(a), py + r * math.sin(a)
+                    if not (0.6 < x < D.W - 0.6 and 0.6 < y < D.H - 5.6):
+                        continue
+                    if any(math.hypot(x - vx, y - vy) < 0.75 for vx, vy in vias):
+                        continue
+                    c = pcbnew.SHAPE_CIRCLE(P(x, y), FromMM(0.225))
+                    seg = pcbnew.SHAPE_SEGMENT(pad.GetPosition(), P(x, y), FromMM(0.15))
+                    bad = False
+                    for q in pads:
+                        if q.GetNetname() == "GND":
+                            if q.GetEffectiveShape(pcbnew.F_Cu).Collide(c, FromMM(0.05)) and q is not pad:
+                                bad = True; break
+                            continue
+                        for L in (pcbnew.F_Cu, pcbnew.B_Cu):
+                            if q.IsOnLayer(L) and q.GetEffectiveShape(L).Collide(c, FromMM(0.12)):
+                                bad = True; break
+                        if not bad and q.IsOnLayer(layer) and q.GetEffectiveShape(layer).Collide(seg, FromMM(0.12)):
+                            bad = True
+                        if bad: break
+                    if not bad:
+                        best = (x, y); break
+                r += 0.05
+            if best is None:
+                PREVIA_POS[(ref, num)] = None
+            if best is None:
+                continue
+            PREVIA_POS[(ref, num)] = best
+        if PREVIA_POS[(ref, num)] is None:
+            continue
+        x, y = PREVIA_POS[(ref, num)]
+        vias.append((x, y))
+        if not any(t.GetClass() == "PCB_VIA" and t.GetPosition() == P(x, y) for t in b.GetTracks()):
+            v = pcbnew.PCB_VIA(b); v.SetPosition(P(x, y)); v.SetWidth(FromMM(0.45)); v.SetDrill(FromMM(0.25))
+            v.SetNet(gnd); v.SetViaType(pcbnew.VIATYPE_THROUGH); v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+            v.SetLocked(True); b.Add(v)
+        if not any(t.GetClass() == "PCB_TRACK" and {(t.GetStart().x, t.GetStart().y), (t.GetEnd().x, t.GetEnd().y)} ==
+                   {(pad.GetPosition().x, pad.GetPosition().y), (P(x, y).x, P(x, y).y)} for t in b.GetTracks()):
+            t = pcbnew.PCB_TRACK(b); t.SetStart(pad.GetPosition()); t.SetEnd(P(x, y)); t.SetWidth(FromMM(0.15))
+            t.SetLayer(layer); t.SetNet(gnd); t.SetLocked(True); b.Add(t)
 
 
 def dump(b, path):
@@ -152,7 +268,7 @@ def write_pro():
         "board": {"design_settings": {
             "rules": {"min_clearance": 0.1, "min_track_width": 0.1, "min_via_diameter": 0.45,
                       "min_via_annular_width": 0.1, "min_through_hole_diameter": 0.25, "min_hole_clearance": 0.2,
-                      "min_hole_to_hole": 0.2, "min_copper_edge_clearance": 0.3, "min_silk_clearance": 0.0,
+                      "min_hole_to_hole": 0.2, "min_copper_edge_clearance": 0.25, "min_silk_clearance": 0.0,
                       "solder_mask_to_copper_clearance": 0.0, "min_microvia_diameter": 0.2, "min_microvia_drill": 0.1},
             "rule_severities": {"silk_overlap": "ignore", "silk_over_copper": "ignore", "silk_edge_clearance": "ignore",
                                 "text_height": "ignore", "text_thickness": "ignore", "lib_footprint_issues": "ignore"},
@@ -163,8 +279,8 @@ def write_pro():
                 {"name": "Default", "clearance": 0.1, "track_width": 0.1, "via_diameter": 0.45, "via_drill": 0.25,
                  "microvia_diameter": 0.3, "microvia_drill": 0.1, "diff_pair_width": 0.2, "diff_pair_gap": 0.25,
                  "diff_pair_via_gap": 0.25, "wire_width": 6, "bus_width": 12, "line_style": 0, "priority": 2147483647},
-                {"name": "PWR", "clearance": 0.1, "track_width": 0.25, "via_diameter": 0.45, "via_drill": 0.25, "priority": 0},
-                {"name": "3V3", "clearance": 0.1, "track_width": 0.2, "via_diameter": 0.45, "via_drill": 0.25, "priority": 1}],
+                {"name": "PWR", "clearance": 0.1, "track_width": 0.2, "via_diameter": 0.45, "via_drill": 0.25, "priority": 0},
+                {"name": "3V3", "clearance": 0.1, "track_width": 0.15, "via_diameter": 0.45, "via_drill": 0.25, "priority": 1}],
             "meta": {"version": 4},
             "netclass_patterns": [{"netclass": "PWR", "pattern": n} for n in ("VBUS", "VBAT", "VSYS", "MOTOR_N")]
                                  + [{"netclass": "3V3", "pattern": "3V3"}]},

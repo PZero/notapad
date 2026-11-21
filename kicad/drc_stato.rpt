@@ -1,0 +1,51 @@
+** Drc report for notapad_v0.1.kicad_pcb **
+** Created on 2026-11-21T14:57:31 **
+** Report includes: Errors, Warnings **
+
+** Found 5 DRC violations **
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(105.0014 mm, 104.4614 mm): Track [VBUS] on F.Cu, length 0.3950 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(105.0014 mm, 104.8564 mm): Track [VBUS] on F.Cu, length 0.3950 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(105.0014 mm, 104.8564 mm): Track [VBUS] on F.Cu, length 0.3950 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(105.0014 mm, 104.8564 mm): Track [VBUS] on B.Cu, length 1.8296 mm
+[track_dangling]: Track has unconnected end
+    Local override; warning
+    @(115.6200 mm, 108.6000 mm): Track [MOTOR_N] on B.Cu, length 4.6298 mm
+
+** Found 3 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(107.2596 mm, 102.2032 mm): Track [VBUS] on In1.Cu, length 3.1936 mm
+    @(105.0014 mm, 104.4614 mm): Track [VBUS] on F.Cu, length 0.3950 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(105.0014 mm, 104.8564 mm): Track [VBUS] on B.Cu, length 1.8296 mm
+    @(105.0014 mm, 104.4614 mm): Track [VBUS] on F.Cu, length 0.3950 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(115.6200 mm, 108.6000 mm): Track [MOTOR_N] on B.Cu, length 4.6298 mm
+    @(115.6200 mm, 108.6000 mm): Pad 2 [MOTOR_N] of D4 on F.Cu
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Silkscreen clipped by board edge
+    - Text height out of range
+    - Text thickness out of range
+    - Footprint component type doesn't match footprint pads
+    - Footprint not found in libraries
+
+** End of Report **

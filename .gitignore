@@ -38,3 +38,8 @@ desktop.ini
 
 # Impostazioni locali di Claude Code
 .claude/settings.local.json
+
+# KiCad: file intermedi dello sbroglio (rigenerati da kicad/sbroglia.py)
+kicad/routing/
+kicad/en/
+kicad/jlc_out/gerber/

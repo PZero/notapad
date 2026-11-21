@@ -25,7 +25,19 @@ run("pcb", "export", "gerbers", "--output", GDIR + os.sep,
     "--no-x2", "--subtract-soldermask", PCB)
 run("pcb", "export", "drill", "--output", GDIR + os.sep, "--format", "excellon", "--drill-origin", "absolute",
     "--excellon-units", "mm", "--excellon-separate-th", "--generate-map", "--map-format", "gerberx2", PCB)
-zpath = os.path.join(OUT, "notapad_v0.1_gerber.zip")
+# DRC: se la scheda non è pulita il pacchetto Gerber viene marcato come BOZZA e non va ordinato
+import json
+drc = os.path.join(OUT, "_drc.json")
+run("pcb", "drc", "--format", "json", "--refill-zones", "--schematic-parity", "-o", drc, PCB)
+rep = json.load(open(drc, encoding="utf-8")); os.remove(drc)
+n_unc = len(rep.get("unconnected_items", []))
+n_err = sum(1 for v in rep.get("violations", []) if v.get("severity") == "error")
+pulito = n_unc == 0 and n_err == 0
+zpath = os.path.join(OUT, "notapad_v0.1_gerber.zip" if pulito else "notapad_v0.1_gerber_BOZZA_NON_ORDINARE.zip")
+if not pulito:
+    open(os.path.join(OUT, "NON_ORDINARE.txt"), "w", encoding="utf-8").write(
+        f"Scheda NON pronta: {n_unc} collegamenti mancanti e {n_err} errori DRC.\n"
+        "BOM e CPL sono validi (dipendono solo dal piazzamento); i Gerber sono una bozza.\n")
 with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
     for f in sorted(glob.glob(os.path.join(GDIR, "*"))):
         z.write(f, os.path.basename(f))
@@ -59,6 +71,7 @@ with open(os.path.join(OUT, "notapad_v0.1_BOM_JLC.csv"), "w", newline="", encodi
     w = csv.writer(f); w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #"])
     for (val, fpn, lcsc), refs in sorted(bom.items(), key=lambda kv: key(sorted(kv[1], key=key)[0])):
         w.writerow([val, ",".join(sorted(refs, key=key)), fpn, lcsc])
+print("DRC pulito" if pulito else f"ATTENZIONE: {n_unc} non connessi, {n_err} errori -> Gerber marcati BOZZA")
 print("OK:", zpath, "|", len(cpl), "componenti nel CPL |", len(bom), "righe BOM")
 
 # ---- aggiorna anche i file di riepilogo in ../jlc/ ----

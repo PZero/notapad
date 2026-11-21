@@ -23,7 +23,7 @@ Il pinout originale del CLAUDE.md usava proprio quei pin, quindi è stato rifatt
 | HOLD (latch alimentazione) | P0.29 | 8 | tenere ALTO subito al boot |
 | VBAT_SENSE | P0.02 / AIN0 | 7 | partitore 1M/1M da VSYS (×2) |
 | VBUS_SENSE | P0.28 | 4 | 5V presente = alto (partitore 100k/100k) |
-| CHRG (TP4054) | P0.07 | 22 | open-drain, pull-up interno, basso = in carica |
+| STAT (MCP73831) | P0.07 | 22 | pull-up interno; basso = in carica, alto = carica completa, alta impedenza = niente 5V/niente batteria (ex CHRG del TP4054) |
 | NRESET | P0.18 | 26 | abilitare pin reset (CONFIG_GPIO_AS_PINRESET) |
 | SWDIO / SWCLK | – | 37 / 39 | contatti posteriori |
 | LED1 R / G / B | P0.15 / P0.17 / P0.20 | 28 / 30 / 32 | catodi, attivi BASSI |
