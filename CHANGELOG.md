@@ -5,3 +5,4 @@
 - elettronica: libreria KiCad dai codici LCSC ufficiali (`kicad/lib/`).
 - elettronica: pinout nRF52840 rifatto sui pin realmente disponibili sul modulo E73 (`docs/pinout_v0.1.md`).
 - elettronica: microfoni sostituiti con MSM261DGT003 (top-port); una resistenza per LED sull'anodo; C14 sul latch.
+- repo: made the repository public; README rewritten in English; presentation page translated and published on GitHub Pages (https://pzero.github.io/notapad/) via .github/workflows/pages.yml; new comunicazione agent.

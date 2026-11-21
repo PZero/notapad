@@ -13,4 +13,9 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | Luce dei LED solo dalla fessura frontale, riempita di resina opalina | La resina pigmentata blocca la luce; per più LED mancano spazio, pin e batteria |
 | 21/11/2026 | Programmazione SWD con Raspberry Pi 3 + OpenOCD; Pico (debugprobe) eventuale | Il nRF52840 non ha bootloader in ROM: il primo bootloader va caricato via SWD, poi OTA via BLE |
 | 21/11/2026 | App: Flutter, sviluppo su Android prima (proposta, da confermare) | Nessuno ha un Mac; il simulatore iOS non ha BLE; iOS si compila nel cloud |
-| 21/11/2026 | Repository GitHub `PZero/notapad`, privato | Progetto condiviso con un amico; si può rendere pubblico in seguito |
+| 21/11/2026 | Repository GitHub `PZero/notapad`, privato (superata: vedi sotto) | Progetto condiviso con un amico |
+| 21/11/2026 | Repository `PZero/notapad` reso PUBBLICO | Visibilità del progetto; GitHub Pages non è disponibile sui repo privati del piano gratuito |
+| 21/11/2026 | README e pagina in inglese; `docs/` resta in italiano | Pubblico internazionale; documenti di lavoro nella lingua del team |
+| 21/11/2026 | La pagina animata su GitHub Pages (https://pzero.github.io/notapad/) sostituisce l'artefatto Claude come riferimento | Versione unica, versionata nel repo, aggiornata dal workflow `pages.yml` |
+| 21/11/2026 | Agente `comunicazione` per README e pagina; `git-readme` fa CHANGELOG, controllo segreti/privacy, commit e push | Separare comunicazione e custodia del repo |
+| 21/11/2026 | Licenza: da decidere | Non scelta; il README dice "to be decided" |
