@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,12 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* VOICE occasione: lancio di un oggetto, studio fotografico al buio, poche parole
-   IDEA il monolite in uno still-life da catalogo: gira, si ferma, si apre a strati
-   PICTURE il notªpad in 3D a tutto schermo, con etichette agganciate ai suoi punti
-   COLOUR grafite #0e0e10, avorio #efebe3, bronzo dei listelli #b8895a, luce del LED variabile
-   TYPE Inter Tight 600 per i titoli, Inter per il testo
-   LAYOUT laptop: oggetto al centro-destra, testo in basso a sinistra; telefono: oggetto in alto, testo sotto */
+/* VOICE product launch, photo studio in the dark, few words
+   IDEA the monolith as a catalogue still-life: it spins, stops, opens in layers
+   PICTURE the notªpad in full-screen 3D, with labels anchored to its parts
+   COLOUR graphite #0e0e10, ivory #efebe3, bronze of the side strips #b8895a, variable LED light
+   TYPE Inter Tight 600 for headings, Inter for text
+   LAYOUT laptop: object centre-right, text bottom-left; phone: object on top, text below */
 :root{color-scheme:dark;--bg:#0e0e10;--bg2:#151518;--ink:#efebe3;--mute:#9a968e;--line:#2a2a2f;--bronze:#b8895a;--led:#5fd3c8}
 *{box-sizing:border-box;min-width:0}
 html{scroll-behavior:smooth;scroll-padding-top:64px}
@@ -73,7 +73,14 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 .specs div{background:var(--bg);padding:18px}
 .specs b{display:block;font:600 24px "Inter Tight",sans-serif;white-space:nowrap}
 .specs span{color:var(--mute);font-size:13px}
-/* animazioni delle scene */
+#progress .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(15em,1fr));gap:16px;margin-top:40px}
+#progress .st{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
+#progress .st h3{font-size:18px;line-height:1.25;margin:8px 0 6px}
+#progress .st p{color:var(--mute);font-size:14px}
+#progress .st em{font:normal 600 12px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+#progress .st.done em{color:var(--led)}#progress .st.now em{color:var(--bronze)}
+#progress .st.now{border-color:var(--bronze)}
+/* scene animations */
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes wig{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
 @keyframes flow{to{stroke-dashoffset:-40}}
@@ -83,18 +90,18 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 </style>
 </head>
 <body>
-<canvas id="gl" aria-label="Il notªpad in 3D"></canvas>
+<canvas id="gl" aria-label="The notªpad in 3D"></canvas>
 <div id="tags" aria-hidden="true"></div>
 
-<nav><strong>notªpad</strong><a href="#oggetto">Oggetto</a><a href="#dentro">Dentro</a><a href="#cosa">Cosa fa</a><a href="#ai">La tua AI</a></nav>
+<nav><strong>notªpad</strong><a href="#oggetto">Object</a><a href="#dentro">Inside</a><a href="#cosa">What it does</a><a href="#ai">Your AI</a><a href="#progress">Progress</a></nav>
 
 <section id="oggetto" class="band">
   <div class="hero">
     <h1>notªpad</h1>
-    <p>Un monolite di resina da 38 × 17,5 × 8 mm che porti al collo. Ascolta, registra e ricorda: il resto lo fa l'AI che scegli tu.</p>
-    <div class="sw" role="group" aria-label="Finitura">
+    <p>A 38 × 17.5 × 8 mm resin monolith you wear around your neck. It listens, records and remembers: the AI of your choice does the rest.</p>
+    <div class="sw" role="group" aria-label="Finish">
       <span id="swatches" style="display:contents"></span>
-      <output id="fname">Carbonio forgiato</output>
+      <output id="fname">Forged carbon</output>
     </div>
   </div>
 </section>
@@ -102,8 +109,8 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 <section id="dentro" class="band">
   <div class="panel">
     <div class="card" id="card">
-      <h2>Dentro, a strati</h2>
-      <p>Una schedina a 2 strati annegata nella resina. Niente viti, niente porte: solo quattro contatti dorati sul retro.</p>
+      <h2>Inside, layer by layer</h2>
+      <p>A tiny 2-layer board cast in resin. No screws, no ports: just four gold contacts on the back.</p>
       <ul id="parts"></ul>
     </div>
   </div>
@@ -111,52 +118,65 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 
 <div class="solid">
 <section id="cosa" class="band sec">
-  <h2>Registra tutto. Tu stringi solo quando conta.</h2>
-  <p class="lead">Il notªpad ascolta in silenzio per tutta la giornata. I gesti e la luce sono l'unica interfaccia: niente schermo, niente app da aprire.</p>
+  <h2>Records everything. You squeeze only when it matters.</h2>
+  <p class="lead">The notªpad listens quietly all day long. Gestures and light are the only interface: no screen, no app to open.</p>
 
   <div class="row">
     <div class="txt">
-      <h3>Tutto il giorno, poi si ricarica</h3>
-      <p>Da quando lo indossi a quando lo appoggi sulla basetta: oltre 11 ore di registrazione stereo. Di notte, in carica, scarica l'audio sul telefono, che lo trascrive con calma.</p>
-      <ul><li><kbd>11,5 h</kbd>autonomia stimata in registrazione</li><li><kbd>256 MB</kbd>circa 11 ore di audio stereo continuo</li><li><kbd>notte</kbd>ricarica, sincronizza, trascrive</li></ul>
+      <h3>All day, then it recharges</h3>
+      <p>From the moment you put it on to the moment you set it on its dock: over 11 hours of stereo recording (estimated). At night, while charging, it hands the audio to your phone, which transcribes it at leisure.</p>
+      <ul><li><kbd>11.5 h</kbd>estimated recording time</li><li><kbd>256 MB</kbd>about 11 hours of continuous stereo audio</li><li><kbd>night</kbd>charges, syncs, transcribes</li></ul>
     </div>
-    <div class="fig"><svg id="dial" viewBox="0 0 400 320" role="img" aria-label="Giornata di 24 ore: registrazione di giorno, ricarica e trascrizione di notte"></svg></div>
+    <div class="fig"><svg id="dial" viewBox="0 0 400 320" role="img" aria-label="24-hour day: recording by day, charging and transcription at night"></svg></div>
   </div>
 
   <div class="row flip">
     <div class="txt">
-      <h3>Una stretta, ed è un tag</h3>
-      <p>I sensori sono sui due fianchi: vale solo se li tocchi entrambi, così il petto non preme nulla per sbaglio. Il LED conferma, la vibrazione anche.</p>
-      <ul><li><kbd>1 stretta</kbd>segna questo momento</li><li><kbd>2 strette</kbd>è un'idea</li><li><kbd>stretta lunga</kbd>manda al progetto di gruppo</li></ul>
+      <h3>One squeeze, and it is a tag</h3>
+      <p>The sensors are on both sides: it only counts if you touch both, so your chest never triggers anything by accident. The LED confirms, and so does the vibration.</p>
+      <ul><li><kbd>1 squeeze</kbd>marks this moment</li><li><kbd>2 squeezes</kbd>it is an idea</li><li><kbd>long squeeze</kbd>sends to the group project</li></ul>
     </div>
-    <div class="fig"><svg id="squeeze" viewBox="0 0 400 300" role="img" aria-label="Animazione dei gesti a stretta e dei tag creati"></svg></div>
+    <div class="fig"><svg id="squeeze" viewBox="0 0 400 300" role="img" aria-label="Animation of the squeeze gestures and the tags they create"></svg></div>
   </div>
 
   <div class="row">
     <div class="txt">
-      <h3>Note di gruppo, che si fanno sentire</h3>
-      <p>Una nota indirizzata a un progetto arriva a tutti i partecipanti: il loro notªpad si illumina del colore del progetto e vibra. Nessuno deve guardare un telefono.</p>
+      <h3>Group notes you can feel</h3>
+      <p>A note addressed to a project reaches every participant: their notªpad lights up in the project colour and vibrates. Nobody has to look at a phone.</p>
     </div>
-    <div class="fig"><svg id="group" viewBox="0 0 400 300" role="img" aria-label="Una nota parte da un notªpad e arriva agli altri tre, che si illuminano e vibrano"></svg></div>
+    <div class="fig"><svg id="group" viewBox="0 0 400 300" role="img" aria-label="A note leaves one notªpad and reaches the other three, which light up and vibrate"></svg></div>
   </div>
 </section>
 
 <section id="ai" class="band sec">
-  <h2>La tua AI, non la nostra.</h2>
-  <p class="lead">Le note restano tue. Un server MCP aperto le mette a disposizione dell'assistente che già usi, con il tuo abbonamento: Claude, ChatGPT, Gemini o un modello locale. Organizzi come preferisci.</p>
-  <div class="mcpwrap" style="margin-top:40px"><div class="fig" style="aspect-ratio:16/8"><svg id="mcp" viewBox="0 0 800 400" role="img" aria-label="Le note passano da un server MCP aperto agli assistenti AI"></svg></div></div>
+  <h2>Your AI, not ours.</h2>
+  <p class="lead">Your notes stay yours. An open MCP server makes them available to the assistant you already use, with your own subscription: Claude, ChatGPT, Gemini or a local model. Organise them the way you like.</p>
+  <div class="mcpwrap" style="margin-top:40px"><div class="fig" style="aspect-ratio:16/8"><svg id="mcp" viewBox="0 0 800 400" role="img" aria-label="Notes flow through an open MCP server to AI assistants"></svg></div></div>
   <div class="specs">
-    <div><b>nRF52840</b><span>Bluetooth LE, cuore del sistema</span></div>
-    <div><b>2 microfoni</b><span>frontale e superiore, stereo</span></div>
-    <div><b>3 LED RGB</b><span>sotto la fessura frontale</span></div>
-    <div><b>256 MB</b><span>memoria NAND</span></div>
-    <div><b>~60 mAh</b><span>LiPo protetta, carica dai contatti</span></div>
-    <div><b>8 mm</b><span>spessore, resina piena</span></div>
+    <div><b>nRF52840</b><span>Bluetooth LE, the heart of the system</span></div>
+    <div><b>2 microphones</b><span>front and top, stereo</span></div>
+    <div><b>3 LED RGB</b><span>behind the front slit</span></div>
+    <div><b>256 MB</b><span>NAND memory</span></div>
+    <div><b>~60 mAh</b><span>protected LiPo, charges via the contacts</span></div>
+    <div><b>8 mm</b><span>thickness, solid resin</span></div>
   </div>
-  <p class="note">Concept v0.1: render e funzioni descrivono il progetto in sviluppo; autonomia e capacità sono stime da verificare sul prototipo.</p>
+  <p class="note">Concept v0.1: renders and features describe a project in development; runtime and capacity are estimates still to be verified on a prototype.</p>
 </section>
 
-<footer><strong>notªpad</strong><span>Progetto hardware aperto · nRF52840 · scheda prodotta da JLCPCB</span><span>Genova, 2026</span></footer>
+<section id="progress" class="band sec">
+  <h2>Progress and next steps</h2>
+  <p class="lead">Honest status, updated at the end of each work session. Nothing here is built, tested or shipped yet: this is a design in progress.</p>
+  <div class="steps">
+    <div class="st done"><em>Done</em><h3>Concept and renders</h3><p>Object, finishes and this presentation. Bill of materials and net list for the v0.1 board.</p></div>
+    <div class="st done"><em>Done</em><h3>Datasheet checks</h3><p>The E73 module exposes fewer GPIOs than first assumed, so the nRF52840 pinout was redone. The first microphone choice was bottom-port: replaced with a top-port part.</p></div>
+    <div class="st now"><em>In progress</em><h3>v0.1 board in KiCad</h3><p>Schematic, placement and routing of the 16.5 × 35 mm, 2-layer board. The top zones are very dense; routing and design-rule checks are under way.</p></div>
+    <div class="st"><em>Next</em><h3>JLCPCB quote</h3><p>Export Gerber, BOM and placement files, upload for a quote only, check rotations, then decide on the first assembly order.</p></div>
+    <div class="st"><em>On hold</em><h3>Firmware and phone app</h3><p>Paused on purpose until the board is settled. The pinout for the firmware is already documented.</p></div>
+  </div>
+  <p class="note">Follow along on <a href="https://github.com/PZero/notapad" style="color:var(--ink)">GitHub</a>. Order and timing are not promises.</p>
+</section>
+
+<footer><strong>notªpad</strong><span>Open hardware project · nRF52840 · board to be built by JLCPCB</span><span><a href="https://github.com/PZero/notapad" style="color:inherit">Source on GitHub</a></span><span>Genoa, Italy, 2026</span></footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -166,30 +186,30 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = s => document.querySelector(s);
 const NS = 'http://www.w3.org/2000/svg';
 
-/* ---------------- finiture ---------------- */
+/* ---------------- finishes ---------------- */
 const finishes = [
-  {n:'Carbonio forgiato', sw:'conic-gradient(#2b2b2e,#6d6d72,#1b1b1d,#88888d,#2b2b2e)', tex:'forged', c:0xffffff, r:.38, m:.25, cc:1},
-  {n:'Nero opaco', sw:'#1a1a1b', c:0x121213, r:.78, m:0, cc:0},
-  {n:'Nero lucido', sw:'#050505', c:0x050506, r:.12, m:0, cc:1},
-  {n:'Antracite', sw:'#34383d', c:0x2c3035, r:.34, m:.65, cc:1},
-  {n:'Blu notte', sw:'#0d1d44', c:0x0b1a3d, r:.28, m:.1, cc:1},
-  {n:'Avorio', sw:'#ddd5c6', c:0xd9d1c2, r:.42, m:0, cc:.5}
+  {n:'Forged carbon', sw:'conic-gradient(#2b2b2e,#6d6d72,#1b1b1d,#88888d,#2b2b2e)', tex:'forged', c:0xffffff, r:.38, m:.25, cc:1},
+  {n:'Matte black', sw:'#1a1a1b', c:0x121213, r:.78, m:0, cc:0},
+  {n:'Gloss black', sw:'#050505', c:0x050506, r:.12, m:0, cc:1},
+  {n:'Anthracite', sw:'#34383d', c:0x2c3035, r:.34, m:.65, cc:1},
+  {n:'Midnight blue', sw:'#0d1d44', c:0x0b1a3d, r:.28, m:.1, cc:1},
+  {n:'Ivory', sw:'#ddd5c6', c:0xd9d1c2, r:.42, m:0, cc:.5}
 ];
 const swWrap = $('#swatches');
 swWrap.innerHTML = finishes.map((f,i)=>`<button type="button" aria-pressed="${i===0}" aria-label="${f.n}" style="background:${f.sw}" data-i="${i}"></button>`).join('');
 
-/* ---------------- parti (pannello "dentro") ---------------- */
+/* ---------------- parts ("inside" panel) ---------------- */
 const parts = [
-  ['Guscio in resina piena','38 × 17,5 × 8 mm'],
-  ['3 LED RGB + 2 microfoni PDM','frontale e superiore'],
-  ['Scheda 2 strati, 16,5 × 35 mm','JLCPCB'],
+  ['Solid resin shell','38 × 17.5 × 8 mm'],
+  ['3 RGB LEDs + 2 PDM microphones','front and top'],
+  ['2-layer board, 16.5 × 35 mm','JLCPCB'],
   ['Modulo nRF52840 (Ebyte E73)','Bluetooth LE'],
-  ['Memoria NAND W25N02','256 MB'],
-  ['Carica TP4054 + interruttore','spegne a 3,5 V'],
-  ['Batteria LiPo protetta','~60 mAh'],
-  ['Motorino di vibrazione','ø 8 × 2 mm'],
-  ['4 contatti dorati','5V · GND · SWD'],
-  ['Anello in acciaio','annegato nella resina']
+  ['NAND memory W25N02','256 MB'],
+  ['TP4054 charger + latch switch','cuts off at 3.5 V'],
+  ['Protected LiPo battery','~60 mAh'],
+  ['Vibration motor','ø 8 × 2 mm'],
+  ['4 gold contacts','5V · GND · SWD'],
+  ['Steel ring','cast into the resin']
 ];
 $('#parts').innerHTML = parts.map(p=>`<li><span>${p[0]}</span><small>${p[1]}</small></li>`).join('');
 
@@ -206,7 +226,7 @@ if (THREE_OK) {
   scene.background = new THREE.Color(0x0e0e10);
   const cam = new THREE.PerspectiveCamera(28, 1, 1, 2000);
 
-  /* ambiente per i riflessi: stanza scura con finestre luminose */
+  /* reflection environment: dark room with bright windows */
   const env = new THREE.Scene();
   const roomM = new THREE.MeshBasicMaterial({color:0x1a1a1d, side:THREE.BackSide});
   env.add(new THREE.Mesh(new THREE.BoxGeometry(200,200,200), roomM));
@@ -221,7 +241,7 @@ if (THREE_OK) {
   const rim = new THREE.DirectionalLight(0xffc89a, 1.1); rim.position.set(80,20,-90); scene.add(rim);
   scene.add(new THREE.HemisphereLight(0xdfe6ff, 0x1a1410, .35));
 
-  /* texture procedurali */
+  /* procedural textures */
   const forgedTex = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
     let s = 7; const rnd = () => (s = s*16807 % 2147483647) / 2147483647;
@@ -235,7 +255,7 @@ if (THREE_OK) {
     const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(.045,.045); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
   })();
 
-  /* ---------------- il monolite ---------------- */
+  /* ---------------- the monolith ---------------- */
   const W = 17.5, H = 38, D = 8, R = 2.2, BV = 1.0;
   const rr = (w,h,r) => {const s = new THREE.Shape(), x=-w/2, y=-h/2; s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r); s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h); s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r); s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s;};
   const bodyGeo = new THREE.ExtrudeGeometry(rr(W-2*BV,H-2*BV,R), {depth:D-2*BV, bevelEnabled:true, bevelThickness:BV, bevelSize:BV, bevelSegments:6, curveSegments:24});
@@ -259,7 +279,7 @@ if (THREE_OK) {
   const ring = new THREE.Mesh(new THREE.TorusGeometry(3,.65,24,80), steel); ring.position.set(0,H/2+2.5,0); ring.rotation.y = Math.PI/2; obj.add(ring);
   const bush = cyl(1.6,.6,steel,0,H/2+.1,0,0);
 
-  /* interno */
+  /* interior */
   const pcbG = new THREE.Group(); obj.add(pcbG);
   box(16.5,35,.8,std(0x1d5a37,.55,0),0,0,.6,pcbG);
   box(13,18,2.1,std(0xbfc3c9,.35,.8),0,-8.5,2.05,pcbG);
@@ -275,40 +295,40 @@ if (THREE_OK) {
   const backG = new THREE.Group(); obj.add(backG);
   const pins = [-7,-4.2,4.2,7].map(x=>cyl(.8,4.2,gold,x,16,-2,Math.PI/2,backG));
 
-  /* posizioni di riposo e di esploso */
+  /* rest and exploded positions */
   const ex = [
     {o:body, z:26}, {o:slit, z:26}, {o:micF, z:26}, {o:pcbG, z:6},
     {o:bat, z:-12}, {o:motor, z:-19, y:4}, {o:backG, z:-28}, {o:ring, y:12}, {o:bush, y:8},
     {o:micT, z:26}, {o:inlays[0], z:26}, {o:inlays[1], z:26}
   ].map(e=>({...e, p:e.o.position.clone()}));
 
-  /* ---------------- etichette ---------------- */
+  /* ---------------- labels ---------------- */
   const tagsEl = $('#tags');
   const feat = [
-    {t:'3 LED RGB', d:'luce che scorre, respira, avvisa', p:[0,11,D/2], n:[0,0,1]},
-    {t:'Microfono frontale', d:'verso chi ti parla', p:[5.5,4.5,D/2], n:[0,0,1]},
-    {t:'Microfono superiore', d:'verso la tua voce', p:[-4,H/2,0], n:[0,1,.0001]},
-    {t:'Sensori a stretta', d:'validi solo su entrambi i fianchi', p:[W/2,-4,0], n:[1,0,0]},
-    {t:'Sensori a stretta', d:'validi solo su entrambi i fianchi', p:[-W/2,-4,0], n:[-1,0,0]},
-    {t:'4 contatti dorati', d:'carica e firmware', p:[-5.6,16,-D/2], n:[0,0,-1]},
-    {t:'Vibrazione', d:'notifiche che senti', p:[0,10.5,-D/2], n:[0,0,-1]},
-    {t:'256 MB di memoria', d:'oltre 11 ore stereo', p:[-3.8,-6,D/2], n:[0,0,1]},
-    {t:'Anello in acciaio', d:'annegato, non si stacca', p:[0,H/2+5,0], n:[0,1,0]}
+    {t:'3 RGB LEDs', d:'light that flows, breathes, alerts', p:[0,11,D/2], n:[0,0,1]},
+    {t:'Front microphone', d:'towards whoever speaks to you', p:[5.5,4.5,D/2], n:[0,0,1]},
+    {t:'Top microphone', d:'towards your own voice', p:[-4,H/2,0], n:[0,1,.0001]},
+    {t:'Squeeze sensors', d:'valid only on both sides together', p:[W/2,-4,0], n:[1,0,0]},
+    {t:'Squeeze sensors', d:'valid only on both sides together', p:[-W/2,-4,0], n:[-1,0,0]},
+    {t:'4 gold contacts', d:'charging and firmware', p:[-5.6,16,-D/2], n:[0,0,-1]},
+    {t:'Vibration', d:'notifications you can feel', p:[0,10.5,-D/2], n:[0,0,-1]},
+    {t:'256 MB of memory', d:'over 11 hours of stereo', p:[-3.8,-6,D/2], n:[0,0,1]},
+    {t:'Steel ring', d:'cast in, cannot come off', p:[0,H/2+5,0], n:[0,1,0]}
   ];
   const layers = [
-    {t:'Guscio in resina', o:body, p:[W/2,14,D/2]},
-    {t:'Scheda e componenti', o:pcbG, p:[8.2,12,.6]},
+    {t:'Resin shell', o:body, p:[W/2,14,D/2]},
+    {t:'Board and components', o:pcbG, p:[8.2,12,.6]},
     {t:'nRF52840', o:pcbG, p:[6.5,-12,3]},
-    {t:'Batteria ~60 mAh', o:bat, p:[8,-10,0]},
-    {t:'Motorino', o:motor, p:[4,0,0]},
-    {t:'Contatti dorati', o:backG, p:[7,16,-4]},
-    {t:'Anello', o:ring, p:[0,0,3]}
+    {t:'Battery ~60 mAh', o:bat, p:[8,-10,0]},
+    {t:'Motor', o:motor, p:[4,0,0]},
+    {t:'Gold contacts', o:backG, p:[7,16,-4]},
+    {t:'Ring', o:ring, p:[0,0,3]}
   ];
   const mk = (t,d) => {const e = document.createElement('div'); e.className = 'tag'; e.innerHTML = `<i></i><b></b><span>${t}${d?`<em>${d}</em>`:''}</span>`; tagsEl.appendChild(e); return e;};
   feat.forEach(f=>f.el = mk(f.t,f.d));
   layers.forEach(l=>l.el = mk(l.t,''));
 
-  /* ---------------- stato ---------------- */
+  /* ---------------- state ---------------- */
   let fi = 0, userPicked = false, lastSwap = 0, explode = 0, heroOn = 1;
   const applyFinish = i => {
     fi = i; const f = finishes[i];
@@ -339,7 +359,7 @@ if (THREE_OK) {
     const act = Math.floor(clamp((pd-.2)/.7,0,.999)*lis.length);
     lis.forEach((l,i)=>l.classList.toggle('hi', pd>.2 && i===act));
 
-    /* rotazione: gira in apertura, si ferma di tre quarti quando si apre */
+    /* rotation: spins on opening, stops at three-quarter view when it opens */
     const target = -1.0;
     if (!reduce) rotY += dt*.45*(1-settle);
     const spun = ((rotY - target) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
@@ -348,7 +368,7 @@ if (THREE_OK) {
     obj.rotation.x = .1 + .2*explode;
     obj.rotation.z = -.05*explode;
 
-    /* esploso */
+    /* exploded view */
     ex.forEach(e=>{e.o.position.set(e.p.x+(e.x||0)*explode, e.p.y+(e.y||0)*explode, e.p.z+(e.z||0)*explode);});
     bodyMat.opacity = 1 - .86*explode; bodyMat.depthWrite = explode<.3;
     slit.visible = explode<.6;
@@ -359,7 +379,7 @@ if (THREE_OK) {
     cam.position.set(wide?0:-22 + 10*explode, wide?-14:0, dist);
     cam.lookAt(wide?0:-22 + 10*explode, wide?-14:0, 0);
 
-    /* luce dei LED */
+    /* LED light */
     const ph = now/1000;
     const col = new THREE.Color().setHSL((ph*.06)%1,.7,.55);
     ledMats.forEach((m,i)=>{const k = .5+.5*Math.sin(ph*2.2 - i*.9); m.emissive.copy(col).multiplyScalar(reduce?.8:.25+1.6*k);});
@@ -397,7 +417,7 @@ if (THREE_OK) {
   canvas.style.background = 'radial-gradient(circle at 60% 45%,#2a2a2e,#0e0e10 60%)';
 }
 
-/* ---------------- scena: 24 ore ---------------- */
+/* ---------------- scene: 24 hours ---------------- */
 const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e;};
 {
   const s = $('#dial'), cx = 200, cy = 146, R = 100;
@@ -410,7 +430,7 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
   svgEl('circle',{cx,cy,r:5,fill:'#efebe3'},s);
   const big = svgEl('text',{x:24,y:36,'font-size':20,'font-weight':600,fill:'#efebe3'},s);
   const small = svgEl('text',{x:24,y:56,'font-size':12,fill:'#9a968e'},s);
-  const legend = [['var(--led)','registra',24,302],['var(--bronze)','in carica · sincronizza · trascrive',110,302]];
+  const legend = [['var(--led)','recording',24,302],['var(--bronze)','charging · syncing · transcribing',110,302]];
   legend.forEach(([c,l,x,y])=>{svgEl('rect',{x,y:y-9,width:12,height:12,rx:3,fill:c},s); const t = svgEl('text',{x:x+18,y:y+1,'font-size':12,fill:'#9a968e'},s); t.textContent = l;});
   let h = 7;
   const tick = () => {
@@ -418,12 +438,12 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
     const a = h/24*360; hand.setAttribute('transform',`rotate(${a} ${cx} ${cy})`);
     const rec = h>=7 && h<18.5, chg = h>=23 || h<6.8;
     big.textContent = String(Math.floor(h)).padStart(2,'0')+':'+String(Math.floor((h%1)*60)).padStart(2,'0');
-    small.textContent = rec ? 'sta registrando' : chg ? 'sulla basetta: trascrizione' : 'in pausa';
+    small.textContent = rec ? 'recording' : chg ? 'on the dock: transcription' : 'idle';
   };
   tick(); if (!reduce) setInterval(tick, 60);
 }
 
-/* ---------------- scena: gesti a stretta ---------------- */
+/* ---------------- scene: squeeze gestures ---------------- */
 {
   const s = $('#squeeze');
   const g = svgEl('g',{},s);
@@ -437,9 +457,9 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
   const label = svgEl('text',{x:182,y:244,'text-anchor':'middle','font-size':14,fill:'#efebe3'},s);
   const list = svgEl('g',{},s);
   const gestures = [
-    {n:'1 stretta', tag:'Segnalibro', col:'#5fd3c8', presses:[1]},
-    {n:'2 strette', tag:'Idea', col:'#f0c060', presses:[1,1]},
-    {n:'stretta lunga', tag:'Progetto Atlante', col:'#e07a5f', presses:[3]}
+    {n:'1 squeeze', tag:'Bookmark', col:'#5fd3c8', presses:[1]},
+    {n:'2 squeezes', tag:'Idea', col:'#f0c060', presses:[1,1]},
+    {n:'long squeeze', tag:'Project Atlas', col:'#e07a5f', presses:[3]}
   ];
   const chips = [];
   let gi = 0;
@@ -462,17 +482,17 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
     });
     await wait(900); led.setAttribute('fill','#2a2a2f'); await wait(900); run();
   };
-  if (!reduce) run(); else {label.textContent = '1 stretta'; led.setAttribute('fill','#5fd3c8');}
+  if (!reduce) run(); else {label.textContent = '1 squeeze'; led.setAttribute('fill','#5fd3c8');}
 }
 
-/* ---------------- scena: gruppo ---------------- */
+/* ---------------- scene: group ---------------- */
 {
   const s = $('#group');
   const pos = [[80,90,'Anna'],[320,90,'Marco'],[80,230,'Luca'],[320,230,'Sara']];
   const hub = [200,160];
   pos.forEach(p=>svgEl('path',{d:`M${p[0]} ${p[1]}L${hub[0]} ${hub[1]}`,stroke:'#2a2a2f','stroke-width':2},s));
   svgEl('circle',{cx:hub[0],cy:hub[1],r:30,fill:'#1d1d21',stroke:'#e07a5f','stroke-width':1.5},s);
-  const ht = svgEl('text',{x:hub[0],y:hub[1]+4,'text-anchor':'middle','font-size':11,fill:'#efebe3'},s); ht.textContent = 'Atlante';
+  const ht = svgEl('text',{x:hub[0],y:hub[1]+4,'text-anchor':'middle','font-size':11,fill:'#efebe3'},s); ht.textContent = 'Atlas';
   const devs = pos.map(p=>{
     const g = svgEl('g',{},s);
     svgEl('rect',{x:p[0]-14,y:p[1]-30,width:28,height:60,rx:6,fill:'#1d1d21',stroke:'#3a3a40'},g);
@@ -488,27 +508,27 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
   let k = 0;
   const run = async () => {
     const from = devs[k%4]; k++;
-    cap.textContent = `${from.p[2]} manda una nota al progetto`;
+    cap.textContent = `${from.p[2]} sends a note to the project`;
     from.l.setAttribute('fill','#e07a5f'); dot.setAttribute('opacity',1);
     await move(from.p,hub,700);
     const others = devs.filter(d=>d!==from);
     await Promise.all(others.map(async (d,i)=>{await wait(i*120);}));
     for (const d of others){ move(hub,d.p,600); }
     await wait(620); dot.setAttribute('opacity',0);
-    cap.textContent = 'gli altri si illuminano e vibrano';
+    cap.textContent = 'the others light up and vibrate';
     others.forEach(d=>{d.l.setAttribute('fill','#e07a5f'); d.glow.setAttribute('opacity',.16); d.g.style.animation = 'wig .3s 3'; d.g.style.transformOrigin = `${d.p[0]}px ${d.p[1]}px`;});
     await wait(1700);
     devs.forEach(d=>{d.l.setAttribute('fill','#2a2a2f'); d.glow.setAttribute('opacity',0); d.g.style.animation = '';});
     await wait(700); run();
   };
-  if (!reduce) run(); else cap.textContent = 'una nota arriva a tutto il gruppo';
+  if (!reduce) run(); else cap.textContent = 'a note reaches the whole group';
 }
 
-/* ---------------- scena: MCP ---------------- */
+/* ---------------- scene: MCP ---------------- */
 {
   const s = $('#mcp');
-  const left = [['Trascrizioni',110],['Tag e momenti',200],['Note di gruppo',290]];
-  const right = [['Claude',80],['ChatGPT',160],['Gemini',240],['Modello locale',320]];
+  const left = [['Transcripts',110],['Tags and moments',200],['Group notes',290]];
+  const right = [['Claude',80],['ChatGPT',160],['Gemini',240],['Local model',320]];
   const node = (x,y,w,t,sub,accent) => {
     svgEl('rect',{x:x-w/2,y:y-24,width:w,height:48,rx:12,fill:accent?'rgba(95,211,200,.1)':'#1d1d21',stroke:accent?'var(--led)':'#3a3a40','stroke-width':accent?1.5:1},s);
     const a = svgEl('text',{x,y:sub?y-2:y+5,'text-anchor':'middle','font-size':14,fill:'#efebe3','font-weight':500},s); a.textContent = t;
@@ -517,10 +537,10 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
   left.forEach(([t,y])=>{svgEl('path',{d:`M190 ${y}C260 ${y} 270 200 312 200`,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s); svgEl('path',{d:`M190 ${y}C260 ${y} 270 200 312 200`,fill:'none',stroke:'var(--led)','stroke-width':2,class:'flow'},s);});
   right.forEach(([t,y],i)=>{svgEl('path',{d:`M488 200C520 200 550 ${y} 615 ${y}`,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s); svgEl('path',{d:`M488 200C520 200 550 ${y} 615 ${y}`,fill:'none',stroke:'var(--bronze)','stroke-width':2,class:'flow',style:`animation-delay:${-i*.3}s`},s);});
   left.forEach(([t,y])=>node(115,y,150,t));
-  node(400,200,176,'Server MCP','aperto, sul tuo telefono',true);
-  right.forEach(([t,y])=>node(690,y,150,t,'il tuo abbonamento'));
+  node(400,200,176,'Server MCP','open, on your phone',true);
+  right.forEach(([t,y])=>node(690,y,150,t,'your subscription'));
   const q = svgEl('text',{x:400,y:372,'text-anchor':'middle','font-size':15,fill:'#efebe3'},s);
-  const prompts = ['«Riassumi la riunione di ieri»','«Trasforma le idee di questa settimana in attività»','«Dove ho parlato di batterie?»','«Prepara il verbale per il progetto Atlante»'];
+  const prompts = ['“Summarise yesterday’s meeting”','“Turn this week’s ideas into tasks”','“Where did I talk about batteries?”','“Draft the minutes for Project Atlas”'];
   let pi = 0, ci = 0;
   const type = () => {const p = prompts[pi%prompts.length]; ci++; q.textContent = p.slice(0,ci); if (ci < p.length) setTimeout(type,38); else setTimeout(()=>{pi++; ci=0; type();},1800);};
   if (!reduce) type(); else q.textContent = prompts[0];

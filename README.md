@@ -1,78 +1,127 @@
+<div align="center">
+
 # notªpad
 
-**Registratore AI indossabile fai-da-te: un monolite di resina da portare al collo che registra la giornata e affida trascrizione e note all'AI che scegli tu.**
+**A DIY wearable AI voice recorder: a resin monolith you wear around your neck. It records your day and leaves transcription and note-taking to the AI of your choice, through an open MCP server.**
 
-> Stato: **v0.1 in progettazione**. Scheda in KiCad, verso il primo ordine JLCPCB. Firmware e app non ancora iniziati.
+[![Status: v0.1 design](https://img.shields.io/badge/status-v0.1%20in%20design-orange)](#status-and-roadmap)
+[![Hardware: nRF52840](https://img.shields.io/badge/MCU-nRF52840-blue)](#electronics-v01)
+[![License: to be decided](https://img.shields.io/badge/license-to%20be%20decided-lightgrey)](#license)
+[![Live presentation](https://img.shields.io/badge/presentation-GitHub%20Pages-2ea44f)](https://pzero.github.io/notapad/)
 
-![Il monolite](render/monolite_hero.png)
+[![The notªpad monolith](render/monolite_hero.png)](https://pzero.github.io/notapad/)
 
-## Indice
-- [Panoramica](#panoramica)
-- [L'oggetto](#loggetto)
-- [Architettura](#architettura)
-- [Elettronica v0.1](#elettronica-v01)
-- [Produzione](#produzione)
-- [Struttura delle cartelle](#struttura-delle-cartelle)
-- [Roadmap](#roadmap)
+### [▶ Live animated presentation](https://pzero.github.io/notapad/)
 
-## Panoramica
-notªpad è un registratore indossabile nello stile di Plaud e Omi, ma aperto. Registra tutto il giorno, si sincronizza via Bluetooth con il telefono e passa l'audio a un **server MCP aperto**: trascrizione, riassunti e organizzazione delle note li fa l'AI scelta dall'utente, non un servizio chiuso.
+</div>
 
-## L'oggetto
+## Contents
+- [Overview](#overview)
+- [The object](#the-object)
+- [Architecture](#architecture)
+- [Electronics v0.1](#electronics-v01)
+- [Manufacturing](#manufacturing)
+- [Status and roadmap](#status-and-roadmap)
+- [Repository layout](#repository-layout)
+- [Contributing](#contributing)
+- [License](#license)
+- [Authors](#authors)
+
+## Overview
+notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. It records all day, syncs over Bluetooth LE with a phone, and hands the audio to an **open MCP server**: transcription, summaries and note organisation are done by the AI the user picks, not by a closed service.
+
+Design goals:
+- **Own your data.** Audio and notes stay with the user; the AI is a replaceable component.
+- **No screen, no app to open.** Interaction is a squeeze gesture, three LEDs and a vibration motor.
+- **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 2-layer board from JLCPCB, a resin shell cast in a silicone mould.
+
+> Honest status: this is a design in progress. Nothing has been manufactured or tested yet. Figures such as runtime and capacity are estimates.
+
+## The object
 | | |
 |---|---|
-| Dimensioni | 38 × 17,5 × 8 mm (fallback 9 mm), resina colata |
-| Aggancio | anello in acciaio annegato con boccola |
-| Comandi | tocco su entrambi i fianchi (gesto "stretta": valgono solo insieme) |
-| Segnali | 3 LED RGB dietro una fessura frontale da 10 mm, motorino di vibrazione |
-| Audio | 2 microfoni PDM top-port: uno frontale, uno verso la faccia superiore |
-| Contatti | 4 contatti dorati sul retro: 5V, GND (ricarica), SWDIO, SWCLK (firmware) |
+| Size | 38 × 17.5 × 8 mm (fallback 9 mm), cast resin |
+| Attachment | steel ring cast in with a bushing, so it cannot come off |
+| Controls | touch sensors on **both** sides (metal strips as electrodes); a touch counts only when both are active (the "squeeze" gesture), to avoid accidental triggers from the chest |
+| Signalling | 3 RGB LEDs behind a 10 mm front slit, vibration motor |
+| Audio | 2 PDM microphones: one on the front face, one on the top face next to the ring (via a small channel) |
+| Contacts | 4 exposed gold contacts on the back: 5V, GND (charging), SWDIO, SWCLK (firmware over cable in v0.1, later also OTA over BLE). They are also a deliberate aesthetic feature. Pogo pins live in the dock, not on the monolith |
 
-| Retro | Fianco | Varianti di finitura |
+| Back | Side | Finish options |
 |---|---|---|
-| ![Retro](render/monolite_back.png) | ![Fianco](render/monolite_side.png) | ![Varianti](render/monolite_varianti.jpg) |
+| ![Back](render/monolite_back.png) | ![Side](render/monolite_side.png) | ![Variants](render/monolite_varianti.jpg) |
 
-## Architettura
+## Architecture
 ```mermaid
 flowchart LR
-  MIC[2 microfoni PDM] --> NRF[nRF52840<br/>LC3 2×24 kbit/s]
-  NRF --> NAND[(NAND 256 MB)]
-  NRF <-->|BLE| APP[App sul telefono]
-  APP --> MCP[Server MCP aperto]
-  MCP --> AI[AI scelta dall'utente<br/>trascrizione e note]
-  TOUCH[Tocco A+B] --> NRF
-  NRF --> LED[3 LED RGB + vibrazione]
+  MIC[2 PDM microphones] --> NRF[nRF52840<br/>LC3 2x24 kbit/s]
+  TOUCH[Touch sensors A+B] --> NRF
+  NRF --> NAND[(256 MB NAND)]
+  NRF --> OUT[3 RGB LEDs + vibration]
+  NRF <-->|BLE| APP[Phone app]
+  APP --> MCP[Open MCP server]
+  MCP --> AI[AI of the user's choice<br/>transcription and notes]
 ```
+The app and the MCP server are not started yet (see the roadmap).
 
-## Elettronica v0.1
-- **Modulo** Ebyte E73-2G4M08S1C (nRF52840) con antenna a filo del bordo.
-- **Memoria** W25N02KV, NAND QSPI da 256 MB (circa 10 h di audio stereo).
-- **Microfoni** 2× MSM261DGT003, PDM top-port, in stereo su un solo filo dati.
-- **Alimentazione** LiPo circa 60 mAh con PCM, caricatore TP4054 a 50 mA, LDO 3,3 V, latch a P-MOSFET che stacca tutto sotto 3,50 V (consumo a riposo < 5 µA); il 5V della basetta riaccende e resetta.
-- **Autonomia stimata** circa 11,5 h (4,6 mA medi).
-- Scheda 16,5 × 35 mm, 2 strati, 0,8 mm, componenti solo sul lato superiore.
+## Electronics v0.1
+- **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
+- **Storage:** W25N02KV QSPI NAND, 256 MB (about 10 to 11 h of stereo LC3 audio).
+- **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
+- **Power:** ~60 mAh LiPo with protection circuit, TP4054 charger at 50 mA, 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
+- **Board:** 16.5 x 35 mm, 2 layers, 0.8 mm, HASL, components on the top side only. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-17 mm: LEDs, touch ICs, LDO, passives), C (17-35 mm: E73 module and antenna). The motor and battery sit under the board.
+- **Estimated consumption:** about 4.6 mA average, about 11.5 h on 60 mAh.
 
-Documenti: pinout in [docs/pinout_v0.1.md](docs/pinout_v0.1.md), distinta e collegamenti in [jlc/](jlc/), progetto KiCad e generatori in [kicad/](kicad/).
+### What changed during design review (21 Nov 2026)
+- **Pinout redone.** The E73 does not expose P0.11, P0.14, P0.16, P0.19, P0.21, P0.23, P0.25, P0.27 and P1.01, which the first pinout used. The new assignment is in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); the 32 kHz crystal is dropped (firmware uses the internal LFRC).
+- **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock at JLCPCB.
+- **Space savings.** One resistor per LED on the common anode instead of one per colour (LEDs multiplexed, one colour at a time); an extra 1 uF capacitor on the latch so a reset at low battery does not power the device off.
+- **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
-## Produzione
-- PCB e montaggio: JLCPCB Economic PCBA (2 schede montate su 5).
-- Prima programmazione via SWD (Raspberry Pi + OpenOCD o sonda Pico), poi aggiornamenti via Bluetooth.
-- Guscio v0.1: due mezzi gusci SLA + riempimento epossidico. Versione finale: master SLA → stampo in silicone → colata piena pigmentata.
+Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
 
-## Struttura delle cartelle
-| Cartella | Contenuto |
+## Manufacturing
+- **PCB and assembly:** JLCPCB Economic PCBA (2 of 5 boards assembled for the first run).
+- **First programming:** SWD from a Raspberry Pi with OpenOCD (or a Pico debugprobe); the nRF52840 has no ROM bootloader, so the first bootloader goes in over SWD, then updates are OTA over BLE.
+- **Shell v0.1:** two SLA half-shells (JLC3DP) filled with low-exotherm epoxy, since JLC does not cast around electronics.
+- **Final shell:** SLA master, silicone mould, fully cast pigmented resin.
+
+## Status and roadmap
+**Done**
+- Concept, finish renders, animated presentation, BOM and netlist for v0.1.
+- Datasheet checks (E73 pinout, microphone port) and the resulting corrections above.
+- LCSC symbols, footprints and 3D models imported into KiCad.
+
+**In progress**
+- v0.1 board in KiCad: schematic, placement, routing (Freerouting) and DRC. Zones A and B are very dense; options if it does not fit are listed in the working notes.
+
+**Next**
+1. Export Gerber, BOM and CPL; upload to JLCPCB for a quote only and check rotations in the preview.
+2. Compare with a combined panel with a second project board.
+3. First order: Economic PCBA, 0.8 mm, HASL, 2 of 5 assembled.
+
+**On hold by choice (restart after the board)**
+- Firmware on a XIAO nRF52840 (same chip): recording, LC3, NAND, BLE sync.
+- Phone app (proposal: Flutter, Android first) and the MCP server.
+
+Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
+
+## Repository layout
+| Path | Contents |
 |---|---|
-| `docs/` | stato, decisioni, domande aperte, pinout |
-| `jlc/` | distinta, collegamenti, contorno DXF, generatore |
-| `kicad/` | progetto KiCad, libreria LCSC, script di generazione e sbroglio |
-| `render/` | render del monolite e script |
-| `pagina/` | pagina di presentazione animata |
+| `docs/` | project state, decisions, open questions, pinout (working documents, in Italian) |
+| `jlc/` | bill of materials, netlist, board outline DXF, generator script |
+| `kicad/` | KiCad project, LCSC-derived library, generation and routing scripts |
+| `render/` | monolith renders and the script that makes them |
+| `pagina/` | animated presentation (three.js), published on GitHub Pages |
+| `.claude/` | project agents and commands used to keep documents in sync |
+| `CHANGELOG.md` | change history |
 
-## Roadmap
-1. Scheda v0.1: sbroglio, DRC, preventivo e ordine JLC.
-2. Firmware su XIAO nRF52840 (Zephyr): registrazione, LC3, NAND, sincronizzazione BLE.
-3. App (proposta: Flutter, prima Android) e server MCP.
-4. Guscio in resina e prove indossate.
+## Contributing
+Issues and ideas are welcome, especially on the electronics review, enclosure casting and the MCP server design. Please open an issue before a large change. Working documents are in Italian; the README, presentation and changelog are in English.
 
-## Autori
-Progetto di Fabio e di un amico, a Genova.
+## License
+To be decided. Until a license is added, all rights are reserved by the authors.
+
+## Authors
+Fabio and a friend, in Genoa, Italy.

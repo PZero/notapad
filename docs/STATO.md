@@ -4,7 +4,7 @@
 
 ## Fatto
 - Concept, render delle finiture, pagina di presentazione (`pagina/`), distinta e collegamenti v0.1 (`jlc/`).
-- Strumenti installati su Windows: KiCad 10.0.8, easyeda2kicad, Freerouting 2.5.0 (`C:\Users\fnico\tools\freerouting`).
+- Strumenti installati su Windows: KiCad 10.0.8, easyeda2kicad, Freerouting 2.5.0 (installato in una cartella `tools/` locale).
 - Libreria KiCad dai codici LCSC ufficiali in `kicad/lib/` (simboli, impronte, 3D).
 - Verifiche sui datasheet:
   - il modulo E73 non porta fuori 9 GPIO del pinout originale → pinout rifatto in `docs/pinout_v0.1.md`;
@@ -23,4 +23,4 @@
 
 ## In pausa (per scelta dell'utente)
 - Firmware e app: si riparte dopo la scheda. Pinout per il firmware già in `docs/pinout_v0.1.md`.
-- In `C:\ncs` c'è un download parziale della toolchain Nordic (1,5 GB), lasciato per il firmware.
+- In una cartella locale `ncs` c'è un download parziale della toolchain Nordic (1,5 GB), lasciato per il firmware.
