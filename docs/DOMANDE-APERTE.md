@@ -1,13 +1,13 @@
 # Domande aperte
 
 ## Elettronica
-- Zone A+B: se dopo le riduzioni lo sbroglio non riesce, scegliere tra: togliere i 2 TTP223 a favore del tocco software sul nRF (~24 mm², −6 $ di Extended), allungare la scheda di 1–2 mm, spostare i LED più in alto.
-- 2N7002 doppio (C83571, Extended, +3 $) solo se serve spazio.
+- Batteria: 501520 (5 × 15 × 20 mm, ~80–100 mAh) o la 351619 prevista (60 mAh)? Oppure la 501525 (~120–150 mAh), che arriverebbe a ~32 mm con il keepout dell'antenna a ~33 mm: margine di circa 1 mm, da verificare.
 - Diametro dei fori dei pin dorati J1–J4 (ora 1,0 mm): dipende dai pin che comprerete.
-- Limiti JLC su pista/spazio a 2 strati (0,1 o 0,127 mm): da confermare sulla pagina capabilities.
+- Rotazioni nel CPL: da controllare nell'anteprima JLC (D1–D3, MK1/MK2, Q2, E73).
 
 ## Produzione
-- Pannello unico notªpad + tag SwimTimer: stesso spessore (0,8 mm), mouse bites lontano dall'antenna; confrontare i preventivi.
+- Pannello unico notªpad + tag SwimTimer: stesso spessore (ora 1,0 mm, 4 strati), mouse bites lontano dall'antenna; confrontare i preventivi.
+- Quale fornitore: JLC, PCBWay o ALLPCB (export pronti per tutti e tre).
 - Acquisto Pico (circa 4–5 € dai rivenditori ufficiali, non 16 € su Amazon) solo se servirà spesso; per ora basta il Pi 3.
 
 ## App (in pausa)
@@ -22,3 +22,6 @@
 
 ## Design
 - Effetto "monolite che si illumina tutto" (resina traslucida, più LED): eventualmente per una versione successiva.
+
+## Repository
+- Licenza: da decidere.

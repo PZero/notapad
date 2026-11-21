@@ -19,3 +19,10 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | La pagina animata su GitHub Pages (https://pzero.github.io/notapad/) sostituisce l'artefatto Claude come riferimento | Versione unica, versionata nel repo, aggiornata dal workflow `pages.yml` |
 | 21/11/2026 | Agente `comunicazione` per README e pagina; `git-readme` fa CHANGELOG, controllo segreti/privacy, commit e push | Separare comunicazione e custodia del repo |
 | 21/11/2026 | Licenza: da decidere | Non scelta; il README dice "to be decided" |
+| 21/11/2026 | Caricatore MCP73831T-2ACI/OT (C424093) al posto del TP4054, carica 50 mA, uscita STAT su P0.07 | Stesso componente del tag SwimTimer: un solo Extended da pagare in un pannello unico; stessa piedinatura |
+| 21/11/2026 | Scheda a 4 strati, 1,0 mm (In1 GND continuo, In2 segnali e alimentazioni) | A 2 strati restavano 7 collegamenti aperti; Economic PCBA JLC non accetta 4 strati da 0,8 mm |
+| 21/11/2026 | Lunghezza della scheda fissata a 38 mm (monolite ~41 mm) | A 35 mm restavano 4 collegamenti aperti; a 38 mm DRC pulito al primo giro |
+| 21/11/2026 | Lo spessore del monolite può crescere di 1–2 mm | Non è un vincolo per l'utente: apre a batterie da 5 mm |
+| 21/11/2026 | Piste di alimentazione lasciate a 0,2 mm (3V3 a 0,15 mm) | Bastano per i consumi (picco motorino compreso); allargarle avrebbe richiesto un nuovo sbroglio |
+| 21/11/2026 | Export per JLC, PCBWay e ALLPCB in `kicad/fab_out/` con `genera_fab.py`, che sostituisce `kicad/jlc_out/` | Confronto dei preventivi tra tre fornitori |
+| 21/11/2026 | Batteria LiPo 502025 scartata | 20 mm di larghezza: più del monolite (17,5 mm) |

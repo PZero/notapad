@@ -1,37 +1,33 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 21/11/2026 — Fase 1: scheda v0.1 (KiCad → preventivo JLC)
+**Ultimo aggiornamento:** 21/11/2026, Fase 1: scheda v0.1 pronta per il preventivo JLC
 
 ## Fatto
 - Concept, render delle finiture, pagina di presentazione (`pagina/`), distinta e collegamenti v0.1 (`jlc/`).
-- Strumenti installati su Windows: KiCad 10.0.8, easyeda2kicad, Freerouting 2.5.0 (installato in una cartella `tools/` locale).
-- Libreria KiCad dai codici LCSC ufficiali in `kicad/lib/` (simboli, impronte, 3D).
-- Verifiche sui datasheet:
-  - il modulo E73 non porta fuori 9 GPIO del pinout originale → pinout rifatto in `docs/pinout_v0.1.md`;
-  - il microfono LMD3526B261 è bottom-port → sostituito con MSM261DGT003 (C48227730), top-port.
-- Riduzioni di spazio: una resistenza per LED sull'anodo comune (era una per colore), 2N7002 doppio opzionale.
-- Aggiunto C14 1 µF sul latch: senza, un reset a batteria spegnerebbe il dispositivo.
-- Caricatore MCP73831 (C424093) e C5 4,7 µF 0402 (C23733), comuni con SwimTimer; rete CHRG rinominata STAT.
-- Scheda allungata a 16,5 × 38 mm (decisione utente, 21/11): con 35 mm la massa non si chiudeva su 2 strati. Monolite da ~38 a ~41 mm. Contorno in `jlc/notapad_v0.1_contorno.dxf` (generato da `kicad/genera_dxf.py`).
+- Strumenti su Windows: KiCad 10.0.8, easyeda2kicad, Freerouting 2.5.0 (cartella `tools/` locale).
+- Libreria KiCad dai codici LCSC ufficiali in `kicad/lib/`.
+- Verifiche sui datasheet: pinout E73 rifatto (`docs/pinout_v0.1.md`), microfono top-port MSM261DGT003.
+- Caricatore MCP73831 (C424093) e C5 4,7 µF 0402, comuni con SwimTimer; rete CHRG rinominata STAT.
+- **Scheda chiusa (21/11):** 4 strati, 1,0 mm, 16,5 × 38 mm, componenti solo sopra.
+  - Controlli: ERC 0, DRC 0 violazioni, 0 scollegati, parità schema-scheda 0 (ricontrollati con kicad-cli).
+  - Stackup: F.Cu segnali / In1 GND continuo / In2 segnali e alimentazioni / B.Cu segnali e GND. Keepout antenna su tutti gli strati. 115 via.
+  - Regole: pista/spazio 0,10/0,10 mm, via 0,25/0,45 mm (senza sovrapprezzo), rame-bordo 0,25 mm.
+  - Larghezze rimaste: alimentazioni 0,2 mm e 3V3 0,15 mm (non 0,25 e 0,2). Sufficienti per i consumi.
+  - 35 mm provato: 4 collegamenti aperti. 36,5 mm non completato. Scelto 38 mm.
+- Export pronto in `kicad/fab_out/jlcpcb|pcbway|allpcb/` (Gerber ZIP, BOM, CPL/centroid, `LEGGIMI.md`). Il vecchio `kicad/jlc_out/` (bozza) è stato cancellato.
 
-## Esito sbroglio (21/11 sera)
-- Scheda 16,5×38: ERC 0, parità 0, DRC 0 violazioni, 7 collegamenti aperti (5 segnali + 2 gruppi GND). Gerber BOZZA, non ordinare.
-
-## In corso
-- Sottoagente elettronica: generatore KiCad (schema + scheda), piazzamento, sbroglio Freerouting, DRC, export Gerber/BOM/CPL in `kicad/jlc_out/`.
+## Catena degli script (`kicad/`, riproducibile con `NOTAPAD_H=38`, default 38)
+`genera_sch.py` → `sbroglia.py 100 protect` → `chiudi_gnd.py tutto` → `rifinisci.py` → `chiudi_gnd.py tutto` → `pulisci.py` → `genera_dxf.py` → `genera_fab.py`.
+- `genera_fab.py` sostituisce `genera_jlc.py` per gli export.
+- `kicad/tracce.json` e `kicad/sbroglio.png` sono anteprime di lavoro, non da ordinare.
 
 ## Prossimi passi
-1. Controllare l'esito dello sbroglio e del DRC; se A+B non bastano, decidere tra le opzioni (vedi domande aperte).
-2. Caricare Gerber/BOM/CPL su JLC solo per il preventivo e controllare le rotazioni nell'anteprima.
-3. Pannello unico notªpad + tag SwimTimer: confrontare il preventivo con quello delle schede separate.
-4. Ordine Economic PCBA, 0,8 mm, HASL, 2 montate su 5, entro il 2/12 per il coupon Black Friday.
+1. Caricare `kicad/fab_out/jlcpcb/` su JLC solo per il preventivo. Nell'anteprima controllare le rotazioni di D1–D3, MK1/MK2, Q2 ed E73.
+2. Scegliere la batteria. Candidata 501520 (5 × 15 × 20 mm, ~80–100 mAh), da verificare sul datasheet dell'E73. La 502025 (20 mm di larghezza) non entra. La 501525 (5 × 15 × 25, ~120–150 mAh) ci starebbe al limite: nell'anteprima `kicad/sbroglio.png` il keepout dell'antenna inizia a ~33 mm e la cella, partendo da 7 mm, arriverebbe a ~32.
+3. Confrontare i preventivi JLC, PCBWay e ALLPCB; valutare il pannello unico con il tag SwimTimer.
+4. Ordine Economic PCBA, 4 strati, 1,0 mm, HASL, 2 montate su 5, entro il 2/12 per il coupon Black Friday.
+5. Dopo: basette XIAO (notªpad e SwimTimer), tag SwimTimer a 4 strati da 1,0 mm.
 
 ## In pausa (per scelta dell'utente)
-- Firmware e app: si riparte dopo la scheda. Pinout per il firmware già in `docs/pinout_v0.1.md`.
+- Firmware e app: si riparte dopo la scheda. Pinout per il firmware in `docs/pinout_v0.1.md`.
 - In una cartella locale `ncs` c'è un download parziale della toolchain Nordic (1,5 GB), lasciato per il firmware.
-
-## Ripartenza (21/11/2026, sessione interrotta per risparmiare token)
-- Scheda: decisi **4 strati da 1,0 mm** (Economic PCBA JLC non accetta 4 strati da 0,8 mm). Stackup: F.Cu segnali / In1 GND continuo / In2 segnali+alimentazioni / B.Cu segnali+GND; keepout antenna su tutti gli strati.
-- Tentativo a 4 strati interrotto: era a 38 mm (35 e 36,5 provati prima), giro 1 di 2, con solo 2 errori DRC (strozzature da 0,05 mm su In2, piano In1 senza piste). I file in `kicad/` sono in quello stato intermedio. Ultimo stato a 2 strati: 16,5×38 mm, 7 collegamenti aperti.
-- Prossimo passo: agente NUOVO (non fork, modello Sonnet) che legge questo file, `docs/DECISIONI.md`, `docs/pinout_v0.1.md` e gli script in `kicad/`, poi: 4 strati 1,0 mm, prova 35 mm → 36,5 → 38, DRC 0 violazioni e 0 pad scollegati, export in `kicad/fab_out/jlcpcb|pcbway|allpcb` (BOM con MPN, CPL, LEGGIMI).
-- Dopo: basette XIAO (notªpad e SwimTimer), tag SwimTimer a 4 strati 1,0 mm, pannello unico e confronto preventivi (JLC unico vs basette a Seeed).

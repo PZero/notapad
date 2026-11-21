@@ -8,7 +8,7 @@ Chiudiamo la sessione. Senza rileggere file che non servono:
 1. Aggiorna `docs/STATO.md`: data di oggi, fase attuale, cosa è stato fatto in questa sessione, cosa è in corso, prossimi passi, cosa è in pausa. **Riscrivi** il file tenendolo sotto le 60 righe: è una fotografia dello stato, non un diario.
 2. Aggiungi a `docs/DECISIONI.md` le decisioni prese oggi (una riga nella tabella: data, decisione, motivazione). Non riscrivere quelle vecchie. Aggiorna `docs/DOMANDE-APERTE.md`: togli le domande risolte, aggiungi le nuove.
 3. Se sono cambiati componenti, pin o collegamenti, verifica che siano allineati `docs/pinout_v0.1.md`, `jlc/notapad_v0.1_BOM_JLC.csv`, `jlc/notapad_v0.1_collegamenti.csv`, la sezione Elettronica di `CLAUDE.md` e, se esiste, `firmware/`. Se c'è una discrepanza, correggi il documento o segnalala.
-4. Rigenera i file prodotti da script che dipendono da quanto è cambiato (`kicad/genera_kicad.py`, export JLC in `kicad/jlc_out/`): su GitHub devono finire le versioni aggiornate. Se ci sono test (firmware, app), eseguili e riporta l'esito.
+4. Rigenera i file prodotti da script che dipendono da quanto è cambiato (catena in `kicad/` descritta in `CLAUDE.md`, export in `kicad/fab_out/` con `genera_fab.py`): su GitHub devono finire le versioni aggiornate. Se ci sono test (firmware, app), eseguili e riporta l'esito.
 5. **Comunicazione (PR).** Lancia l'agente `comunicazione` in primo piano, **non in background**, e **aspetta il suo rapporto prima di passare al punto 6**. Passagli questo brief, compilato con i fatti della sessione:
    ```
    Fine sessione del <data>. Novità di oggi (fatti, non intenzioni):

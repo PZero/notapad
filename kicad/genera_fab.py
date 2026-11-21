@@ -3,7 +3,7 @@
 - Gerber RS-274X + drill Excellon (tutti gli strati di rame, anche quelli interni) in uno ZIP, uguale per i tre produttori
 - JLCPCB: BOM (Comment, Designator, Footprint, LCSC Part #) e CPL (Designator, Mid X, Mid Y, Layer, Rotation)
 - PCBWay / ALLPCB: BOM con produttore e MPN (dai simboli LCSC) + centroid
-- LEGGIMI.txt con le opzioni d'ordine
+- LEGGIMI.md con le opzioni d'ordine
 Se il DRC non è pulito (violazioni o collegamenti mancanti) gli ZIP vengono marcati BOZZA_NON_ORDINARE.
 """
 import csv, glob, json, os, re, shutil, subprocess, sys, zipfile
@@ -90,11 +90,11 @@ for fam, refs in sorted(groups.items(), key=lambda kv: key(sorted(kv[1], key=key
 LEGG = """notªpad v0.1 - file di produzione per {fab}
 {stato}
 Opzioni d'ordine
-- Strati: {strati}  ·  spessore {sp} mm (stackup standard del produttore)
+- Strati: {strati} (F.Cu segnali · In1 GND continuo · In2 segnali+alimentazioni · B.Cu segnali+GND) · spessore {sp} mm
 - Dimensioni: {w} x {h} mm  ·  quantità: 5 PCB, 2 montate
 - Finitura: HASL senza piombo (se disponibile)  ·  solder mask verde  ·  serigrafia bianca
 - Assemblaggio: solo lato superiore (top). J1-J4, BT1P/BT1N, M1P/M1N, TPA/TPB NON vanno montati (DNP: montaggio a mano)
-- Pista/spazio minimo 0,10 mm · via 0,25/0,45 mm (foro/diametro), tentate
+- Pista/spazio 0,10/0,10 mm (minimo JLC 4 strati 0,09) · via 0,25/0,45 mm foro/diametro (senza sovrapprezzo: JLC addebita i fori 0,2-0,25 solo con diametro < 0,45) · rame-bordo 0,25 mm (minimo JLC 0,2)
 File
 - {zip}: Gerber RS-274X + drill Excellon (PTH e NPTH separati)
 - BOM e posizionamento: coordinate in mm, le stesse dei Gerber (origine del file KiCad), solo lato Top
@@ -130,7 +130,7 @@ for fab in ("jlcpcb", "pcbway", "allpcb"):
         extra = EXTRA_ALT
     stato = "SCHEDA PRONTA: DRC pulito." if pulito else \
         f"ATTENZIONE: NON ORDINARE. DRC non pulito ({n_unc} collegamenti mancanti, {n_err} errori, {n_par} parità)."
-    open(os.path.join(d, "LEGGIMI.txt"), "w", encoding="utf-8").write(LEGG.format(
+    open(os.path.join(d, "LEGGIMI.md"), "w", encoding="utf-8").write(LEGG.format(
         fab=fab.upper(), stato=stato, strati=D.STRATI, sp=f"{D.SPESSORE:.1f}".replace(".", ","),
         w=f"{D.W:g}".replace(".", ","), h=f"{D.H:g}".replace(".", ","), zip=zname, extra=extra))
 shutil.rmtree(TMP)

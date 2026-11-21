@@ -7,7 +7,7 @@ Rotazione in gradi, antioraria (convenzione KiCad).
 
 import os as _os
 W = 16.5
-H = float(_os.environ.get("NOTAPAD_H", "35.0"))   # lunghezza scheda: 35 (base), 36.5 o 38
+H = float(_os.environ.get("NOTAPAD_H", "38.0"))   # lunghezza scheda: 38 mm (decisione utente 21/11; 35 e 36,5 non usati)
 STRATI = 4                                         # 4 strati, 1,0 mm (Economic PCBA JLC)
 SPESSORE = 1.0
 STRETCH = H - 35.0
