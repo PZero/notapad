@@ -1,0 +1,40 @@
+# Segreti: mai nel repository
+.env
+.env.*
+!.env.example
+*.pem
+*service-account*.json
+
+# Registrazioni audio reali (dati personali): mai nel repository
+registrazioni/
+*.wav
+*.lc3
+*.m4a
+
+# KiCad: file locali e temporanei
+*-backups/
+*.kicad_prl
+fp-info-cache
+*.lck
+_autosave-*
+\#auto_saved_files#
+*.bak
+freerouting*.log
+
+# Build e dipendenze
+build/
+node_modules/
+dist/
+__pycache__/
+*.log
+*.stackdump
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+~$*
+
+# Impostazioni locali di Claude Code
+.claude/settings.local.json

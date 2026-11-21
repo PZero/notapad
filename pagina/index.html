@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>notªpad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasione: lancio di un oggetto, studio fotografico al buio, poche parole
+   IDEA il monolite in uno still-life da catalogo: gira, si ferma, si apre a strati
+   PICTURE il notªpad in 3D a tutto schermo, con etichette agganciate ai suoi punti
+   COLOUR grafite #0e0e10, avorio #efebe3, bronzo dei listelli #b8895a, luce del LED variabile
+   TYPE Inter Tight 600 per i titoli, Inter per il testo
+   LAYOUT laptop: oggetto al centro-destra, testo in basso a sinistra; telefono: oggetto in alto, testo sotto */
+:root{color-scheme:dark;--bg:#0e0e10;--bg2:#151518;--ink:#efebe3;--mute:#9a968e;--line:#2a2a2f;--bronze:#b8895a;--led:#5fd3c8}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;letter-spacing:-.02em;line-height:1.05;margin:0;text-wrap:balance}
+p{margin:0}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;transition:opacity .6s}
+#tags{position:fixed;inset:0;pointer-events:none;z-index:2}
+.tag{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .35s;white-space:nowrap;will-change:transform}
+.tag i{width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px rgba(239,235,227,.15);flex:none}
+.tag b{display:block;height:1px;width:34px;background:rgba(239,235,227,.5);flex:none}
+.tag span{font-size:13px;line-height:1.25;background:rgba(14,14,16,.72);backdrop-filter:blur(6px);padding:6px 10px;border-radius:8px;border:1px solid var(--line)}
+.tag span em{display:block;font-style:normal;color:var(--mute);font-size:12px}
+.tag.left{flex-direction:row-reverse}
+.tag.on{opacity:1}
+nav{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:20px;padding:14px max(5vw,16px);background:linear-gradient(var(--bg),rgba(14,14,16,0))}
+nav strong{font:600 18px "Inter Tight",sans-serif;margin-right:auto}
+nav a{color:var(--mute);text-decoration:none;font-size:14px}
+nav a:hover,nav a:focus-visible{color:var(--ink)}
+.band{position:relative;z-index:3;padding-inline:max(5vw,16px)}
+#oggetto{min-height:170svh}
+.hero{position:sticky;top:0;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:clamp(28px,6vh,64px);pointer-events:none}
+.hero>*{pointer-events:auto}
+.hero h1{font-size:clamp(56px,10vw,128px);font-weight:600}
+.hero p{max-width:30em;color:var(--mute);margin-top:12px;font-size:17px}
+.sw{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:22px}
+.sw button{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.25);cursor:pointer;padding:0;outline-offset:3px}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+.sw output{margin-left:8px;font-size:14px;color:var(--ink);min-width:12em}
+#dentro{min-height:260svh}
+.panel{position:sticky;top:0;min-height:100svh;display:flex;align-items:center;pointer-events:none}
+.card{pointer-events:auto;width:min(380px,100%);background:rgba(14,14,16,.78);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:22px 22px 18px;opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.on{opacity:1;transform:none}
+.card h2{font-size:clamp(28px,3.4vw,40px)}
+.card p{color:var(--mute);margin:10px 0 14px}
+.card ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.card li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:14px;transition:color .3s}
+.card li small{color:var(--mute);font-size:13px;white-space:nowrap}
+.card li.hi{color:var(--led)}
+.solid{background:var(--bg);position:relative;z-index:4}
+.sec{padding-block:clamp(64px,10vw,128px)}
+.sec>h2{font-size:clamp(36px,5vw,56px);max-width:14em}
+.sec>p.lead{color:var(--mute);max-width:36em;margin-top:14px;font-size:17px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,5vw,72px);align-items:center;margin-top:clamp(48px,7vw,96px)}
+.row.flip>.txt{order:2}
+.txt h3{font-size:clamp(26px,3vw,36px)}
+.txt p{color:var(--mute);margin-top:12px;max-width:30em}
+.txt ul{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.txt li{display:flex;gap:12px;align-items:baseline}
+.txt li kbd{font:600 13px Inter,sans-serif;color:var(--bg);background:var(--ink);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.fig{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:18px;aspect-ratio:4/3;overflow:hidden}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{font-family:Inter,sans-serif}
+.note{color:var(--mute);font-size:13px;margin-top:28px}
+footer{padding:48px max(5vw,16px) 64px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:12px 32px}
+footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5em,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:48px}
+.specs div{background:var(--bg);padding:18px}
+.specs b{display:block;font:600 24px "Inter Tight",sans-serif;white-space:nowrap}
+.specs span{color:var(--mute);font-size:13px}
+/* animazioni delle scene */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes wig{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+@keyframes flow{to{stroke-dashoffset:-40}}
+.flow{stroke-dasharray:4 12;animation:flow 1.2s linear infinite}
+@media(max-width:820px){.card ul li:not(.hi){display:none}.card p{display:none}.mcpwrap{overflow-x:auto}.mcpwrap .fig{min-width:680px}.row,.row.flip{grid-template-columns:minmax(0,1fr)}.row.flip>.txt{order:0}.panel{align-items:flex-end;padding-bottom:24px}nav a{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-label="Il notªpad in 3D"></canvas>
+<div id="tags" aria-hidden="true"></div>
+
+<nav><strong>notªpad</strong><a href="#oggetto">Oggetto</a><a href="#dentro">Dentro</a><a href="#cosa">Cosa fa</a><a href="#ai">La tua AI</a></nav>
+
+<section id="oggetto" class="band">
+  <div class="hero">
+    <h1>notªpad</h1>
+    <p>Un monolite di resina da 38 × 17,5 × 8 mm che porti al collo. Ascolta, registra e ricorda: il resto lo fa l'AI che scegli tu.</p>
+    <div class="sw" role="group" aria-label="Finitura">
+      <span id="swatches" style="display:contents"></span>
+      <output id="fname">Carbonio forgiato</output>
+    </div>
+  </div>
+</section>
+
+<section id="dentro" class="band">
+  <div class="panel">
+    <div class="card" id="card">
+      <h2>Dentro, a strati</h2>
+      <p>Una schedina a 2 strati annegata nella resina. Niente viti, niente porte: solo quattro contatti dorati sul retro.</p>
+      <ul id="parts"></ul>
+    </div>
+  </div>
+</section>
+
+<div class="solid">
+<section id="cosa" class="band sec">
+  <h2>Registra tutto. Tu stringi solo quando conta.</h2>
+  <p class="lead">Il notªpad ascolta in silenzio per tutta la giornata. I gesti e la luce sono l'unica interfaccia: niente schermo, niente app da aprire.</p>
+
+  <div class="row">
+    <div class="txt">
+      <h3>Tutto il giorno, poi si ricarica</h3>
+      <p>Da quando lo indossi a quando lo appoggi sulla basetta: oltre 11 ore di registrazione stereo. Di notte, in carica, scarica l'audio sul telefono, che lo trascrive con calma.</p>
+      <ul><li><kbd>11,5 h</kbd>autonomia stimata in registrazione</li><li><kbd>256 MB</kbd>circa 11 ore di audio stereo continuo</li><li><kbd>notte</kbd>ricarica, sincronizza, trascrive</li></ul>
+    </div>
+    <div class="fig"><svg id="dial" viewBox="0 0 400 320" role="img" aria-label="Giornata di 24 ore: registrazione di giorno, ricarica e trascrizione di notte"></svg></div>
+  </div>
+
+  <div class="row flip">
+    <div class="txt">
+      <h3>Una stretta, ed è un tag</h3>
+      <p>I sensori sono sui due fianchi: vale solo se li tocchi entrambi, così il petto non preme nulla per sbaglio. Il LED conferma, la vibrazione anche.</p>
+      <ul><li><kbd>1 stretta</kbd>segna questo momento</li><li><kbd>2 strette</kbd>è un'idea</li><li><kbd>stretta lunga</kbd>manda al progetto di gruppo</li></ul>
+    </div>
+    <div class="fig"><svg id="squeeze" viewBox="0 0 400 300" role="img" aria-label="Animazione dei gesti a stretta e dei tag creati"></svg></div>
+  </div>
+
+  <div class="row">
+    <div class="txt">
+      <h3>Note di gruppo, che si fanno sentire</h3>
+      <p>Una nota indirizzata a un progetto arriva a tutti i partecipanti: il loro notªpad si illumina del colore del progetto e vibra. Nessuno deve guardare un telefono.</p>
+    </div>
+    <div class="fig"><svg id="group" viewBox="0 0 400 300" role="img" aria-label="Una nota parte da un notªpad e arriva agli altri tre, che si illuminano e vibrano"></svg></div>
+  </div>
+</section>
+
+<section id="ai" class="band sec">
+  <h2>La tua AI, non la nostra.</h2>
+  <p class="lead">Le note restano tue. Un server MCP aperto le mette a disposizione dell'assistente che già usi, con il tuo abbonamento: Claude, ChatGPT, Gemini o un modello locale. Organizzi come preferisci.</p>
+  <div class="mcpwrap" style="margin-top:40px"><div class="fig" style="aspect-ratio:16/8"><svg id="mcp" viewBox="0 0 800 400" role="img" aria-label="Le note passano da un server MCP aperto agli assistenti AI"></svg></div></div>
+  <div class="specs">
+    <div><b>nRF52840</b><span>Bluetooth LE, cuore del sistema</span></div>
+    <div><b>2 microfoni</b><span>frontale e superiore, stereo</span></div>
+    <div><b>3 LED RGB</b><span>sotto la fessura frontale</span></div>
+    <div><b>256 MB</b><span>memoria NAND</span></div>
+    <div><b>~60 mAh</b><span>LiPo protetta, carica dai contatti</span></div>
+    <div><b>8 mm</b><span>spessore, resina piena</span></div>
+  </div>
+  <p class="note">Concept v0.1: render e funzioni descrivono il progetto in sviluppo; autonomia e capacità sono stime da verificare sul prototipo.</p>
+</section>
+
+<footer><strong>notªpad</strong><span>Progetto hardware aperto · nRF52840 · scheda prodotta da JLCPCB</span><span>Genova, 2026</span></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+{
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------------- finiture ---------------- */
+const finishes = [
+  {n:'Carbonio forgiato', sw:'conic-gradient(#2b2b2e,#6d6d72,#1b1b1d,#88888d,#2b2b2e)', tex:'forged', c:0xffffff, r:.38, m:.25, cc:1},
+  {n:'Nero opaco', sw:'#1a1a1b', c:0x121213, r:.78, m:0, cc:0},
+  {n:'Nero lucido', sw:'#050505', c:0x050506, r:.12, m:0, cc:1},
+  {n:'Antracite', sw:'#34383d', c:0x2c3035, r:.34, m:.65, cc:1},
+  {n:'Blu notte', sw:'#0d1d44', c:0x0b1a3d, r:.28, m:.1, cc:1},
+  {n:'Avorio', sw:'#ddd5c6', c:0xd9d1c2, r:.42, m:0, cc:.5}
+];
+const swWrap = $('#swatches');
+swWrap.innerHTML = finishes.map((f,i)=>`<button type="button" aria-pressed="${i===0}" aria-label="${f.n}" style="background:${f.sw}" data-i="${i}"></button>`).join('');
+
+/* ---------------- parti (pannello "dentro") ---------------- */
+const parts = [
+  ['Guscio in resina piena','38 × 17,5 × 8 mm'],
+  ['3 LED RGB + 2 microfoni PDM','frontale e superiore'],
+  ['Scheda 2 strati, 16,5 × 35 mm','JLCPCB'],
+  ['Modulo nRF52840 (Ebyte E73)','Bluetooth LE'],
+  ['Memoria NAND W25N02','256 MB'],
+  ['Carica TP4054 + interruttore','spegne a 3,5 V'],
+  ['Batteria LiPo protetta','~60 mAh'],
+  ['Motorino di vibrazione','ø 8 × 2 mm'],
+  ['4 contatti dorati','5V · GND · SWD'],
+  ['Anello in acciaio','annegato nella resina']
+];
+$('#parts').innerHTML = parts.map(p=>`<li><span>${p[0]}</span><small>${p[1]}</small></li>`).join('');
+
+const canvas = $('#gl');
+let THREE_OK = typeof THREE !== 'undefined';
+
+if (THREE_OK) {
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = .92;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0e0e10);
+  const cam = new THREE.PerspectiveCamera(28, 1, 1, 2000);
+
+  /* ambiente per i riflessi: stanza scura con finestre luminose */
+  const env = new THREE.Scene();
+  const roomM = new THREE.MeshBasicMaterial({color:0x1a1a1d, side:THREE.BackSide});
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(200,200,200), roomM));
+  const lightPanel = (w,h,x,y,z,ry,col,inten) => {const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({color:new THREE.Color(col).multiplyScalar(inten), side:THREE.DoubleSide})); m.position.set(x,y,z); m.lookAt(0,0,0); env.add(m);};
+  lightPanel(90,40,-70,50,60,0,0xfff4e6,3);
+  lightPanel(20,120,90,0,-40,0,0xffd9b0,2.2);
+  lightPanel(120,15,0,-90,40,0,0xdfe8ff,1.2);
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(env, .04).texture;
+
+  const key = new THREE.DirectionalLight(0xfff1e0, 1.4); key.position.set(-60,80,90); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffc89a, 1.1); rim.position.set(80,20,-90); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xdfe6ff, 0x1a1410, .35));
+
+  /* texture procedurali */
+  const forgedTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+    let s = 7; const rnd = () => (s = s*16807 % 2147483647) / 2147483647;
+    g.fillStyle = '#121214'; g.fillRect(0,0,512,512);
+    for (let i=0;i<900;i++){
+      const x=rnd()*512,y=rnd()*512,r=6+rnd()*26,a=rnd()*Math.PI,l=14+rnd()*70;
+      g.fillStyle=`rgb(${l},${l},${l+3})`;g.beginPath();
+      for(let k=0;k<5;k++){const t=a+k*1.25+rnd()*.6,rr=r*(.4+rnd()*.9)*(k%2?1.8:.6);g.lineTo(x+Math.cos(t)*rr,y+Math.sin(t)*rr*.55);}
+      g.closePath();g.fill();
+    }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(.045,.045); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+  })();
+
+  /* ---------------- il monolite ---------------- */
+  const W = 17.5, H = 38, D = 8, R = 2.2, BV = 1.0;
+  const rr = (w,h,r) => {const s = new THREE.Shape(), x=-w/2, y=-h/2; s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r); s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h); s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r); s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s;};
+  const bodyGeo = new THREE.ExtrudeGeometry(rr(W-2*BV,H-2*BV,R), {depth:D-2*BV, bevelEnabled:true, bevelThickness:BV, bevelSize:BV, bevelSegments:6, curveSegments:24});
+  bodyGeo.translate(0,0,-(D-2*BV)/2); bodyGeo.computeVertexNormals();
+  const bodyMat = new THREE.MeshPhysicalMaterial({color:0xffffff, roughness:.3, metalness:0, clearcoat:1, clearcoatRoughness:.05, transparent:true, opacity:1});
+  const obj = new THREE.Group(); scene.add(obj);
+  const body = new THREE.Mesh(bodyGeo, bodyMat); obj.add(body);
+
+  const std = (c,r,m,em) => new THREE.MeshStandardMaterial({color:c, roughness:r, metalness:m, emissive:em||0x000000});
+  const box = (w,h,d,mat,x,y,z,par) => {const o = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat); o.position.set(x,y,z); (par||obj).add(o); return o;};
+  const cyl = (r,h,mat,x,y,z,rx,par) => {const o = new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,40), mat); o.position.set(x,y,z); o.rotation.x = rx||0; (par||obj).add(o); return o;};
+
+  const bronze = std(0xb8895a,.32,1), gold = std(0xf0c060,.18,1), steel = std(0xdedfe3,.12,1), holeM = std(0x020202,.9,0);
+  const inlays = [box(.16,17,1.4,bronze,-W/2,-1,0), box(.16,17,1.4,bronze,W/2,-1,0)];
+  const ledMats = [0,1,2].map(()=>std(0x101012,.2,0,0x000000));
+  const slit = new THREE.Group(); obj.add(slit);
+  box(10.4,1.1,.1,std(0x050506,.08,0),0,11,D/2+.01,slit);
+  const leds = [-3.4,0,3.4].map((x,i)=>box(3,.7,.12,ledMats[i],x,11,D/2+.03,slit));
+  const micF = cyl(.45,.2,holeM,5.5,4.5,D/2+.01,Math.PI/2);
+  const micT = cyl(.45,.2,holeM,-4,H/2+.01,0,0);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(3,.65,24,80), steel); ring.position.set(0,H/2+2.5,0); ring.rotation.y = Math.PI/2; obj.add(ring);
+  const bush = cyl(1.6,.6,steel,0,H/2+.1,0,0);
+
+  /* interno */
+  const pcbG = new THREE.Group(); obj.add(pcbG);
+  box(16.5,35,.8,std(0x1d5a37,.55,0),0,0,.6,pcbG);
+  box(13,18,2.1,std(0xbfc3c9,.35,.8),0,-8.5,2.05,pcbG);
+  box(13,4.5,2.12,std(0x2a2b2e,.5,.2),0,-15.3,2.06,pcbG);
+  box(6,8,.8,std(0x161617,.45,0),-3.8,3.2,1.4,pcbG);
+  box(3.5,2.7,1,std(0x9ea3a8,.3,.9),5.5,4.5,1.5,pcbG);
+  box(3.5,2.7,1,std(0x9ea3a8,.3,.9),0,15.6,1.5,pcbG);
+  [-3.4,0,3.4].forEach((x,i)=>box(1,1,.6,std(0xf3f3f3,.3,0),x,11,1.3,pcbG));
+  [[4.5,8],[6.8,6.6],[-6.5,7.6],[-6.6,12.8],[4,13.6],[6.8,1.6],[-1.2,8.4]].forEach(([x,y])=>box(2.9,1.6,1.1,std(0x111112,.5,0),x,y,1.55,pcbG));
+  for(let i=0;i<26;i++){const x=-7+((i*37)%140)/10, y=-.5+((i*53)%150)/10; if(Math.abs(x)<7.8 && y<16.2) box(1,.5,.5,std(i%3?0x8c6a3f:0xb9b2a5,.5,.3),x,y,1.25,pcbG);}
+  const bat = box(16,19,3.5,std(0xaab3bd,.35,.85),0,-3,-2.25);
+  const motor = cyl(4,2,std(0xb0b4ba,.3,.9),0,10.5,-2,Math.PI/2);
+  const backG = new THREE.Group(); obj.add(backG);
+  const pins = [-7,-4.2,4.2,7].map(x=>cyl(.8,4.2,gold,x,16,-2,Math.PI/2,backG));
+
+  /* posizioni di riposo e di esploso */
+  const ex = [
+    {o:body, z:26}, {o:slit, z:26}, {o:micF, z:26}, {o:pcbG, z:6},
+    {o:bat, z:-12}, {o:motor, z:-19, y:4}, {o:backG, z:-28}, {o:ring, y:12}, {o:bush, y:8},
+    {o:micT, z:26}, {o:inlays[0], z:26}, {o:inlays[1], z:26}
+  ].map(e=>({...e, p:e.o.position.clone()}));
+
+  /* ---------------- etichette ---------------- */
+  const tagsEl = $('#tags');
+  const feat = [
+    {t:'3 LED RGB', d:'luce che scorre, respira, avvisa', p:[0,11,D/2], n:[0,0,1]},
+    {t:'Microfono frontale', d:'verso chi ti parla', p:[5.5,4.5,D/2], n:[0,0,1]},
+    {t:'Microfono superiore', d:'verso la tua voce', p:[-4,H/2,0], n:[0,1,.0001]},
+    {t:'Sensori a stretta', d:'validi solo su entrambi i fianchi', p:[W/2,-4,0], n:[1,0,0]},
+    {t:'Sensori a stretta', d:'validi solo su entrambi i fianchi', p:[-W/2,-4,0], n:[-1,0,0]},
+    {t:'4 contatti dorati', d:'carica e firmware', p:[-5.6,16,-D/2], n:[0,0,-1]},
+    {t:'Vibrazione', d:'notifiche che senti', p:[0,10.5,-D/2], n:[0,0,-1]},
+    {t:'256 MB di memoria', d:'oltre 11 ore stereo', p:[-3.8,-6,D/2], n:[0,0,1]},
+    {t:'Anello in acciaio', d:'annegato, non si stacca', p:[0,H/2+5,0], n:[0,1,0]}
+  ];
+  const layers = [
+    {t:'Guscio in resina', o:body, p:[W/2,14,D/2]},
+    {t:'Scheda e componenti', o:pcbG, p:[8.2,12,.6]},
+    {t:'nRF52840', o:pcbG, p:[6.5,-12,3]},
+    {t:'Batteria ~60 mAh', o:bat, p:[8,-10,0]},
+    {t:'Motorino', o:motor, p:[4,0,0]},
+    {t:'Contatti dorati', o:backG, p:[7,16,-4]},
+    {t:'Anello', o:ring, p:[0,0,3]}
+  ];
+  const mk = (t,d) => {const e = document.createElement('div'); e.className = 'tag'; e.innerHTML = `<i></i><b></b><span>${t}${d?`<em>${d}</em>`:''}</span>`; tagsEl.appendChild(e); return e;};
+  feat.forEach(f=>f.el = mk(f.t,f.d));
+  layers.forEach(l=>l.el = mk(l.t,''));
+
+  /* ---------------- stato ---------------- */
+  let fi = 0, userPicked = false, lastSwap = 0, explode = 0, heroOn = 1;
+  const applyFinish = i => {
+    fi = i; const f = finishes[i];
+    bodyMat.map = f.tex ? forgedTex : null; bodyMat.envMapIntensity = f.r > .6 ? .12 : f.c < 0x202020 ? .7 : 1; bodyMat.color.setHex(f.c); bodyMat.roughness = f.r; bodyMat.metalness = f.m; bodyMat.clearcoat = f.cc; bodyMat.needsUpdate = true;
+    $('#fname').textContent = f.n;
+    swWrap.querySelectorAll('button').forEach((b,k)=>b.setAttribute('aria-pressed', k===i));
+  };
+  swWrap.addEventListener('click', e => {const b = e.target.closest('button'); if(!b) return; userPicked = true; applyFinish(+b.dataset.i);});
+  applyFinish(0);
+
+  const resize = () => {const w = innerWidth, h = innerHeight; renderer.setSize(w,h,false); cam.aspect = w/h; cam.updateProjectionMatrix();};
+  addEventListener('resize', resize); resize();
+
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v)), ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+  const progress = el => {const r = el.getBoundingClientRect(); return clamp(-r.top/(r.height-innerHeight),0,1);};
+  const v = new THREE.Vector3(), nv = new THREE.Vector3(), cp = new THREE.Vector3();
+  const card = $('#card'), lis = [...document.querySelectorAll('#parts li')];
+
+  let t0 = performance.now(), rotY = .5;
+  const loop = now => {
+    const dt = Math.min(.05,(now-t0)/1000); t0 = now;
+    const pd = progress($('#dentro')), po = progress($('#oggetto'));
+    explode = ease(clamp((pd-.12)/.55,0,1));
+    const settle = clamp(pd/.12 + (po>.98?0:0),0,1);
+    const solidTop = $('.solid').getBoundingClientRect().top;
+    canvas.style.opacity = solidTop < innerHeight*.35 ? 0 : 1;
+    card.classList.toggle('on', pd>.2 && pd<.98);
+    const act = Math.floor(clamp((pd-.2)/.7,0,.999)*lis.length);
+    lis.forEach((l,i)=>l.classList.toggle('hi', pd>.2 && i===act));
+
+    /* rotazione: gira in apertura, si ferma di tre quarti quando si apre */
+    const target = -1.0;
+    if (!reduce) rotY += dt*.45*(1-settle);
+    const spun = ((rotY - target) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+    obj.rotation.y = settle>0 ? target + spun*(1-ease(settle)) : rotY;
+    if (settle>=1) rotY = target;
+    obj.rotation.x = .1 + .2*explode;
+    obj.rotation.z = -.05*explode;
+
+    /* esploso */
+    ex.forEach(e=>{e.o.position.set(e.p.x+(e.x||0)*explode, e.p.y+(e.y||0)*explode, e.p.z+(e.z||0)*explode);});
+    bodyMat.opacity = 1 - .86*explode; bodyMat.depthWrite = explode<.3;
+    slit.visible = explode<.6;
+
+    /* camera */
+    const wide = innerWidth < 820;
+    const dist = (wide?175:120) + (wide?140:75)*explode;
+    cam.position.set(wide?0:-22 + 10*explode, wide?-14:0, dist);
+    cam.lookAt(wide?0:-22 + 10*explode, wide?-14:0, 0);
+
+    /* luce dei LED */
+    const ph = now/1000;
+    const col = new THREE.Color().setHSL((ph*.06)%1,.7,.55);
+    ledMats.forEach((m,i)=>{const k = .5+.5*Math.sin(ph*2.2 - i*.9); m.emissive.copy(col).multiplyScalar(reduce?.8:.25+1.6*k);});
+
+    if (!userPicked && !reduce && now-lastSwap > 3800 && explode<.05){lastSwap = now; applyFinish((fi+1)%finishes.length);}
+
+    renderer.render(scene,cam);
+
+    /* etichette */
+    obj.updateMatrixWorld(true);
+    const w = innerWidth, h = innerHeight;
+    const place = (el,p,show,right) => {
+      v.copy(p).project(cam); const x = (v.x*.5+.5)*w, y = (-v.y*.5+.5)*h;
+      const left = !right && x < w*.5 - (wide?0:110);
+      el.classList.toggle('left', left);
+      const ew = el.offsetWidth; const tx = Math.max(8, Math.min(w - ew - 8, left ? x - ew + 4 : x - 4));
+      el.style.transform = `translate(${tx}px,${y - el.offsetHeight/2}px)`;
+      el.classList.toggle('on', show);
+    };
+    const heroShow = settle < .4 && canvas.style.opacity !== '0';
+    feat.forEach(f=>{
+      v.set(...f.p).applyMatrix4(obj.matrixWorld);
+      nv.set(...f.n).transformDirection(obj.matrixWorld);
+      cp.copy(cam.position).sub(v).normalize();
+      place(f.el, v.clone(), heroShow && nv.dot(cp) > .3);
+    });
+    layers.forEach(l=>{
+      v.set(...l.p).applyMatrix4(l.o.matrixWorld);
+      place(l.el, v.clone(), explode > .75 && canvas.style.opacity !== '0' && !wide, true);
+    });
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+} else {
+  canvas.style.background = 'radial-gradient(circle at 60% 45%,#2a2a2e,#0e0e10 60%)';
+}
+
+/* ---------------- scena: 24 ore ---------------- */
+const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e;};
+{
+  const s = $('#dial'), cx = 200, cy = 146, R = 100;
+  const arc = (a0,a1,r) => {const p = a => [cx + r*Math.sin(a/24*2*Math.PI), cy - r*Math.cos(a/24*2*Math.PI)]; const [x0,y0] = p(a0), [x1,y1] = p(a1); return `M${x0} ${y0}A${r} ${r} 0 ${(a1-a0)>12?1:0} 1 ${x1} ${y1}`;};
+  svgEl('circle',{cx,cy,r:R,fill:'none',stroke:'#2a2a2f','stroke-width':16},s);
+  svgEl('path',{d:arc(7,18.5,R),fill:'none',stroke:'var(--led)','stroke-width':16,'stroke-linecap':'round'},s);
+  svgEl('path',{d:arc(23,30.8,R),fill:'none',stroke:'var(--bronze)','stroke-width':16,'stroke-linecap':'round'},s);
+  for (let hh=0; hh<24; hh+=6){const a = hh/24*2*Math.PI; const t = svgEl('text',{x:cx+(R+26)*Math.sin(a),y:cy-(R+26)*Math.cos(a)+4,'text-anchor':'middle','font-size':12,fill:'#9a968e'},s); t.textContent = String(hh).padStart(2,'0');}
+  const hand = svgEl('line',{x1:cx,y1:cy,x2:cx,y2:cy-R+24,stroke:'#efebe3','stroke-width':2,'stroke-linecap':'round'},s);
+  svgEl('circle',{cx,cy,r:5,fill:'#efebe3'},s);
+  const big = svgEl('text',{x:24,y:36,'font-size':20,'font-weight':600,fill:'#efebe3'},s);
+  const small = svgEl('text',{x:24,y:56,'font-size':12,fill:'#9a968e'},s);
+  const legend = [['var(--led)','registra',24,302],['var(--bronze)','in carica · sincronizza · trascrive',110,302]];
+  legend.forEach(([c,l,x,y])=>{svgEl('rect',{x,y:y-9,width:12,height:12,rx:3,fill:c},s); const t = svgEl('text',{x:x+18,y:y+1,'font-size':12,fill:'#9a968e'},s); t.textContent = l;});
+  let h = 7;
+  const tick = () => {
+    h = (h + .05) % 24;
+    const a = h/24*360; hand.setAttribute('transform',`rotate(${a} ${cx} ${cy})`);
+    const rec = h>=7 && h<18.5, chg = h>=23 || h<6.8;
+    big.textContent = String(Math.floor(h)).padStart(2,'0')+':'+String(Math.floor((h%1)*60)).padStart(2,'0');
+    small.textContent = rec ? 'sta registrando' : chg ? 'sulla basetta: trascrizione' : 'in pausa';
+  };
+  tick(); if (!reduce) setInterval(tick, 60);
+}
+
+/* ---------------- scena: gesti a stretta ---------------- */
+{
+  const s = $('#squeeze');
+  const g = svgEl('g',{},s);
+  svgEl('rect',{x:150,y:60,width:64,height:150,rx:10,fill:'#1d1d21',stroke:'#3a3a40'},g);
+  svgEl('circle',{cx:182,cy:44,r:11,fill:'none',stroke:'#cfd0d4','stroke-width':4},g);
+  const led = svgEl('rect',{x:162,y:96,width:40,height:5,rx:2.5,fill:'#2a2a2f'},g);
+  const L = svgEl('rect',{x:146,y:115,width:5,height:64,rx:2,fill:'var(--bronze)'},g);
+  const Rr = svgEl('rect',{x:213,y:115,width:5,height:64,rx:2,fill:'var(--bronze)'},g);
+  const fL = svgEl('path',{d:'M104 147h30',stroke:'#efebe3','stroke-width':3,'stroke-linecap':'round',opacity:0},s);
+  const fR = svgEl('path',{d:'M260 147h-30',stroke:'#efebe3','stroke-width':3,'stroke-linecap':'round',opacity:0},s);
+  const label = svgEl('text',{x:182,y:244,'text-anchor':'middle','font-size':14,fill:'#efebe3'},s);
+  const list = svgEl('g',{},s);
+  const gestures = [
+    {n:'1 stretta', tag:'Segnalibro', col:'#5fd3c8', presses:[1]},
+    {n:'2 strette', tag:'Idea', col:'#f0c060', presses:[1,1]},
+    {n:'stretta lunga', tag:'Progetto Atlante', col:'#e07a5f', presses:[3]}
+  ];
+  const chips = [];
+  let gi = 0;
+  const press = on => {[fL,fR].forEach(f=>f.setAttribute('opacity',on?1:0)); fL.setAttribute('transform',on?'translate(8 0)':''); fR.setAttribute('transform',on?'translate(-8 0)':''); [L,Rr].forEach(r=>r.setAttribute('fill',on?'#f3d3a8':'var(--bronze)'));};
+  const wait = ms => new Promise(r=>setTimeout(r,ms));
+  const run = async () => {
+    const ge = gestures[gi % 3]; gi++;
+    label.textContent = ge.n;
+    for (const p of ge.presses){press(true); await wait(p*260); press(false); await wait(200);}
+    led.setAttribute('fill', ge.col); g.style.animation = 'wig .35s 2'; await wait(500); g.style.animation = '';
+    const now = new Date(2026,10,21,9,12 + gi*7);
+    chips.unshift({t:ge.tag, c:ge.col, h:now.toTimeString().slice(0,5)}); chips.length = Math.min(chips.length,4);
+    list.innerHTML = '';
+    chips.forEach((c,i)=>{
+      const y = 70 + i*44, gg = svgEl('g',{opacity:1 - i*.18},list);
+      svgEl('rect',{x:268,y,width:112,height:34,rx:8,fill:'#1d1d21',stroke:'#2e2e34'},gg);
+      svgEl('circle',{cx:284,cy:y+17,r:5,fill:c.c},gg);
+      const t = svgEl('text',{x:296,y:y+15,'font-size':12,fill:'#efebe3'},gg); t.textContent = c.t.length>13 ? c.t.slice(0,12)+'…' : c.t;
+      const t2 = svgEl('text',{x:296,y:y+28,'font-size':10.5,fill:'#9a968e'},gg); t2.textContent = c.h;
+    });
+    await wait(900); led.setAttribute('fill','#2a2a2f'); await wait(900); run();
+  };
+  if (!reduce) run(); else {label.textContent = '1 stretta'; led.setAttribute('fill','#5fd3c8');}
+}
+
+/* ---------------- scena: gruppo ---------------- */
+{
+  const s = $('#group');
+  const pos = [[80,90,'Anna'],[320,90,'Marco'],[80,230,'Luca'],[320,230,'Sara']];
+  const hub = [200,160];
+  pos.forEach(p=>svgEl('path',{d:`M${p[0]} ${p[1]}L${hub[0]} ${hub[1]}`,stroke:'#2a2a2f','stroke-width':2},s));
+  svgEl('circle',{cx:hub[0],cy:hub[1],r:30,fill:'#1d1d21',stroke:'#e07a5f','stroke-width':1.5},s);
+  const ht = svgEl('text',{x:hub[0],y:hub[1]+4,'text-anchor':'middle','font-size':11,fill:'#efebe3'},s); ht.textContent = 'Atlante';
+  const devs = pos.map(p=>{
+    const g = svgEl('g',{},s);
+    svgEl('rect',{x:p[0]-14,y:p[1]-30,width:28,height:60,rx:6,fill:'#1d1d21',stroke:'#3a3a40'},g);
+    const l = svgEl('rect',{x:p[0]-8,y:p[1]-16,width:16,height:3,rx:1.5,fill:'#2a2a2f'},g);
+    const glow = svgEl('circle',{cx:p[0],cy:p[1],r:34,fill:'#e07a5f',opacity:0},g);
+    const t = svgEl('text',{x:p[0],y:p[1]+48,'text-anchor':'middle','font-size':12,fill:'#9a968e'},g); t.textContent = p[2];
+    return {g,l,glow,p};
+  });
+  const dot = svgEl('circle',{r:6,fill:'#e07a5f',opacity:0},s);
+  const cap = svgEl('text',{x:200,y:286,'text-anchor':'middle','font-size':13,fill:'#efebe3'},s);
+  const wait = ms => new Promise(r=>setTimeout(r,ms));
+  const move = async (a,b,ms) => {const t0 = performance.now(); return new Promise(res=>{const f = now=>{const k = Math.min(1,(now-t0)/ms); dot.setAttribute('cx',a[0]+(b[0]-a[0])*k); dot.setAttribute('cy',a[1]+(b[1]-a[1])*k); k<1 ? requestAnimationFrame(f) : res();}; requestAnimationFrame(f);});};
+  let k = 0;
+  const run = async () => {
+    const from = devs[k%4]; k++;
+    cap.textContent = `${from.p[2]} manda una nota al progetto`;
+    from.l.setAttribute('fill','#e07a5f'); dot.setAttribute('opacity',1);
+    await move(from.p,hub,700);
+    const others = devs.filter(d=>d!==from);
+    await Promise.all(others.map(async (d,i)=>{await wait(i*120);}));
+    for (const d of others){ move(hub,d.p,600); }
+    await wait(620); dot.setAttribute('opacity',0);
+    cap.textContent = 'gli altri si illuminano e vibrano';
+    others.forEach(d=>{d.l.setAttribute('fill','#e07a5f'); d.glow.setAttribute('opacity',.16); d.g.style.animation = 'wig .3s 3'; d.g.style.transformOrigin = `${d.p[0]}px ${d.p[1]}px`;});
+    await wait(1700);
+    devs.forEach(d=>{d.l.setAttribute('fill','#2a2a2f'); d.glow.setAttribute('opacity',0); d.g.style.animation = '';});
+    await wait(700); run();
+  };
+  if (!reduce) run(); else cap.textContent = 'una nota arriva a tutto il gruppo';
+}
+
+/* ---------------- scena: MCP ---------------- */
+{
+  const s = $('#mcp');
+  const left = [['Trascrizioni',110],['Tag e momenti',200],['Note di gruppo',290]];
+  const right = [['Claude',80],['ChatGPT',160],['Gemini',240],['Modello locale',320]];
+  const node = (x,y,w,t,sub,accent) => {
+    svgEl('rect',{x:x-w/2,y:y-24,width:w,height:48,rx:12,fill:accent?'rgba(95,211,200,.1)':'#1d1d21',stroke:accent?'var(--led)':'#3a3a40','stroke-width':accent?1.5:1},s);
+    const a = svgEl('text',{x,y:sub?y-2:y+5,'text-anchor':'middle','font-size':14,fill:'#efebe3','font-weight':500},s); a.textContent = t;
+    if (sub){const b = svgEl('text',{x,y:y+15,'text-anchor':'middle','font-size':11,fill:'#9a968e'},s); b.textContent = sub;}
+  };
+  left.forEach(([t,y])=>{svgEl('path',{d:`M190 ${y}C260 ${y} 270 200 312 200`,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s); svgEl('path',{d:`M190 ${y}C260 ${y} 270 200 312 200`,fill:'none',stroke:'var(--led)','stroke-width':2,class:'flow'},s);});
+  right.forEach(([t,y],i)=>{svgEl('path',{d:`M488 200C520 200 550 ${y} 615 ${y}`,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s); svgEl('path',{d:`M488 200C520 200 550 ${y} 615 ${y}`,fill:'none',stroke:'var(--bronze)','stroke-width':2,class:'flow',style:`animation-delay:${-i*.3}s`},s);});
+  left.forEach(([t,y])=>node(115,y,150,t));
+  node(400,200,176,'Server MCP','aperto, sul tuo telefono',true);
+  right.forEach(([t,y])=>node(690,y,150,t,'il tuo abbonamento'));
+  const q = svgEl('text',{x:400,y:372,'text-anchor':'middle','font-size':15,fill:'#efebe3'},s);
+  const prompts = ['«Riassumi la riunione di ieri»','«Trasforma le idee di questa settimana in attività»','«Dove ho parlato di batterie?»','«Prepara il verbale per il progetto Atlante»'];
+  let pi = 0, ci = 0;
+  const type = () => {const p = prompts[pi%prompts.length]; ci++; q.textContent = p.slice(0,ci); if (ci < p.length) setTimeout(type,38); else setTimeout(()=>{pi++; ci=0; type();},1800);};
+  if (!reduce) type(); else q.textContent = prompts[0];
+}
+}
+</script>
+</body>
+</html>

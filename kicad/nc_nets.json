@@ -1,0 +1,13 @@
+{
+ "U1.1": "unconnected-(U1-P1.11-Pad1)",
+ "U1.2": "unconnected-(U1-P1.10-Pad2)",
+ "U1.3": "unconnected-(U1-P0.03-Pad3)",
+ "U1.6": "unconnected-(U1-P1.13-Pad6)",
+ "U1.25": "unconnected-(U1-DCH-Pad25)",
+ "U1.27": "unconnected-(U1-VBS-Pad27)",
+ "U1.29": "unconnected-(U1-D--Pad29)",
+ "U1.31": "unconnected-(U1-D+-Pad31)",
+ "U1.41": "unconnected-(U1-NF1-Pad41)",
+ "U1.42": "unconnected-(U1-P1.06-Pad42)",
+ "U1.43": "unconnected-(U1-NF2-Pad43)"
+}
