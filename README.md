@@ -139,4 +139,4 @@ Issues and ideas are welcome, especially on the electronics review, enclosure ca
 To be decided. Until a license is added, all rights are reserved by the authors.
 
 ## Authors
-Fabio and a friend, in Genoa, Italy.
+Two friends, as a hobby project.

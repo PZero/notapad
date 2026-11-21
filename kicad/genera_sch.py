@@ -132,7 +132,7 @@ for title, refs in groups:
 o = []
 o.append('(kicad_sch (version 20211123) (generator genera_sch.py)\n')
 o.append(f'  (uuid {uid("root")})\n  (paper "A1")\n')
-o.append('  (title_block (title "notªpad v0.1") (date "2026-11-21") (rev "0.1") (company "Genova"))\n')
+o.append('  (title_block (title "notªpad v0.1") (date "2026-11-21") (rev "0.1"))\n')
 o.append('  (lib_symbols\n')
 for sym in sorted({i[1] for i in items}):
     blk = LB[sym].replace(f'(symbol "{sym}"', f'(symbol "notapad:{sym}"', 1)

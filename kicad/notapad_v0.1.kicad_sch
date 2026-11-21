@@ -1,7 +1,7 @@
 (kicad_sch (version 20211123) (generator genera_sch.py)
   (uuid 944f7831-41e6-5d11-803c-bfe5418094b1)
   (paper "A1")
-  (title_block (title "notªpad v0.1") (date "2026-11-21") (rev "0.1") (company "Genova"))
+  (title_block (title "notªpad v0.1") (date "2026-11-21") (rev "0.1"))
   (lib_symbols
       (symbol "notapad:0402WGF1003TCE"
       (in_bom yes)

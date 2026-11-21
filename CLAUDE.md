@@ -1,6 +1,6 @@
 # notªpad – contesto del progetto
 
-Registratore AI indossabile fai-da-te, stile Plaud/Omi: un monolite di resina da portare al collo che registra tutto il giorno, si sincronizza via Bluetooth e lascia la trascrizione e l'organizzazione delle note a un'AI scelta dall'utente (tramite un server MCP aperto). Progetto di Fabio, a Genova, con un amico. Lingua di lavoro: italiano.
+Registratore AI indossabile fai-da-te, stile Plaud/Omi: un monolite di resina da portare al collo che registra tutto il giorno, si sincronizza via Bluetooth e lascia la trascrizione e l'organizzazione delle note a un'AI scelta dall'utente (tramite un server MCP aperto). Progetto dell'utente con un amico (repo pubblico: niente nomi né città nei file). Lingua di lavoro: italiano.
 
 Questo file riassume una lunga conversazione su claude.ai (21 novembre 2026). Le decisioni qui sotto sono già prese dall'utente: non rimetterle in discussione senza motivo.
 
