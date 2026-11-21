@@ -1,6 +1,12 @@
 # Changelog
 
 ## 21/11/2026
+- electronics: JLC pick-and-place file rotates both microphones by +180° (checked on the JLC preview); `kicad/genera_fab.py` now deletes only the folders it regenerates (jlcpcb, pcbway, allpcb).
+- electronics: NextPCB exports added in `kicad/fab_out/nextpcb/` (single 51 × 51 mm board) and `kicad/fab_out/nextpcb_pannello52/` (52 × 52 mm panel with one board); NextPCB was then discarded for v0.
+- repo: purchasing plan added in `acquisti/` (3-unit order, 10-unit estimate, other distributors for battery and vibration motor).
+- docs: draft request to Seeed Fusion for an XIAO nRF52840 Plus variant (`docs/seeed_richiesta_en.md`).
+- docs: status, decisions, open questions and CLAUDE.md updated; README and presentation page updated by the comunicazione agent.
+- repo: `kicad/pannello/` added to `.gitignore` (it contains files from another project, not for GitHub).
 - repo: impostazione del progetto (comandi `/stato` e `/fine-sessione`, agente `git-readme`, documenti di stato in `docs/`).
 - elettronica: libreria KiCad dai codici LCSC ufficiali (`kicad/lib/`).
 - elettronica: pinout nRF52840 rifatto sui pin realmente disponibili sul modulo E73 (`docs/pinout_v0.1.md`).

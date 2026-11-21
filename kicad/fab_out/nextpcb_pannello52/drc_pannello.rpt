@@ -1,0 +1,24 @@
+** Drc report for pannello_5x5.kicad_pcb **
+** Created on 2026-11-21T17:36:45 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 0 DRC violations **
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Silkscreen clipped by board edge
+    - Text height out of range
+    - Text thickness out of range
+    - Footprint component type doesn't match footprint pads
+    - Footprint not found in libraries
+
+** End of Report **

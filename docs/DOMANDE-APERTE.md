@@ -1,16 +1,19 @@
 # Domande aperte
 
 ## Elettronica
-- Batteria: 501520 (5 × 15 × 20 mm, ~80–100 mAh) o la 351619 prevista (60 mAh)? Oppure la 501525 (~120–150 mAh), che arriverebbe a ~32 mm con il keepout dell'antenna a ~33 mm: margine di circa 1 mm, da verificare.
+- Batteria: 501520 (5 × 15 × 20 mm, ~80–100 mAh) o 501525 (~120–150 mAh, margine di circa 1 mm prima del keepout dell'antenna a ~33 mm)? Dove comprarla e il motorino (LCSC non spedisce LiPo).
 - Diametro dei fori dei pin dorati J1–J4 (ora 1,0 mm): dipende dai pin che comprerete.
-- Rotazioni nel CPL: da controllare nell'anteprima JLC (D1–D3, MK1/MK2, Q2, E73).
+- NAND: la W25N02KVZEIR costa ~10 $; cercare una SPI NAND 2 Gbit WSON-8 8×6 cinese compatibile (XT26G02, DS35Q2GA, FM25S02) e verificarne pin e comandi sul datasheet.
+- IO2/IO3 della NAND senza pull-up: verificare sul datasheet Winbond.
+- Corrente di carica: tenere R1 = 20 kΩ (50 mA) o passare a 33 kΩ (30 mA)? Con 470 Ω i LED verde e blu sono tenui (~1 mA).
+- Land pattern del microfono (ereditato dall'impronta EasyEDA) da confrontare col disegno del datasheet; pin 1 dei LED da controllare col tester prima del reflow.
 
 ## Produzione
-- E73-2G4M08S1C (C356849) esaurito su JLC (21/11): aspettare il riassortimento, comprarlo da LCSC o altrove e mandarlo a JLC ("My Inventory"), oppure montarlo a mano. Il CX non va bene (solo IPEX).
-- Microfono MSM261DGT003 (C48227730) esaurito su JLC (21/11), disponibile su LCSC: stessa soluzione, ordinarlo da LCSC nel magazzino JLC ("My Inventory"). Datasheet verificato: pin 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R; top-port; VDD 1,6–3,6 V.
-- Pannello unico notªpad + tag SwimTimer: stesso spessore (ora 1,0 mm, 4 strati), mouse bites lontano dall'antenna; confrontare i preventivi.
-- Quale fornitore: JLC, PCBWay o ALLPCB (export pronti per tutti e tre).
-- Acquisto Pico (circa 4–5 € dai rivenditori ufficiali, non 16 € su Amazon) solo se servirà spesso; per ora basta il Pi 3.
+- E73-2G4M08S1C (C356849) non disponibile su JLC: comprarlo da LCSC nel magazzino JLC (3 pezzi). Il CX non va bene (solo IPEX).
+- Pannello unico notªpad + tag SwimTimer (file pronto in `kicad/pannello/`): confrontare il preventivo con le schede separate.
+- Montaggio in casa dei lotti successivi: stencil, piastra e pasta Sn42Bi58 (~60–70 €).
+- Risposta di Seeed Fusion: XIAO nRF52840 Plus ammessa allo sconto 30%? saldano i pad sul retro? sponsorizzazione per progetti aperti?
+- Acquisto Pico (circa 4–5 € dai rivenditori ufficiali) solo se servirà spesso; per ora basta il Pi 3.
 
 ## App (in pausa)
 - Confermare Flutter + Android per primo.

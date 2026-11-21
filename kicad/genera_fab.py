@@ -15,7 +15,10 @@ CLI = os.path.expandvars(r"%LOCALAPPDATA%\Programs\KiCad\10.0\bin\kicad-cli.exe"
 PCB = os.path.join(HERE, "notapad_v0.1.kicad_pcb")
 FAB = os.path.join(HERE, "fab_out")
 TMP = os.path.join(FAB, "_tmp")
-shutil.rmtree(FAB, ignore_errors=True); os.makedirs(TMP)
+# Cancella solo le cartelle che questo script rigenera: nextpcb/ e nextpcb_pannello52/ sono fatte da crea_scheda_51x51.py
+for _s in ("jlcpcb", "pcbway", "allpcb", "_tmp"):
+    shutil.rmtree(os.path.join(FAB, _s), ignore_errors=True)
+os.makedirs(TMP, exist_ok=True)
 
 
 def run(*a):
@@ -111,7 +114,13 @@ for fab in ("jlcpcb", "pcbway", "allpcb"):
             w = csv.writer(f); w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #"]); w.writerows(rows_jlc)
         with open(os.path.join(d, "notapad_v0.1_CPL_JLC.csv"), "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f); w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])
-            w.writerows([[r[0], r[1] + "mm", r[2] + "mm", r[3], r[4]] for r in cpl])
+            # Correzioni verificate nell'anteprima JLC (21/11/2026): il modello JLC del microfono
+            # C48227730 ha il pin 1 opposto al pad 1 dell'impronta EasyEDA -> +180 gradi.
+            JLC_ROT = {"MK": 180}
+            def rot_jlc(ref, rot):
+                off = next((v for k, v in JLC_ROT.items() if re.fullmatch(k + r"\d+", ref)), 0)
+                return f'{(float(rot) + off) % 360:g}'
+            w.writerows([[r[0], r[1] + "mm", r[2] + "mm", r[3], rot_jlc(r[0], r[4])] for r in cpl])
         extra = "Economic PCBA, codici LCSC già nella BOM. Controllare le rotazioni nell'anteprima JLC.\n"
     else:
         hdr = ["Item", "Designator", "Qty", "Manufacturer", "Manufacturer Part Number", "Description/Value", "Package", "LCSC (riferimento)", "Note"]

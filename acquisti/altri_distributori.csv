@@ -1,0 +1,8 @@
+Distributore,Articolo,Codice,Quantita,Prezzo_indicativo,Quando usarlo,Stato_dato
+Ebyte store (ebyteiot.com),E73-2G4M08S1C,E73-2G4M08S1C,4,5.04 USD + spedizione,Solo se LCSC C356849 risulta esaurito o a meno di 5 pezzi,Snapshot web non datato; un'altra pagina lo dava esaurito
+Robotshop,E73-2G4M08S1C,E73-2G4M08S1C,4,5.43 USD + spedizione,Alternativa a Ebyte store (95 pezzi in magazzino nello snapshot),Snapshot web non datato
+Mouser / DigiKey,W25N02KVZEIR,W25N02KVZEIR (DigiKey 14560446),4,Mouser ~26 USD (4 pz); DigiKey.it 20.36 EUR esaurito (versione TR 21.64 EUR con 14.9k pz),NON consigliato: 2-4x il prezzo LCSC. Solo come ripiego se LCSC esaurisce e non va bene la 1 Gbit,Snapshot 21/11/2026 (digikey.it) e findchips/flux non datati
+Negozio italiano o AliExpress,Batteria LiPo 501520 o 501525 con PCM e fili (5x15 mm 3.7 V),n.d.,3-6,3-6 EUR cad.,Fuori dall'ordine LCSC. Verificare spessore (max ~5 mm) e che il PCM sia incluso e il filo + sia a destra,Non verificato
+Negozio italiano o AliExpress,Motorino a moneta 0820 (8x2 mm),n.d.,6,1-2 EUR cad.,Fuori dall'ordine LCSC. Comprarne qualcuno in piu': i fili si rompono,Non verificato
+Negozio italiano o AliExpress,Pin dorati passanti per J1-J4 (5V/GND/SWDIO/SWCLK),n.d.,12,5-10 EUR il set,Montati a mano,Non verificato
+JLCPCB,Stencil acciaio + schede nude,-,-,come da preventivo JLC,Gia' deciso dall'utente,-

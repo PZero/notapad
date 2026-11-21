@@ -1,0 +1,7 @@
+(version 1)
+# Raccordi termici: su questa scheda molti pad piccoli possono avere un solo raggio verso il piano GND.
+(rule "raggi_termici"
+  (constraint min_resolved_spokes 1))
+# JLC: rame dal bordo fresato >= 0,2 mm; teniamo 0,25.
+(rule "bordo"
+  (constraint edge_clearance (min 0.25mm)))
