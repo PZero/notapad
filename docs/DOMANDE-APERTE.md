@@ -7,6 +7,7 @@
 
 ## Produzione
 - E73-2G4M08S1C (C356849) esaurito su JLC (21/11): aspettare il riassortimento, comprarlo da LCSC o altrove e mandarlo a JLC ("My Inventory"), oppure montarlo a mano. Il CX non va bene (solo IPEX).
+- Microfono MSM261DGT003 (C48227730) esaurito su JLC (21/11), disponibile su LCSC: stessa soluzione, ordinarlo da LCSC nel magazzino JLC ("My Inventory"). Datasheet verificato: pin 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R; top-port; VDD 1,6–3,6 V.
 - Pannello unico notªpad + tag SwimTimer: stesso spessore (ora 1,0 mm, 4 strati), mouse bites lontano dall'antenna; confrontare i preventivi.
 - Quale fornitore: JLC, PCBWay o ALLPCB (export pronti per tutti e tre).
 - Acquisto Pico (circa 4–5 € dai rivenditori ufficiali, non 16 € su Amazon) solo se servirà spesso; per ora basta il Pi 3.
