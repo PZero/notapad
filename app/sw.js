@@ -4,8 +4,8 @@
 //    Whisper; né il server di Python né GitHub Pages permettono di impostare queste intestazioni;
 // 3. tiene in cache la libreria transformers.js e i file di ONNX Runtime (cdn.jsdelivr.net, versione fissa).
 // I modelli Whisper (Hugging Face) non passano di qui: transformers.js li tiene nella sua cache.
-const VERSIONE = 'np-0.2.0', LIB = 'np-lib-4.3.2';
-const FILE = ['./', 'index.html', 'app.js', 'adpcm.js', 'trascrittore.js', 'manifest.webmanifest', 'icone/icona-192.png', 'icone/icona-512.png'];
+const VERSIONE = 'np-0.8.1', LIB = 'np-lib-4.3.2';
+const FILE = ['./', 'index.html', 'app.js', 'adpcm.js', 'trascrittore.js', 'voci.js', 'comandi.js', 'vad.js', 'manifest.webmanifest', 'icone/icona-192.png', 'icone/icona-512.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSIONE).then(c => c.addAll(FILE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(
   caches.keys().then(k => Promise.all(k.filter(x => x !== VERSIONE && x !== LIB).map(x => caches.delete(x)))).then(() => self.clients.claim())));
@@ -23,7 +23,7 @@ self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (u.origin === self.location.origin) {
     // prima la rete (così le modifiche si vedono subito), la cache solo se il server non risponde
-    e.respondWith(fetch(e.request).then(r => {
+    e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => {   // no-cache: mai file vecchi dalla cache HTTP
       if (r.ok) { const copia = r.clone(); caches.open(VERSIONE).then(c => c.put(e.request, copia)); }
       return isola(r);
     }).catch(() => caches.match(e.request).then(r => r ? isola(r) : Response.error())));

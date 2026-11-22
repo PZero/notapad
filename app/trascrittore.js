@@ -2,7 +2,9 @@
 // così Bluetooth e interfaccia non si bloccano. Funziona su Edge/Chrome per Windows e su Chrome per Android.
 // Motore: WebGPU se c'è, altrimenti WASM (multithread se la pagina è cross-origin isolated, vedi sw.js).
 // Il modello si scarica una volta da Hugging Face e resta nella cache del browser ("transformers-cache").
-import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
+// Voci: per ogni frase calcola anche un'"impronta vocale" (embedding da 256 numeri) con WeSpeaker ResNet34
+// (lo stesso modello della pipeline pyannote 3.1, 26 MB). Chi parla lo decide app.js confrontando le impronte.
+import { pipeline, env, AutoModel, AutoFeatureExtractor } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
 
 env.allowLocalModels = false;           // niente richieste a /models/ sul nostro server
 env.useBrowserCache = true;
@@ -14,10 +16,11 @@ if (env.backends?.onnx?.wasm) {
 //   wasm   q8:            tiny 41 MB · base 77 MB · small 249 MB
 //   webgpu fp32/fp16 + q4: tiny 42/26 MB · base 106/65 MB · small 586/410 MB · turbo (q4f16) 564 MB
 const MODELLI = {
-  tiny:  'onnx-community/whisper-tiny',
-  base:  'onnx-community/whisper-base',
-  small: 'onnx-community/whisper-small',
-  turbo: 'onnx-community/whisper-large-v3-turbo',
+  // varianti "_timestamped": danno l'ora di ogni parola (serve per dividere il testo tra chi parla)
+  tiny:  'onnx-community/whisper-tiny_timestamped',
+  base:  'onnx-community/whisper-base_timestamped',
+  small: 'onnx-community/whisper-small_timestamped',
+  turbo: 'onnx-community/whisper-large-v3-turbo_timestamped',
 };
 
 let asr = null, chiave = '', motore = '';
@@ -76,20 +79,79 @@ async function carica(nome, preferito) {
   postMessage({ tipo: 'pronto', modello: `whisper-${nome}`, motore });
 }
 
-async function trascrivi({ id, audio, lingua }) {
+// ---------- impronte vocali ----------
+// Sempre su WASM fp32: il modello è piccolo, così il risultato è identico su PC, Android e iPhone
+// (le impronte salvate restano confrontabili tra dispositivi e motori diversi).
+const VOCE = 'onnx-community/wespeaker-voxceleb-resnet34-LM';
+const FREQ = 16000, MIN_S = 0.5, MAX_S = 20;
+let voce = null;
+async function caricaVoce() {
+  if (voce) return voce;
+  postMessage({ tipo: 'stato', testo: 'carico il modello delle voci…' });
+  const [fe, mod] = await Promise.all([
+    AutoFeatureExtractor.from_pretrained(VOCE),
+    AutoModel.from_pretrained(VOCE, { device: 'wasm', dtype: 'fp32', progress_callback: progresso() }),
+  ]);
+  return voce = { fe, mod };
+}
+// impronta normalizzata (lunghezza 1) di un pezzo di audio, o null se è troppo corto
+async function impronta(audio) {
+  if (audio.length < MIN_S * FREQ) return null;
+  if (audio.length > MAX_S * FREQ) {                   // frase lunghissima: la parte centrale basta
+    const m = (audio.length - MAX_S * FREQ) >> 1;
+    audio = audio.subarray(m, m + MAX_S * FREQ);
+  }
+  const { fe, mod } = await caricaVoce();
+  const out = await mod(await fe(audio));
+  const v = Float32Array.from(Object.values(out)[0].data);
+  let n = 0; for (const x of v) n += x * x;
+  n = Math.sqrt(n) || 1;
+  return Array.from(v, x => +(x / n).toFixed(5));
+}
+// un'impronta per ogni frase (t0, t1 in secondi dall'inizio dell'audio)
+async function impronteDi(audio, segmenti) {
+  const out = [];
+  for (const s of segmenti) {
+    const a = Math.max(0, Math.floor((s.t0 || 0) * FREQ));
+    const b = Math.min(audio.length, Math.ceil((s.t1 ?? audio.length / FREQ) * FREQ));
+    out.push(b > a ? await impronta(audio.subarray(a, b)) : null);
+  }
+  return out;
+}
+
+// finestre di 1,5 s ogni 0,75 s sulle parti con parlato: ognuna ha la sua impronta (Int8, ×127),
+// così un cambio di voce a metà frase si vede. Chi parla lo decide app.js.
+const FIN = 1.5, PASSO = 0.75;
+async function finestreDi(audio, parole) {
+  const out = [];
+  for (let t = 0; t + FIN <= audio.length / FREQ + 0.01; t += PASSO) {
+    if (!parole.some(w => w.t1 > t && w.t0 < t + FIN)) continue;      // nessuna parola: silenzio
+    const v = await impronta(audio.subarray(Math.floor(t * FREQ), Math.floor((t + FIN) * FREQ)));
+    if (v) out.push({ t0: +t.toFixed(2), t1: +(t + FIN).toFixed(2), voce: Int8Array.from(v, x => Math.round(x * 127)) });
+  }
+  return out;
+}
+
+async function trascrivi({ id, audio, lingua, voci = true }) {
   const t0 = performance.now();
+  let picco = 0; for (const x of audio) { const a = Math.abs(x); if (a > picco) picco = a; }
+  if (picco > 0 && picco < 0.5) { const k = 0.7 / picco; for (let i = 0; i < audio.length; i++) audio[i] *= k; }   // voci lontane: più volume
   const out = await asr(audio, {
     language: lingua || null,          // null = rilevamento automatico
     task: 'transcribe',
     chunk_length_s: 30,
     stride_length_s: 5,
-    return_timestamps: true,
+    return_timestamps: 'word',
   });
-  const segmenti = (out.chunks || []).map(c => ({ t0: c.timestamp[0] ?? 0, t1: c.timestamp[1] ?? null, testo: c.text.trim() }))
-    .filter(s => s.testo);
+  const parole = (out.chunks || []).map(c => ({ t0: c.timestamp[0] ?? 0, t1: c.timestamp[1] ?? c.timestamp[0] ?? 0, testo: c.text }))
+    .filter(w => w.testo.trim());
+  const secondi = (performance.now() - t0) / 1000;
+  let finestre = null;
+  try { if (voci) finestre = await finestreDi(audio, parole); }
+  catch (e) { postMessage({ tipo: 'stato', testo: `voci non riconosciute (${e.message})` }); }
   postMessage({
-    tipo: 'risultato', id, testo: (out.text || '').trim(), segmenti,
-    secondi: (performance.now() - t0) / 1000, modello: chiave.split('|')[0], motore,
+    tipo: 'risultato', id, testo: (out.text || '').trim(), parole, finestre,
+    secondi, secondiVoci: (performance.now() - t0) / 1000 - secondi, modello: chiave.split('|')[0], motore,
   });
 }
 
@@ -99,6 +161,21 @@ onmessage = e => {
   const m = e.data;
   coda = coda.then(async () => {
     try {
+      if (m.tipo === 'voci') {                          // impronte per frasi già trascritte (senza Whisper)
+        postMessage({ tipo: 'risultato', id: m.id, impronte: await impronteDi(m.audio, m.segmenti) });
+        return;
+      }
+      if (m.tipo === 'campione') {                      // voce del proprietario: un'impronta ogni 3 s di parlato
+        const imp = [];
+        for (let i = 0; i + 1.5 * FREQ <= m.audio.length; i += 3 * FREQ) {
+          const pezzo = m.audio.subarray(i, i + 3 * FREQ);
+          let e2 = 0; for (const x of pezzo) e2 += x * x;
+          if (Math.sqrt(e2 / pezzo.length) < 0.003) continue;      // silenzio
+          const v = await impronta(pezzo); if (v) imp.push(v);
+        }
+        postMessage({ tipo: 'risultato', id: m.id, impronte: imp });
+        return;
+      }
       await carica(m.modello, m.motore);
       if (m.tipo === 'trascrivi') await trascrivi(m);
       else postMessage({ tipo: 'fatto', id: m.id });

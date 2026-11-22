@@ -1,6 +1,9 @@
 // notªpad – app di prova (PWA locale): collega il dispositivo via Web Bluetooth, scarica i settori audio,
 // li salva in IndexedDB e li fa ascoltare/scaricare in WAV. Protocollo in firmware/xiao-prova/protocollo.h.
 import { SETT_BYTE, FREQ, verificaSettore, decodifica, wav, sessioni } from './adpcm.js';
+import { soloParlato, tempoVero } from './vad.js';
+import { trovaComandi, leggiStanze, chiamaHA, provaHA, statoHA } from './comandi.js';
+import { assegna, turni, etichetta, media, aggiungiCampioni } from './voci.js';
 
 const U = x => `a7d1000${x}-6e70-4b8f-9c4a-5f3e2b1d0c01`;
 const $ = id => document.getElementById(id);
@@ -16,6 +19,7 @@ function log(t) {
 // ---------- IndexedDB ----------
 // v1: settori (chiave seq) · v2: trascrizioni (chiave da = primo settore del pezzo trascritto, fino ad a)
 let db;
+const dbPronto = dbApri();       // aperto subito: se dopo qualcosa si rompe, i settori si salvano lo stesso
 function dbApri() {
   return new Promise((ok, ko) => {
     const r = indexedDB.open('notapad', 2);
@@ -28,19 +32,20 @@ function dbApri() {
     r.onerror = () => ko(r.error);
   });
 }
-const tx = (modo, f, archivio = 'settori') => new Promise((ok, ko) => {
+const tx = (modo, f, archivio = 'settori') => dbPronto.then(() => new Promise((ok, ko) => {
   const t = db.transaction(archivio, modo);
   const ris = f(t.objectStore(archivio));
   t.oncomplete = () => ok(ris && ris.result);
   t.onerror = () => ko(t.error);
-});
+}));
 const dbMetti = rec => tx('readwrite', s => s.put(rec));
 const dbPrendi = seq => tx('readonly', s => s.get(seq));
 const dbCancella = seqs => tx('readwrite', s => seqs.forEach(q => s.delete(q)));
 const dbTrascrizioni = () => tx('readonly', s => s.getAll(), 'trascrizioni');
 const dbMettiTr = rec => tx('readwrite', s => s.put(rec), 'trascrizioni');
 const dbCancellaTr = das => tx('readwrite', s => das.forEach(d => s.delete(d)), 'trascrizioni');
-function dbMeta() {
+async function dbMeta() {
+  await dbPronto;
   return new Promise((ok, ko) => {
     const out = [];
     const r = db.transaction('settori').objectStore('settori').openCursor();
@@ -167,8 +172,13 @@ function suStato(v) {
   }
 }
 
+// tocco singolo sul notªpad: «K cmd <primo> <ultimo>» = settori di un comando, scaricati subito
+let cmdSeq = new Set();
+const cmdAttesi = new Set();          // settori del comando non ancora arrivati
 function suRisposta(t) {
   log(t);
+  const m = t.match(/^K cmd (\d+) (\d+)$/);
+  if (m) { for (let q = +m[1]; q <= +m[2]; q++) { cmdSeq.add(q); cmdAttesi.add(q); } if (!scaricoLocale) { scaricoLocale = true; ultimaRichiestaSync = Date.now(); byteScaricati = 0; settoriOk = 0; t0Scarico = performance.now(); } }
   if (t.startsWith('K sync fine') && scaricoLocale) fineScarico();
 }
 
@@ -184,8 +194,51 @@ function fineScarico() {
   const s = (performance.now() - t0Scarico) / 1000;
   if (settoriOk) log(`scarico finito: ${settoriOk} settori, ${(byteScaricati / 1024).toFixed(0)} KB in ${s.toFixed(1)} s`);
   aggiornaPulsanti();
-  aggiornaLista().then(trascriviNuove);
+  cmdAttesi.clear();
+  aggiornaLista().then(async () => { await trascriviComando(); trascriviNuove(); });
 }
+// il pezzo del comando va in testa alla coda delle trascrizioni
+async function trascriviComando() {
+  const qs = [...cmdSeq].sort((a, b) => a - b); cmdSeq = new Set();
+  const presenti = [];
+  for (const q of qs) if (await dbPrendi(q)) presenti.push(q);
+  if (!presenti.length) return;
+  presenti.forEach(q => { comandoSeq.add(q); inCodaSeq.add(q); });
+  log(`comando arrivato (${presenti.length} settori): lo trascrivo subito`);
+  await aggiornaLista();
+  // secondo trascrittore, solo per i comandi: whisper-base su CPU, in parallelo a quello lungo (che resta sulla GPU)
+  try {
+    const primo = await dbPrendi(presenti[0]);
+    const pcm = await pcmDi(presenti);
+    const audio = Float32Array.from(pcm, x => x / 32768);
+    const t0 = performance.now();
+    const r = await chiediComando({ tipo: 'trascrivi', audio, lingua: $('sLingua').value, voci: false }, [audio.buffer]);
+    const base = { da: presenti[0], a: presenti[presenti.length - 1], ms: primo.ms, avvio: primo.avvio, durata: pcm.length / FREQ, data: Date.now(), lingua: $('sLingua').value };
+    await dbMettiTr({ ...base, testo: r.testo, segmenti: [], parole: r.parole, finestre: [], voci: true, comando: true, modello: r.modello, motore: r.motore, secondi: r.secondi });
+    log(`comando trascritto in ${((performance.now() - t0) / 1000).toFixed(1)} s: «${r.testo}»`);
+    await eseguiComandi(base, r.parole, [], true);
+  } catch (e) { log('X comando: ' + e.message); }
+  finally { presenti.forEach(q => inCodaSeq.delete(q)); aggiornaTesti(); }
+}
+let workerCmd = null; const atteseCmd = new Map();
+function chiediComando(msg, trasferibili = []) {
+  if (!workerCmd) {
+    workerCmd = new Worker('trascrittore.js', { type: 'module' });
+    workerCmd.onmessage = e => {
+      const m = e.data, p = atteseCmd.get(m.id);
+      if (m.tipo === 'pronto') log(`comandi: pronto ${m.modello} (${m.motore})`);
+      if (!p || !['risultato', 'fatto', 'errore'].includes(m.tipo)) return;
+      atteseCmd.delete(m.id);
+      m.tipo === 'errore' ? p.ko(new Error(m.testo)) : p.ok(m);
+    };
+  }
+  return new Promise((ok, ko) => {
+    const id = ++nId;
+    atteseCmd.set(id, { ok, ko });
+    workerCmd.postMessage({ ...msg, id, modello: 'base', motore: 'wasm' }, trasferibili);
+  });
+}
+const comandoSeq = new Set();
 
 // ---------- dati ----------
 function suDati(v) {
@@ -211,7 +264,11 @@ function suDati(v) {
   }
   const t = r.testa;
   dbMetti({ ...t, dati: a.buf.slice(36).buffer, scaricato: Date.now() })
-    .then(() => { settoriOk++; invia('ACK ' + sett); })
+    .then(() => {
+      settoriOk++; invia('ACK ' + sett);
+      // il comando è arrivato tutto (anche a metà di uno scarico lungo): si trascrive subito, prima del resto
+      if (cmdAttesi.delete(t.seq) && !cmdAttesi.size) trascriviComando();
+    })
     .catch(e => log('X salvataggio: ' + e.message));
 }
 
@@ -244,6 +301,7 @@ async function aggiornaLista() {
       await dbCancella(s.seqs); await dbCancellaTr(pezziDi(s).map(p => p.da)); aggiornaLista(); return;
     }
     if (b.dataset.a === 'trascrivi') { await ritrascrivi(s); return; }
+    if (b.dataset.a === 'io') { sonoIo(s, +b.dataset.n); return; }
     if (b.dataset.a === 'txt') { scarica(new Blob([testoDi(s, true)], { type: 'text/plain;charset=utf-8' }), nomeFile(s, 'txt')); return; }
     if (b.dataset.a === 'tutto') { $('tx' + i).querySelector('.testo').classList.toggle('aperto'); return; }
     const blob = wav(await pcmDi(s.seqs));
@@ -270,8 +328,11 @@ async function pcmDi(seqs) {
 // ---------- trascrizione (Whisper nel browser: trascrittore.js) ----------
 // Ogni sincronizzazione porta settori nuovi: si trascrivono a pezzi (al massimo PEZZO_MAX settori, ~5 min)
 // i settori di ogni registrazione non ancora coperti da un pezzo. Tutto resta sul dispositivo.
-const PEZZO_MAX = 600;
+const PEZZO_MAX = 120;                 // ~1 min: pezzi corti, così niente resta in coda a lungo
 const telefono = /Android|Mobi/i.test(navigator.userAgent);
+// sul PC con WebGPU fp16 il modello automatico è large-v3-turbo: molto meglio in italiano con voci lontane
+let gpuF16 = false;
+if (navigator.gpu) navigator.gpu.requestAdapter().then(a => { gpuF16 = !!(a && a.features.has('shader-f16')); }).catch(() => {});
 const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // frasi che Whisper "inventa" sul silenzio o sul rumore (soprattutto in italiano)
 const ALLUCINAZIONI = [/sottotitoli (creati|a cura|e revisione)/i, /amara\.org/i, /grazie (a tutti )?per (la visione|l'ascolto|aver guardato)/i,
@@ -304,7 +365,7 @@ function trWorker() {
 }
 function modelloScelto() {
   const v = $('sModello').value;
-  return v === 'auto' ? (telefono ? 'base' : 'small') : v;
+  return v === 'auto' ? (telefono ? 'base' : 'small') : v;   // small: ~3× più veloce di turbo, turbo si sceglie a mano
 }
 function chiedi(msg, trasferibili = []) {
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();   // il modello non va buttato via
@@ -360,30 +421,171 @@ async function trascriviPezzo(seqs) {
     log(`${durata(base.durata)} di silenzio, niente da trascrivere`);
     return;
   }
-  trInCorso = { t0: Date.now(), durata: base.durata };
-  const r = await chiedi({ tipo: 'trascrivi', audio, lingua }, [audio.buffer]);
-  const segmenti = r.segmenti.filter(x => !allucinazione(x.testo));
-  await dbMettiTr({ ...base, testo: segmenti.map(x => x.testo).join(' '), segmenti, modello: r.modello, motore: r.motore, secondi: r.secondi });
-  log(`trascritti ${durata(base.durata)} di audio in ${r.secondi.toFixed(1)} s (whisper-${r.modello}, ${r.motore})`);
+  // solo i tratti con voce a Whisper (molto più veloce), poi i tempi tornano quelli veri
+  const v = soloParlato(audio);
+  trInCorso = { t0: Date.now(), durata: v.audio.length / FREQ };
+  const r = await chiedi({ tipo: 'trascrivi', audio: v.audio, lingua }, [v.audio.buffer]);
+  const vero = t => +tempoVero(t, v.mappa).toFixed(2);
+  r.parole = (r.parole || []).map(w => ({ ...w, t0: vero(w.t0), t1: vero(w.t1) }));
+  if (r.finestre) r.finestre = r.finestre.map(f => ({ ...f, t0: vero(f.t0), t1: vero(f.t0) + (f.t1 - f.t0) }));
+  if (v.parlato < 0.85) log(`parlato ${Math.round(v.parlato * 100)}% del pezzo: a Whisper ${durata(v.audio.length / FREQ)} su ${durata(base.durata)}`);
+  // formato 3: parole con l'ora + finestre con l'impronta; frasi e turni si ricavano quando si mostra
+  const parole = allucinazione(r.testo) ? [] : r.parole;
+  await dbMettiTr({ ...base, testo: r.testo, segmenti: [], parole, finestre: r.finestre || [], voci: true,
+    modello: r.modello, motore: r.motore, secondi: r.secondi });
+  log(`trascritti ${durata(base.durata)} di audio in ${r.secondi.toFixed(1)} s (whisper-${r.modello}, ${r.motore})` +
+    (r.finestre ? `, voci in ${r.secondiVoci.toFixed(1)} s` : ''));
+  eseguiComandi(base, parole, r.finestre || [], comandoSeq.has(seqs[0]) || !!primo.comando).catch(e => log('X comando: ' + e.message));
+}
+
+// pezzi trascritti prima del riconoscimento delle voci: si calcolano solo le impronte (senza Whisper)
+async function vociMancanti() {
+  for (const p of await dbTrascrizioni()) {
+    if (p.voci || !(p.segmenti || []).length || vociInCoda.has(p.da)) continue;
+    vociInCoda.add(p.da);
+    codaTr = codaTr.then(async () => {
+      const seqs = []; for (let q = p.da; q <= p.a; q++) seqs.push(q);
+      const esistenti = [];
+      for (const q of seqs) if (await dbPrendi(q)) esistenti.push(q);
+      if (!esistenti.length) return;
+      const pcm = await pcmDi(esistenti);
+      const audio = Float32Array.from(pcm, v => v / 32768);
+      $('kTr').textContent = 'riconosco le voci…';
+      const r = await chiedi({ tipo: 'voci', audio, segmenti: p.segmenti.map(({ t0, t1 }) => ({ t0, t1 })) }, [audio.buffer]);
+      await dbMettiTr({ ...p, voci: true, segmenti: p.segmenti.map((x, i) => ({ ...x, voce: r.impronte[i] })) });
+      $('kTr').textContent = 'pronta';
+      aggiornaTesti();
+    }).catch(e => log('X voci: ' + e.message)).finally(() => vociInCoda.delete(p.da));
+  }
+}
+const vociInCoda = new Set();
+
+// ---------- comandi vocali → Home Assistant ----------
+// Solo comandi detti da poco (COMANDO_MAX_MIN) e, se c'è il profilo, solo con la voce del proprietario.
+// Ogni comando si esegue una volta sola (chiave = primo settore del pezzo + secondo), anche se si ritrascrive.
+const COMANDO_MAX_MIN = 10;
+const conf = () => ({ url: $('hUrl').value.trim(), token: $('hToken').value.trim(), stanze: leggiStanze($('hStanze').value) });
+async function eseguiComandi(p, parole, finestre, daTocco = false) {
+  const c = conf();
+  if (!$('cComandi').checked || !c.url || !c.token) { if (daTocco) log('comando non eseguito: attiva «Esegui i comandi» e inserisci indirizzo e token'); return; }
+  const s = gruppi.find(g => g.seqs.includes(p.da));
+  if (!s || !s.inizio) { if (daTocco) log('comando non eseguito: registrazione senza ora'); return; }
+  let fatti = []; try { fatti = JSON.parse(localStorage.getItem('np-comandi-fatti')) || []; } catch {}
+  // dopo il tocco singolo basta «accendi la luce»: il tocco vale come la parola «Comando»
+  const tt = daTocco ? [{ t0: 0, testo: 'comando ' + parole.map(w => w.testo).join(''), chi: 'io' }]
+    : turni(parole, finestre, profiloMedia, { delta: delta() });
+  if (daTocco && !trovaComandi(tt[0].testo, c.stanze).length) log(`nessun comando riconosciuto in «${tt[0].testo.slice(8)}»`);
+  for (const t of tt) {
+    if (profiloMedia && t.chi !== 'io') continue;
+    const quando = s.inizio + ((p.ms - s.msInizio) / 1000 + t.t0) * 1000;
+    for (const k of trovaComandi(t.testo, c.stanze)) {
+      const id = `${p.da}:${Math.round(t.t0)}:${k.frase}`;
+      if (fatti.includes(id)) continue;
+      fatti = [...fatti, id].slice(-200);
+      try { localStorage.setItem('np-comandi-fatti', JSON.stringify(fatti)); } catch {}
+      if (Date.now() - quando > COMANDO_MAX_MIN * 60000) { log(`comando vecchio, non eseguito: «${k.frase}»`); continue; }
+      await chiamaHA(c, k);
+      log(`comando eseguito: «${k.frase}» → ${k.azione} ${k.entita}`);
+    }
+  }
+}
+
+// ---------- la voce del proprietario ----------
+// Profilo = impronte della sua voce, nel browser (localStorage). Si costruisce registrando 30 s col
+// microfono di questo dispositivo, oppure toccando "Interlocutore N" in una trascrizione → "sono io"
+// (meglio: stesso microfono del notªpad).
+let profilo = null, profiloMedia = null;
+try { profilo = JSON.parse(localStorage.getItem('np-voce-io')); } catch {}
+function salvaProfilo(p) {
+  profilo = p;
+  profiloMedia = p && p.campioni.length ? media(p.campioni) : null;
+  try { p ? localStorage.setItem('np-voce-io', JSON.stringify(p)) : localStorage.removeItem('np-voce-io'); } catch {}
+  if ($('kVoce')) $('kVoce').textContent = p && p.campioni.length ? `${p.campioni.length} campioni` : 'non registrata';
+  if ($('bVoceVia')) $('bVoceVia').disabled = !p;
+  aggiornaTesti();
+}
+async function registraVoce() {
+  const b = $('bVoce');
+  if (!navigator.mediaDevices || !window.MediaRecorder) { avviso('Questo browser non permette di registrare dal microfono.'); return; }
+  let flusso;
+  try { flusso = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true } }); }
+  catch (e) { log('X microfono: ' + e.message); return; }
+  const rec = new MediaRecorder(flusso), parti = [];
+  rec.ondataavailable = e => parti.push(e.data);
+  const fine = new Promise(ok => rec.onstop = ok);
+  rec.start();
+  $('pVoce').style.display = 'block';
+  b.disabled = true;
+  let s = 30;
+  const conta = setInterval(() => { s--; $('bVoceStop').textContent = `Ho finito (${s} s)`; if (s <= 0) rec.stop(); }, 1000);
+  $('bVoceStop').textContent = `Ho finito (${s} s)`;
+  $('bVoceStop').onclick = () => rec.state === 'recording' && rec.stop();
+  await fine;
+  clearInterval(conta);
+  flusso.getTracks().forEach(t => t.stop());
+  $('pVoce').style.display = 'none';
+  try {
+    const ctx = new AudioContext({ sampleRate: FREQ });
+    const buf = await ctx.decodeAudioData(await new Blob(parti).arrayBuffer());
+    ctx.close();
+    const audio = buf.getChannelData(0).slice();
+    $('kVoce').textContent = 'analizzo…';
+    const r = await chiedi({ tipo: 'campione', audio }, [audio.buffer]);
+    if (r.impronte.length < 3) { log(`voce: solo ${r.impronte.length} pezzi con parlato, riprova parlando di più`); salvaProfilo(profilo); }
+    else { salvaProfilo(aggiungiCampioni(profilo, r.impronte)); log(`voce del proprietario: ${r.impronte.length} campioni aggiunti`); }
+  } catch (e) { log('X voce: ' + e.message); salvaProfilo(profilo); }
+  b.disabled = false;
 }
 
 const pezziDi = s => { const q = new Set(s.seqs); return pezzi.filter(p => q.has(p.da)).sort((a, b) => a.da - b.da); };
 // segmenti con l'ora: assoluta se la registrazione ha l'ora vera, altrimenti relativa all'inizio
+const delta = () => +($('rSep') ? $('rSep').value : 0);
 function righeDi(s) {
-  const out = [];
+  const oraDi = t => s.inizio ? new Date(s.inizio + t * 1000).toLocaleTimeString('it-IT')
+    : `+${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+  const vecchie = [], parole = [], finestre = [];
   for (const p of pezziDi(s)) {
     const off = (p.ms - s.msInizio) / 1000;
-    for (const x of p.segmenti) {
-      const t = off + (x.t0 || 0);
-      const ora = s.inizio ? new Date(s.inizio + t * 1000).toLocaleTimeString('it-IT')
-        : `+${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
-      out.push({ ora, testo: x.testo });
-    }
+    for (const x of p.segmenti || [])
+      vecchie.push({ t: off + (x.t0 || 0), testo: x.testo, voce: x.voce || null, durata: x.t1 != null ? x.t1 - (x.t0 || 0) : 0 });
+    for (const w of p.parole || []) parole.push({ ...w, t0: w.t0 + off, t1: w.t1 + off });
+    for (const f of p.finestre || []) finestre.push({ ...f, t0: f.t0 + off, t1: f.t1 + off });
   }
-  return out;
+  // ordine cronologico vero, qualunque sia stato l'ordine di scarico e di trascrizione
+  parole.sort((a, b) => a.t0 - b.t0); finestre.sort((a, b) => a.t0 - b.t0); vecchie.sort((a, b) => a.t - b.t);
+  if (vecchie.length && parole.length)                 // registrazione mista: le frasi vecchie diventano "parole"
+    for (const v of vecchie.splice(0)) parole.push({ t0: v.t, t1: v.t + v.durata, testo: ' ' + v.testo });
+  parole.sort((a, b) => a.t0 - b.t0);
+  if (vecchie.length) {                                // trascrizioni fatte prima del 22/11 sera: una voce per frase
+    const chi = assegna(vecchie, profiloMedia, { delta: delta() });
+    return vecchie.map((r, i) => ({ ...r, ...chi[i], ora: oraDi(r.t), campioni: r.voce ? [r.voce] : [] }));
+  }
+  // chi parla, a turni: numeri degli interlocutori propri di ogni registrazione
+  return turni(parole, finestre, profiloMedia, { delta: delta() }).filter(t => !allucinazione(t.testo)).map(t => ({
+    ...t, ora: oraDi(t.t0),
+    campioni: finestre.filter(f => f.t0 >= t.t0 - 0.2 && f.t1 <= t.t1 + 0.2).map(f => Array.from(f.voce, x => x / 127)),
+  }));
 }
-const testoDi = (s, conOra) => righeDi(s).map(r => conOra ? `[${r.ora}] ${r.testo}` : r.testo).join('\n');
+const conVoci = righe => righe.some(r => r.chi);
+const testoDi = (s, conOra) => {
+  const righe = righeDi(s), v = conVoci(righe);
+  return righe.map(r => (conOra ? `[${r.ora}] ` : '') + (v ? etichetta(r.chi) + ': ' : '') + r.testo).join('\n');
+};
+// "Interlocutore N sono io": le sue impronte in questa registrazione vanno nel profilo del proprietario
+function sonoIo(s, n) {
+  const imp = righeDi(s).filter(r => r.chi === n && !r.dedotto).flatMap(r => r.campioni).slice(-100);
+  if (!imp.length) return;
+  if (!confirm(`${etichetta(n)} sei tu? Le sue ${imp.length} frasi diventano campioni della tua voce.`)) return;
+  salvaProfilo(aggiungiCampioni(profilo, imp));
+  log(`voce del proprietario: ${imp.length} campioni presi da una registrazione`);
+}
 
+const chip = (r, i) => {
+  const t = r.sim != null ? ` title="somiglianza ${r.sim.toFixed(2)}"` : ' title="frase corta: come la precedente"';
+  if (r.chi === 'io') return `<b class="chi io"${t}>Io</b>`;
+  if (!r.chi) return `<b class="chi"${t}>?</b>`;
+  return `<button class="chi c${(r.chi - 1) % 6}" data-a="io" data-i="${i}" data-n="${r.chi}"${t}>${etichetta(r.chi)}</button>`;
+};
 async function aggiornaTesti() {
   pezzi = await dbTrascrizioni();
   gruppi.forEach((s, i) => {
@@ -398,7 +600,7 @@ async function aggiornaTesti() {
     else if (!righe.length) stato = '<span class="chip">nessun parlato</span>';
     const info = pz.find(p => p.modello);
     cella.innerHTML = `<div class="riga">${stato}
-      ${righe.length ? `<div class="testo">${righe.map(r => `<p><time>${r.ora}</time> ${esc(r.testo)}</p>`).join('')}</div>` : ''}
+      ${righe.length ? `<div class="testo">${righe.map(r => `<p><time>${r.ora}</time> ${conVoci(righe) ? chip(r, i) : ''}${esc(r.testo)}</p>`).join('')}</div>` : ''}
       <span class="az">${righe.length > 3 ? `<button data-a="tutto" data-i="${i}">Tutto</button> ` : ''}
       ${righe.length ? `<button data-a="txt" data-i="${i}">TXT</button> ` : ''}
       <button data-a="trascrivi" data-i="${i}" ${inCoda ? 'disabled' : ''}>${pz.length ? 'Ritrascrivi' : 'Trascrivi'}</button>
@@ -430,7 +632,7 @@ function aggiornaPulsanti() {
   if (!collegato) mostraStato(voglioCollegato ? 'riprovo…' : 'non collegato');
 }
 
-$('bCollega').onclick = () => collega(!dev);
+$('bCollega').onclick = () => collega(true);      // sempre la finestra di scelta (il ricollegamento automatico resta)
 $('bScollega').onclick = scollega;
 $('bRec').onclick = () => invia(stato && stato.flag & 1 ? 'REC 0' : 'REC 1');
 $('bSync').onclick = sincronizza;
@@ -460,7 +662,41 @@ if ('serviceWorker' in navigator) {
   if (!crossOriginIsolated && !sessionStorage.getItem('np-ricaricata'))
     navigator.serviceWorker.addEventListener('controllerchange', () => { sessionStorage.setItem('np-ricaricata', '1'); location.reload(); }, { once: true });
 }
-await dbApri();
-aggiornaLista().then(() => trascriviNuove());
+for (const [id, k] of [['hUrl', 'np-ha-url'], ['hToken', 'np-ha-token'], ['hStanze', 'np-ha-stanze'], ['cComandi', 'np-comandi']]) {
+  const el = $(id); let v = null; try { v = localStorage.getItem(k); } catch {}
+  if (v !== null) { if (el.type === 'checkbox') el.checked = v === '1'; else el.value = v; }
+  el.onchange = () => { try { localStorage.setItem(k, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value); } catch {} };
+}
+// pulsanti di prova: un pulsante per ogni riga della lista (luce, ventilatore…), mostrano lo stato
+async function pulsantiHA() {
+  const c = conf(), box = $('hPuls');
+  box.innerHTML = c.stanze.map(([n, e]) => `<button data-e="${esc(e)}">${esc(n)}: <b>…</b></button>`).join(' ');
+  if (!c.url || !c.token) return;
+  for (const b of box.querySelectorAll('button')) {
+    const agg = async () => { try { b.querySelector('b').textContent = (await statoHA(conf(), b.dataset.e)) === 'on' ? 'accesa' : 'spenta'; } catch { b.querySelector('b').textContent = '?'; } };
+    b.onclick = async () => {
+      try { await chiamaHA(conf(), { azione: 'toggle', entita: b.dataset.e }); log(`${b.textContent.split(':')[0]}: toggle ${b.dataset.e}`); }
+      catch (e) { log('X Home Assistant: ' + e.message); }
+      setTimeout(agg, 400);
+    };
+    agg();
+  }
+}
+for (const id of ['hUrl', 'hToken', 'hStanze']) $(id).addEventListener('change', pulsantiHA);
+pulsantiHA();
+// con i comandi attivi il trascrittore dei comandi si prepara subito (il primo comando non aspetta il download)
+const preparaComandi = () => $('cComandi').checked && chiediComando({ tipo: 'carica' }).catch(e => log('X comandi: ' + e.message));
+$('cComandi').addEventListener('change', preparaComandi);
+preparaComandi();
+$('bHa').onclick = async () => {
+  try { log('Home Assistant: ' + await provaHA(conf())); pulsantiHA(); }
+  catch (e) { log('X Home Assistant: ' + e.message + ' (indirizzo, token o cors_allowed_origins?)'); }
+};
+if ($('bVoce')) $('bVoce').onclick = registraVoce;
+if ($('rSep')) { try { $('rSep').value = localStorage.getItem('np-sep') ?? 0; } catch {}
+  $('rSep').oninput = () => { try { localStorage.setItem('np-sep', $('rSep').value); } catch {} aggiornaTesti(); }; }
+if ($('bVoceVia')) $('bVoceVia').onclick = () => confirm('Cancellare il profilo della tua voce da questo dispositivo?') && salvaProfilo(null);
+salvaProfilo(profilo);
+aggiornaLista().then(() => { trascriviNuove(); vociMancanti(); });
 aggiornaPulsanti();
 ricollegaNoto();

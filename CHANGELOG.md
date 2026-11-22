@@ -1,5 +1,12 @@
 # Changelog
 
+## 22/11/2026 (evening)
+- firmware: `firmware/xiao-prova/` gains IMU gestures for the test board: double tap starts/stops recording, single tap sends a command confirmed by 5 yellow flashes; 6 s segments around a gesture are marked in the file header and synced with priority. Compiled and flashed to the XIAO nRF52840 Sense; the gesture-to-sync path is not yet verified on the device.
+- app: speaker separation added: `app/voci.js` (WeSpeaker embeddings, owner profile as "Me", other voices as "Speaker N", turn assignment with a minimum run length) and `app/vad.js` (voice activity detection); transcript shown in chronological order with per-word timestamps. Unit tests in `app/test/voci.test.mjs` pass together with `app/test/adpcm.test.mjs`.
+- app: voice commands for home automation in `app/comandi.js`: recognised with a regular expression (no AI, no cost) and sent to a Home Assistant REST endpoint; the long-lived token is stored only in the browser. First tests with real lights succeeded. Planned to move to the MCP server.
+- docs: `docs/STATO.md`, `docs/DECISIONI.md` and `docs/DOMANDE-APERTE.md` updated with the test-bench status; README and project page updated by the comunicazione agent.
+- electronics: no changes to board, BOM, pinout or JLC export files.
+
 ## 22/11/2026
 - app: automatic transcription with Whisper in the browser added: new `app/trascrittore.js` (Web Worker, transformers.js 4.3.2 from jsDelivr, WebGPU or WASM, `onnx-community/whisper-*` models); `app/app.js` stores transcripts in IndexedDB (`trascrizioni`), queues transcription after each sync, shows a timestamp per sentence, exports TXT and filters silence and hallucinations; new Transcription section in `app/index.html`. Tested: 17 s of Italian speech transcribed in 4.8 s with whisper-base on WebGPU. Not yet tested on the real device.
 - app: `app/sw.js` sends COOP/COEP headers for multithreaded WASM and caches the transcription library; `app/LEGGIMI.md` updated; ADPCM tests still pass.

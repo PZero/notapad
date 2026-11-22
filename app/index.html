@@ -37,6 +37,7 @@ audio{height:34px;width:100%;max-width:340px}
 label.cb{display:inline-flex;gap:8px;align-items:center;color:var(--mut)}
 .vuoto{color:var(--mut);padding:10px 0}
 #avviso{display:none;border-color:var(--err);color:var(--err);margin-top:14px}
+input:not([type]),input[type=password],textarea{font:inherit;color:var(--ink);background:#24242a;border:1px solid #34343b;border-radius:9px;padding:8px 10px}
 select{font:inherit;color:var(--ink);background:#24242a;border:1px solid #34343b;border-radius:9px;padding:7px 8px;min-height:40px;max-width:100%}
 .nota{color:var(--mut);font-size:13px;margin:12px 0 0}
 tr.tr td{padding-top:0}
@@ -44,6 +45,12 @@ tr.tr td{padding-top:0}
 .testo.aperto{max-height:none}
 .testo p{margin:0 0 2px}.testo time{color:var(--mut);font:12px Consolas,monospace;margin-right:6px}
 .az{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.az small{color:var(--mut)}
+.chi{display:inline-block;font:600 11px/1.6 "Segoe UI",system-ui,sans-serif;padding:0 7px;min-height:0;border-radius:99px;margin-right:6px;border:1px solid var(--line);background:#24242a;color:var(--mut);vertical-align:1px}
+.chi.io{background:var(--acc);border-color:var(--acc);color:#071513}
+.chi.c0{color:#f0a868;border-color:#6b4a2c}.chi.c1{color:#b49cf2;border-color:#4d4170}.chi.c2{color:#f28cb1;border-color:#6d3b4e}
+.chi.c3{color:#9ccf6a;border-color:#45602e}.chi.c4{color:#7fb7f5;border-color:#33506f}.chi.c5{color:#e8d36a;border-color:#655a2a}
+button.chi{cursor:pointer}
+.leggi{display:none;margin-top:12px}.leggi blockquote{margin:8px 0 12px;padding:10px 14px;border-left:3px solid var(--acc);background:#1d1d21;color:#d6d2ca}
 @media(max-width:640px){td:nth-child(3),th:nth-child(3){display:none}tr.tr td:nth-child(1){display:table-cell}}
 </style>
 </head>
@@ -88,7 +95,7 @@ tr.tr td{padding-top:0}
       <option value="tiny">tiny · ~40 MB, veloce, impreciso</option>
       <option value="base">base · ~80 MB</option>
       <option value="small">small · ~250 MB, buono in italiano</option>
-      <option value="turbo">large-v3-turbo · ~560 MB, solo WebGPU</option>
+      <option value="turbo">large-v3-turbo · ~560 MB, il più preciso ma lento</option>
     </select></label>
     <label class="cb">Lingua <select id="sLingua">
       <option value="italian">italiano</option><option value="english">inglese</option><option value="">automatica</option>
@@ -101,6 +108,43 @@ tr.tr td{padding-top:0}
     <div class="kpi"><b id="kMotore">—</b><span>motore · modello</span></div>
   </div>
   <p class="nota">Whisper gira dentro il browser: l'audio non esce da questo dispositivo. Il modello si scarica una volta sola da Hugging Face (meglio col Wi-Fi) e resta nella cache del browser.</p>
+</div>
+
+<h2>La mia voce</h2>
+<div class="pan">
+  <div class="riga">
+    <button id="bVoce">Registra la mia voce (30 s)</button>
+    <button id="bVoceVia" disabled>Cancella</button>
+    <div class="kpi"><b id="kVoce">—</b><span>profilo della tua voce</span></div>
+  </div>
+  <div class="riga" style="margin-top:10px"><label class="cb">Separazione delle voci: unisci
+    <input type="range" id="rSep" min="-0.2" max="0.3" step="0.05" value="0"> separa</label></div>
+  <div id="pVoce" class="leggi">
+    <p>Leggi ad alta voce, con calma, come parli di solito:</p>
+    <blockquote>Oggi è una giornata come le altre. Mi sono svegliato presto, ho preso un caffè e ho controllato i messaggi.
+      Poi sono uscito: c'era un po' di traffico, ma sono arrivato in tempo. Ho parlato con un paio di persone,
+      abbiamo fissato una riunione per giovedì e ci siamo divisi i compiti. Stasera vorrei leggere qualcosa,
+      magari fare una passeggiata e andare a letto non troppo tardi. Domani ricomincia tutto da capo.</blockquote>
+    <button id="bVoceStop" class="pri">Ho finito</button>
+  </div>
+  <p class="nota">Nelle trascrizioni le tue frasi diventano <b class="chi io">Io</b>, le altre voci <b class="chi c0">Interlocutore 1</b>, <b class="chi c1">2</b>… (numerate per ogni registrazione).
+    Il modo migliore per insegnarle la tua voce: in una trascrizione tocca l'interlocutore che sei tu e conferma «sono io» (stesso microfono del notªpad).
+    Le impronte vocali restano su questo dispositivo.</p>
+</div>
+
+<h2>Comandi vocali · Home Assistant</h2>
+<div class="pan">
+  <label class="cb"><input type="checkbox" id="cComandi"> Esegui i comandi detti nelle registrazioni («Comando, accendi la luce della cucina»)</label>
+  <div class="riga" style="margin-top:10px">
+    <input id="hUrl" placeholder="http://homeassistant.local:8123" style="flex:1 1 260px">
+    <input id="hToken" type="password" placeholder="token a lunga durata" autocomplete="off" style="flex:1 1 260px">
+  </div>
+  <div class="riga" style="margin-top:10px">
+    <textarea id="hStanze" rows="3" placeholder="luce=light.soggiorno&#10;bagno=switch.luce_bagno&#10;ventilatore=switch.ventilatore" style="flex:1 1 260px"></textarea>
+    <button id="bHa">Prova il collegamento</button>
+  </div>
+  <div id="hPuls" class="riga" style="margin-top:10px"></div>
+  <p class="nota">Una luce per riga, «nome=entità»; «accendi la luce» usa la riga «luce» (o la prima), «spegni il ventilatore» la riga «ventilatore». Valgono solo i comandi detti negli ultimi 10 minuti e, se il profilo esiste, solo con la tua voce. Il token resta in questo browser.</p>
 </div>
 
 <h2>Registrazioni sul PC</h2>

@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <bluefruit.h>
 #include <PDM.h>
+#include <Wire.h>
 #include "flash_qspi.h"
 #include "adpcm.h"
 #include "protocollo.h"
@@ -40,6 +41,13 @@ static inline void metti(uint8_t *m, uint16_t i, bool v) { if (v) m[i >> 3] |= (
 
 // ---------- registrazione ----------
 static bool registra = true;            // all'accensione registra
+static uint32_t lampiFinoMs = 0;        // conferma dei tocchi (vedi servizioTap)
+static uint8_t lampiColore = 0;         // 1 verde, 2 rosso, 3 giallo
+// modalità comando (tocco singolo): i settori della finestra si scaricano subito
+static uint32_t cmdFineMs = 0, cmdSeqDa = 0, cmdSeqA = 0;
+static bool cmdAttesa = false, cmdRecPrima = true;
+static uint16_t cmdSlotDa = 0, cmdN = 0;  // cmdN > 0: lo scarico manda solo questi settori
+static bool cmdRiprendi = false;         // finito il comando, lo scarico completo riprende
 static bool fermaPerPiena = false;
 static bool pdmAttivo = false;
 static int pdmGuadagno = 0x30;          // +4 dB
@@ -200,7 +208,7 @@ static void apriBuffer() {
   t->indice = (uint8_t)adpcm.indice;
   t->codec = NP_CODEC_ADPCM16K;
   t->campioni = 0;
-  t->riservato = 0;
+  t->riservato = cmdFineMs ? 1 : 0;              // dentro la finestra del comando
   t->crc = 0;
   B.campioni = 0;
   bufCorr = i;
@@ -261,6 +269,7 @@ static void servizioFlash() {
     metti(valido, scr.sett, true);
     usati++;
     idxScrittura = (scr.sett + 1) % NP_SETT_N;
+    if (((NpTesta *)bufs[scr.buf].b)->seq == cmdSeqDa) cmdSlotDa = scr.sett;   // primo settore del comando
     scr.attiva = false;
     codaTesta = (codaTesta + 1) % N_BUF;
     codaN--;
@@ -314,6 +323,7 @@ static void avviaScarico() {
 static void fermaScarico(const char *motivo) {
   if (!scarico) return;
   scarico = false;
+  cmdN = 0; cmdRiprendi = false;
   inviando = false;
   nVolo = 0;
   risp("K sync fine %s, inviati %lu", motivo, settoriInviati);
@@ -342,7 +352,14 @@ static void servizioScarico() {
       bool trovato = false;
       for (uint16_t k = 0; k < NP_SETT_N; k++) {
         uint16_t i = (cursoreInvio + k) % NP_SETT_N;
+        if (cmdN && (uint16_t)((i + NP_SETT_N - cmdSlotDa) % NP_SETT_N) >= cmdN) continue;
         if (haBit(valido, i) && !inVolo(i) && !(scr.attiva && scr.sett == i)) { settInvio = i; trovato = true; break; }
+      }
+      if (!trovato && cmdN && cmdRiprendi) {           // comando inviato: si riprende lo scarico completo
+        cmdN = 0; cmdRiprendi = false;
+        cursoreInvio = piuVecchio();
+        risp("K cmd inviato, riprendo");
+        continue;
       }
       if (!trovato) { if (nVolo == 0) fermaScarico("ok"); return; }
       inviando = true;
@@ -544,9 +561,108 @@ static void servizioBatteriaLed() {
   bool rosso = fermaPerPiena || (batteriaMv && batteriaMv < BATT_AVVISO_MV && !usb());
   bool blu = !rosso && percento() >= SOGLIA_SYNC_PCT;
   bool verde = !rosso && !blu && pdmAttivo && usb();
+  if (cmdFineMs && ora >= lampiFinoMs) {          // finestra del comando aperta: giallo fisso
+    led(LED_RED, true); led(LED_GREEN, true); led(LED_BLUE, false);
+    return;
+  }
+  if (ora < lampiFinoMs) {                       // conferma del doppio tocco: 3 lampi
+    bool on = (ora % 300) < 150;
+    led(LED_RED, on && lampiColore >= 2); led(LED_GREEN, on && (lampiColore & 1)); led(LED_BLUE, false);
+    return;
+  }
   led(LED_RED, fase && rosso);
   led(LED_BLUE, (fase && blu) || (scarico && (ora % 200) < 20));
   led(LED_GREEN, fase && verde);
+}
+
+// ---------- tocchi (IMU LSM6DS3TR-C della XIAO Sense, Wire1 0x6A, INT1) ----------
+// Doppio tocco = avvia/ferma la registrazione (3 lampi verdi o rossi).
+// Tocco singolo = comando: 5 lampi gialli, l'audio si taglia, i prossimi CMD_S secondi diventano un pezzo a sé
+// che si scarica subito (l'app lo trascrive ed esegue il comando), poi la registrazione continua.
+// Rilevamento nell'IMU (registri da ST AN5130); un singolo diventa "singolo" se entro 600 ms non arriva il secondo.
+static const uint8_t IMU = 0x6A;
+static const uint32_t CMD_MS = 6000, ATTESA_DOPPIO_MS = 600;
+static volatile bool tapArrivato = false;
+static bool imuOk = false;
+static uint32_t ultimoTapMs = 0, singoloMs = 0;
+static void suTap() { tapArrivato = true; }
+static bool imuScrivi(uint8_t r, uint8_t v) {
+  Wire1.beginTransmission(IMU); Wire1.write(r); Wire1.write(v);
+  return Wire1.endTransmission() == 0;
+}
+static int imuLeggi(uint8_t r) {
+  Wire1.beginTransmission(IMU); Wire1.write(r);
+  if (Wire1.endTransmission(false) != 0) return -1;
+  Wire1.requestFrom(IMU, (uint8_t)1);
+  return Wire1.available() ? Wire1.read() : -1;
+}
+static void avviaTap() {
+  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
+  digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
+  delay(20);
+  Wire1.begin();
+  if (imuLeggi(0x0F) != 0x6A) { risp("X IMU assente: niente tocchi"); return; }   // WHO_AM_I
+  imuOk = imuScrivi(0x10, 0x60)      // CTRL1_XL: 416 Hz, ±2 g
+       && imuScrivi(0x58, 0x8E)      // TAP_CFG: interruzioni attive, tocco su X, Y, Z
+       && imuScrivi(0x59, 0x8C)      // TAP_THS_6D: soglia 12/32 del fondo scala (~0,75 g)
+       && imuScrivi(0x5A, 0x7F)      // INT_DUR2: durata, quiete e shock massimi (doppio tocco entro ~0,5 s)
+       && imuScrivi(0x5B, 0x80)      // WAKE_UP_THS: abilita singolo e doppio tocco
+       && imuScrivi(0x5E, 0x48);     // MD1_CFG: singolo e doppio tocco su INT1
+  if (!imuOk) { risp("X IMU non configurato"); return; }
+  pinMode(PIN_LSM6DS3TR_C_INT1, INPUT);
+  attachInterrupt(digitalPinToInterrupt(PIN_LSM6DS3TR_C_INT1), suTap, RISING);
+}
+static void lampi(uint8_t colore, uint32_t ms) { lampiColore = colore; lampiFinoMs = millis() + ms; }
+static void doppioTocco() {
+  registra = !registra;
+  if (!registra) fermaPerPiena = false;
+  cmdFineMs = 0; cmdAttesa = false;
+  aggiornaRegistrazione();
+  lampi(registra ? 1 : 2, 900);
+  risp("K tap rec %d", registra);
+  inviaStato();
+}
+static void toccoSingolo() {
+  if (cmdFineMs || cmdAttesa || !flashOk) return;                  // un comando alla volta
+  cmdRecPrima = registra;
+  if (!registra) { registra = true; aggiornaRegistrazione(); }
+  chiudiBuffer();                                                  // taglio: il comando parte da un settore nuovo
+  cmdSeqDa = prossimoSeq;
+  cmdFineMs = millis() + CMD_MS;
+  lampi(3, 1500);                                                  // 5 lampi gialli
+  risp("K cmd ascolto %lu", cmdSeqDa);
+}
+static void servizioTap() {
+  uint32_t ora = millis();
+  if (tapArrivato) {
+    tapArrivato = false;
+    int src = imuLeggi(0x1C);                                      // TAP_SRC: bit4 doppio, bit5 singolo
+    if (src >= 0 && (src & 0x10)) {
+      singoloMs = 0;
+      if (ora - ultimoTapMs > 1000) { ultimoTapMs = ora; doppioTocco(); }
+    } else if (src >= 0 && (src & 0x20) && !singoloMs && ora - ultimoTapMs > 1000) singoloMs = ora;
+  }
+  if (singoloMs && ora - singoloMs > ATTESA_DOPPIO_MS) { singoloMs = 0; ultimoTapMs = ora; toccoSingolo(); }
+  // fine della finestra del comando: secondo taglio, poi si aspetta che sia tutto in flash
+  if (cmdFineMs && (int32_t)(ora - cmdFineMs) >= 0) {
+    cmdFineMs = 0;
+    chiudiBuffer();
+    cmdSeqA = prossimoSeq - 1;
+    cmdAttesa = cmdSeqA >= cmdSeqDa;
+    if (!cmdRecPrima) { registra = false; aggiornaRegistrazione(); }
+  }
+  if (cmdAttesa && codaN == 0 && !scr.attiva) {
+    cmdAttesa = false;
+    uint16_t n = cmdSeqA - cmdSeqDa + 1;
+    risp("K cmd %lu %lu", cmdSeqDa, cmdSeqA);
+    if (connesso()) {
+      cmdRiprendi = scarico;                                       // scarico già in corso: passa avanti il comando
+      if (!scarico) avviaScarico();
+      cmdN = n;
+      cursoreInvio = cmdSlotDa;
+      inviando = false;                                            // il settore a metà si rimanda dopo
+    }
+  }
 }
 
 // ---------- setup e loop ----------
@@ -562,6 +678,7 @@ void setup() {
   avviaBle();
   batteriaMv = leggiBatteria();
   aggiornaRegistrazione();
+  avviaTap();
   inviaStato();
   risp("K avvio fw %d.%d.%d flash %d usati %u", FW_MAJ, FW_MIN, FW_PAT, flashOk, usati);
 }
@@ -581,6 +698,7 @@ void loop() {
     esegui(c);
   }
   servizioScarico();
+  servizioTap();
   aggiornaRegistrazione();
   servizioBatteriaLed();
   if (millis() - ultimoStatoMs > 2000) { ultimoStatoMs = millis(); inviaStato(); }

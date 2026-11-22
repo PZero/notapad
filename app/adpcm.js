@@ -81,6 +81,7 @@ export function leggiTesta(u8) {
     indice: v.getUint8(26),
     codec: v.getUint8(27),
     campioni: v.getUint16(28, true),
+    comando: !!(v.getUint16(30, true) & 1),     // riservato bit 0: settore di un comando (tocco singolo)
     crc: v.getUint32(32, true),
   };
 }

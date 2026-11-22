@@ -39,3 +39,9 @@ Compilazione del 22/11/2026: sketch 137 808 byte (16 %), RAM globale 31 300 byte
 - Non ancora provato sull'hardware: compilato senza errori, formato e decodifica provati con `node app/test/adpcm.test.mjs`.
 - Ora dei settori: il dispositivo non ha un orologio; l'app manda l'ora a ogni collegamento. Le registrazioni fatte prima del primo collegamento hanno solo l'ora relativa all'accensione.
 - 2 MB sono pochi (4 minuti): sulla scheda v0.1 la NAND da 256 MB e l'LC3 porteranno a ~10 ore.
+
+## Doppio tocco (22/11/2026)
+Doppio tocco sul dispositivo = avvia/ferma la registrazione (IMU LSM6DS3TR-C, rilevamento hardware, interruzione su INT1). Conferma: 3 lampi verdi (avvia) o rossi (ferma); nel registro dell'app compare `K tap rec 1/0`, oppure `X IMU ...` se l'IMU non risponde. Compilato e caricato, non ancora provato a mano.
+
+## Tocco singolo = comando (22/11/2026)
+Tocco singolo (se entro 600 ms non arriva il secondo): 5 lampi gialli, taglio dell'audio, i 6 s seguenti diventano un pezzo a sé, poi secondo taglio e la registrazione continua (se era ferma, si ferma di nuovo). Appena i settori sono in flash il firmware manda `K cmd <primo seq> <ultimo seq>` e, se collegato, scarica **solo** quei settori; l'app li trascrive per primi ed esegue il comando senza bisogno della parola «Comando». Compilato e caricato, non provato a mano.

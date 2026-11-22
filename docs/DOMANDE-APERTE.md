@@ -24,13 +24,14 @@
 - Pannello unico notªpad + tag SwimTimer (file pronto in `kicad/pannello/`): confrontare il preventivo con le schede separate.
 - Programmatore SWD: il Raspberry Pi 3 basta per il nRF52840? Altrimenti Raspberry Pi Debug Probe o Pico con `debugprobe`.
 
-## App
-- App di prova con la XIAO vera: collegamento, registrazione e scarico provati; restano da provare sync automatica all'80%, qualità audio, velocità di scarico, installazione come app e service worker in Edge.
-- Trascrizione Whisper: provata solo con 17 s di voce sintetica (base, WebGPU). Da provare con parlato vero e rumore (audio 16 kHz ADPCM): modello small sul PC, tempi e qualità in italiano, WASM sul telefono.
-- Android: pubblicare l'app su https (GitHub Pages) nel repo pubblico? Dentro `pagina/` o in una cartella separata? Web Bluetooth non lavora a schermo spento: basta per la sync o serve l'app nativa (Flutter)?
-- Peso dei modelli (base ~80 MB, small ~250 MB) sul telefono: scaricarli solo con il Wi-Fi?
+## App (banco di prova)
+- Comandi: whisper-base su CPU capisce male alcune parole (spegni → «spenni»); le regole lo tollerano. Basta, o i comandi devono usare whisper-small (~250 MB, ~3× più lento)?
+- Velocità della trascrizione lunga con small + VAD su registrazioni vere: quanti minuti per ora di audio?
+- Soglie delle voci (0,40 / 0,35) da tarare con conversazioni vere a 2–3 persone.
+- Android: Capacitor (app vera, Bluetooth a schermo spento, installazione via USB) o PWA su https? iPhone: serve un Mac.
+- Peso dei modelli sul telefono (base ~80 MB, small ~250 MB, voci 26 MB): scaricarli solo col Wi-Fi?
+- Come portare trascrizione, voci e comandi nel server MCP (strumenti per l'AI scelta dall'utente).
 - Repository dell'app: questo stesso o uno separato? Invitare l'amico come collaboratore.
-- Qualcuno di voi ha un telefono Android?
 
 ## Basetta di ricarica (idea, dopo il primo ordine del monolite)
 - Basetta con **XIAO RP2040** + molle pogo: alimenta il 5V per la carica e fa da **programmatore SWD** (firmware `debugprobe`, come un Pico), collegata al PC via USB-C.

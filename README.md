@@ -23,6 +23,7 @@
 - [Electronics v0.1](#electronics-v01)
 - [Pre-order verification](#pre-order-verification)
 - [First firmware and app tests](#first-firmware-and-app-tests)
+- [Test bench: exploration now, MCP server later](#test-bench-exploration-now-mcp-server-later)
 - [Wallpapers](#wallpapers)
 - [Manufacturing](#manufacturing)
 - [Status and roadmap](#status-and-roadmap)
@@ -90,6 +91,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
 ### Update, 22 Nov 2026
+- **Test bench defined (evening):** Whisper with word timing and speech detection, speaker recognition (WeSpeaker), tap gestures and first voice-command tests; see [Test bench](#test-bench-exploration-now-mcp-server-later). Exploration only; the features are meant to move into the MCP server later.
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
 - **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith length is 41 mm; 38 mm is the board length.
 - **Wallpapers approved:** all eight phone wallpapers, published below; the three LEDs are drawn as separate lights.
@@ -132,6 +134,14 @@ Started on 22 Nov 2026, before the v0.1 boards arrive. They run on a **Seeed XIA
 - **App** ([`app/`](app/)): a web app (PWA), local-only for now (localhost, Web Bluetooth in Edge or Chrome). It stores in the browser (IndexedDB), with playback and WAV export, and no cloud. Since 22 Nov it also **transcribes automatically after each sync** with Whisper running in the browser (transformers.js in a Web Worker, WebGPU or WASM; small model on a PC, base on a phone; Italian), keeping the time of each sentence, with TXT export. The audio never leaves the device. Test: 17 s of Italian speech in 4.8 s with whisper-base on WebGPU.
 - **Honest status:** the firmware was flashed on a real XIAO nRF52840 Sense and tested with the app on 22 Nov: Bluetooth connection, recording and audio download work. **Not tested in depth yet:** automatic sync at 80%, audio quality, download speed, the small Whisper model, Edge as an installed app and an Android phone. The final firmware for the v0.1 board (Zephyr is the option) is separate and still on hold; the phone app stays a PWA for now (Flutter postponed).
 
+## Test bench: exploration now, MCP server later
+This is an **exploration phase, not the product**. The XIAO nRF52840 Sense firmware plus the local app (Web Bluetooth, data kept only in the browser) are a test bench to learn which software features work and how well, before the real board exists. Everything below was added on 22 Nov 2026; speed and error rates are not measured yet.
+- **Whisper in the browser** (transformers.js, models that return the time of every word): the audio never leaves the device. A speech detector sends only the stretches with a voice to the model; the default on a PC is the small model.
+- **Who is speaking:** voice prints with WeSpeaker ResNet34. The transcript shows "Me" (the owner, whose profile comes from the microphone or from confirming "that's me" on a transcript) and "Speaker 1, 2, 3...". Text is always in chronological order.
+- **Gestures** on the device (motion sensor): double tap starts or stops recording; single tap is a command (5 yellow flashes, the next 6 seconds become a separate piece downloaded with priority, then recording continues).
+- **First voice-command tests with home automation:** "Command, turn on/off the light" switched real smart lights. Recognition uses tolerant rules instead of an AI, so it copes with Whisper's mistakes, and a second small transcriber is dedicated to commands. First tests only.
+- **Later:** transcription, speaker recognition and commands are meant to move into the MCP server, so the AI the user picks can use them as tools.
+
 ## Wallpapers
 Eight phone wallpapers, all approved. The clock area is kept clear and a discreet "Sponsor" slot sits above the home bar. Each comes as a full-size PNG for iPhone (1179 x 2556) and Android (1080 x 2400); sources and generator scripts are in [`sfondi/`](sfondi/).
 
@@ -152,6 +162,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
+- Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice commands to smart lights. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
 - Automatic on-device-browser transcription in the test app (22 Nov): Whisper via transformers.js, Italian; 17 s transcribed in 4.8 s (base model, WebGPU). Audio does not leave the device.
 - All eight wallpapers approved and published (22 Nov).
@@ -165,7 +176,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
-- Deeper tests on the XIAO board and the app: automatic sync at 80%, audio quality, download speed, battery, the small Whisper model, Edge as installed app.
+- Testing the bench with real speech: automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
 - Waiting for sponsor replies; nothing is agreed.
@@ -173,6 +184,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
+0. Measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
 1. Settle the assembly quote in the JLCPCB cart and pay once the E73 arrives.
 2. Buy the parts outside JLCPCB: 381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin.
 3. Design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing); fill in online sponsor forms and prepare a grant application.
@@ -181,7 +193,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 **On hold by choice (restart after the board)**
 - Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
-- Native phone app (Flutter postponed: the test app stays a PWA, also for Android) and the MCP server.
+- Native phone app (Capacitor is a proposal for Android; Flutter postponed: the test app stays a PWA) and the production MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
 
@@ -196,11 +208,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
-2. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
-3. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
-4. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
-5. 21 Nov: [manufacturing route fixed](https://github.com/PZero/notapad/commit/1835875), JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
+1. 22 Nov (evening): test bench defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests with smart lights.
+2. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
+3. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
+4. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
+5. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
 
 ## Repository layout
 | Path | Contents |

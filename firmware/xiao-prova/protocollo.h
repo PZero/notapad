@@ -59,7 +59,7 @@ struct __attribute__((packed)) NpTesta {
   uint8_t indice;
   uint8_t codec;
   uint16_t campioni;    // campioni validi (8120 se il settore è pieno)
-  uint16_t riservato;
+  uint16_t riservato;   // bit 0: settore di un comando vocale (tocco singolo), il resto a 0
   uint32_t crc;         // CRC32 (polinomio 0xEDB88320) dei 4060 byte di dati
 };
 #define NP_DATI_BYTE (NP_SETT_BYTE - sizeof(NpTesta))
