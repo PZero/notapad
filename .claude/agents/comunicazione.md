@@ -18,7 +18,7 @@ Leggi `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md`, `docs/pino
 ## Regole
 - Niente promesse non vere: distingui fatto / in corso / prossimo / in pausa. Cifre come autonomia e capacità sono stime, dillo.
 - Niente dati personali: nessun percorso locale (`C:\Users\...`), email, nome utente, token, nomi di persone terze. Niente nomi né città degli autori: nel README restano «Two friends, as a hobby project».
-- La licenza non è stata scelta: finché l'utente non decide scrivi "License: to be decided". Non sceglierla tu.
+- Licenza (scelta il 22/11): hardware CERN-OHL-S-2.0 (`LICENSE-HARDWARE`), software e documenti MIT (`LICENSE`). Non cambiarla senza l'utente.
 - Controlla che ogni file e link citato esista.
 - Non toccare `kicad/`, `jlc/`, `docs/pinout_v0.1.md` e le sezioni tecniche di `CLAUDE.md`: se cambiano, leggili soltanto.
 - Aggiungi solo i file che hai modificato (mai `git add -A`); il commit e il push li fa `git-readme`, salvo diversa richiesta.

@@ -1,34 +1,33 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 21/11/2026, Fase 1: scheda v0.1 chiusa, ordine v0 su JLC in corso (solo JLC)
+**Ultimo aggiornamento:** 22/11/2026, Fase 1: scheda v0.1 chiusa, ordine v0 su JLC in attesa dell'E73, ricerca sponsor avviata
 
 ## Fatto
 - Concept, render, pagina di presentazione (`pagina/`), distinta e collegamenti v0.1 (`jlc/`), libreria KiCad dai codici LCSC (`kicad/lib/`).
-- Verifiche sui datasheet: pinout E73 rifatto (`docs/pinout_v0.1.md`); microfono MSM261DGT003 top-port; E73-2G4M08S1CX scartato (solo IPEX).
-- **Scheda chiusa:** 4 strati, 1,0 mm, 16,5 × 38 mm, componenti solo sopra. ERC 0, DRC 0, 0 scollegati, 115 via. Export in `kicad/fab_out/jlcpcb/` (microfoni ruotati +180° nel CPL, verificato nell'anteprima JLC).
-- **Preventivo JLC: 97 € per 2 schede montate e spedite** (Economic PCBA, 5 PCB, 2 montate). Microfoni (4) comprati da JLC in automatico.
-- **E73:** 2 pezzi in pre-order dal Parts Manager (13,51 €, coperti da coupon), restano nel magazzino JLC per il montaggio.
-- Verificato: nessun negozio italiano costa meno di LCSC/JLC per i chip; nessun equivalente Basic per Q2, NAND, caricatore; una scheda "solo Basic" non si può fare (BLE, NAND, microfoni, LED RGB, tocco non esistono in Basic).
-- Lista della spesa Amazon per i pezzi fuori da JLC: `acquisti/spesa_amazon.md` (~40–60 € stimati).
+- **Scheda chiusa:** 4 strati, 1,0 mm, 16,5 × 38 mm, componenti solo sopra. ERC 0, DRC 0, 0 scollegati, 115 via. Export in `kicad/fab_out/jlcpcb/`. Pinout E73 e microfono MSM261DGT003 (top-port) verificati sui datasheet.
+- **Preventivo JLC: 97 € per 2 schede montate e spedite** (Economic PCBA, 5 PCB, 2 montate). E73: 2 pezzi in pre-order verso My Inventory (coupon).
+- **Licenze (22/11):** hardware CERN-OHL-S-2.0 (`LICENSE-HARDWARE`), software e documenti MIT (`LICENSE`); README aggiornato.
+- **Sponsor (22/11):** email inviate a JLCPCB, Ebyte, PCBWay, Seeed Fusion, NextPCB ed Elecrow (testi in `docs/sponsor_contatti.md`). Issue pubblica fissata https://github.com/PZero/notapad/issues/1; sezione "Looking for sponsors" su README e pagina (senza nomi di aziende).
+- Confronto con dema-import.it: utile solo la batteria 381620 (110 mAh, 3,8 × 16 × 20 mm, PCM, 2,50 €) e il flussante; la lista Amazon resta com'è (`acquisti/spesa_amazon.md`).
 
 ## In corso
-- Attendere la conferma del prezzo del pre-order E73 (email JLC entro 48 h) e l'arrivo in **My Inventory**.
-- Poi: riaprire il preventivo PCBA, selezionare la scorta su U1, controllare l'antenna verso il bordo basso nell'anteprima 3D, pagare con spedizione economica e coupon Black Friday (fino al 2/12).
+- Attendere l'email JLC sul prezzo del pre-order E73 e l'arrivo in **My Inventory**; poi riaprire il preventivo PCBA, selezionare la scorta su U1, controllare l'antenna e pagare (coupon Black Friday fino al **2/12**).
+- Attendere le risposte degli sponsor. Se arrivano buoni: aggiornare il preventivo e citare lo sponsor su README e pagina.
 
 ## Prossimi passi
-1. Ordinare da Amazon: batteria 501520 (120 mAh dichiarati, 5 × 15 × 20 mm), motorini 0820 (8 × 2 mm, NON 8 × 3,4), resina epossidica piccola; programmatore SWD solo se il Raspberry Pi 3 non basta.
-2. Disegnare i due mezzi gusci SLA della v0.1 e ordinarli su JLC3DP (se possibile nello stesso pacco delle schede).
-3. All'arrivo delle schede: saldare a filo batteria, motorino e contatti J1–J4 (serve solo un saldatore a punta fine), collaudo (alimentazioni, SWD, firmware minimo per LED, microfoni, NAND, tocco).
+1. Compilare i moduli online di PCBWay ed Elecrow; preparare la proposta NLnet (scadenza probabile 3/1/2027, da verificare) con il testo in `docs/sponsor_contatti.md`.
+2. Ordinare i pezzi fuori JLC: batteria (501520 su Amazon o 381620 su dema-import, da decidere), motorini 0820, resina, stagno sottile; SWD solo se il Raspberry Pi 3 non basta.
+3. Disegnare i due mezzi gusci SLA e ordinarli su JLC3DP; all'arrivo delle schede saldare batteria, motorino e J1–J4 e collaudare.
 4. Basetta di ricarica con molle pogo: dopo il collaudo.
 
+## In pausa (per scelta dell'utente)
+- Firmware e app: si riparte dopo la scheda. Pinout in `docs/pinout_v0.1.md`. Nota: `CLAUDE.md` cita ancora il firmware per XIAO nRF52840, ma la v0.1 usa il modulo E73.
+- Cartella locale `ncs` con download parziale della toolchain Nordic (1,5 GB).
+
 ## Abbandonato (21/11)
-- Variante XIAO (Seeed Fusion), PCBWay, ALLPCB, NextPCB: si resta solo su JLC.
-- Montaggio in casa (stencil, piastra, pasta Sn42Bi58): non c'è l'attrezzatura; tutte le schede montate da JLC. Il piano in `acquisti/ordine_v0_*` e `stima_10monoliti.csv` resta come riferimento.
+- Variante XIAO (Seeed Fusion), PCBWay, ALLPCB, NextPCB per la produzione: si resta solo su JLC (restano come possibili sponsor).
+- Montaggio in casa: tutte le schede montate da JLC.
 
 ## Costi
-- 2 schede montate: 97 € (E73 coperto da coupon). Pezzi Amazon ~40–60 €. Totale v0 stimato ~140–170 € (senza gusci SLA e saldatore).
-- Tasse Extended JLC: 7 componenti × 3 $ a ordine (E73, NAND, microfono, LED, TTP223, MCP73831, 2N7002DW), si diluiscono con lotti più grandi.
-
-## In pausa (per scelta dell'utente)
-- Firmware e app: si riparte dopo la scheda. Pinout in `docs/pinout_v0.1.md`.
-- Cartella locale `ncs` con download parziale della toolchain Nordic (1,5 GB).
+- 2 schede montate: 97 € (E73 coperto da coupon). Pezzi fuori JLC ~40–60 €. Totale v0 stimato ~140–170 € (senza gusci SLA e saldatore), azzerabile in parte dagli sponsor.
+- Tasse Extended JLC: 7 componenti × 3 $ a ordine.

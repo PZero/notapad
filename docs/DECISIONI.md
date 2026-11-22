@@ -18,7 +18,7 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | README e pagina in inglese; `docs/` resta in italiano | Pubblico internazionale; documenti di lavoro nella lingua del team |
 | 21/11/2026 | La pagina animata su GitHub Pages (https://pzero.github.io/notapad/) sostituisce l'artefatto Claude come riferimento | Versione unica, versionata nel repo, aggiornata dal workflow `pages.yml` |
 | 21/11/2026 | Agente `comunicazione` per README e pagina; `git-readme` fa CHANGELOG, controllo segreti/privacy, commit e push | Separare comunicazione e custodia del repo |
-| 21/11/2026 | Licenza: da decidere | Non scelta; il README dice "to be decided" |
+| 21/11/2026 | Licenza: da decidere (superata: vedi sotto) | Non scelta; il README dice "to be decided" |
 | 21/11/2026 | Caricatore MCP73831T-2ACI/OT (C424093) al posto del TP4054, carica 50 mA, uscita STAT su P0.07 | Stesso componente del tag SwimTimer: un solo Extended da pagare in un pannello unico; stessa piedinatura |
 | 21/11/2026 | Scheda a 4 strati, 1,0 mm (In1 GND continuo, In2 segnali e alimentazioni) | A 2 strati restavano 7 collegamenti aperti; Economic PCBA JLC non accetta 4 strati da 0,8 mm |
 | 21/11/2026 | Lunghezza della scheda fissata a 38 mm (monolite ~41 mm) | A 35 mm restavano 4 collegamenti aperti; a 38 mm DRC pulito al primo giro |
@@ -40,3 +40,7 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 21/11/2026 | Q2 resta il 2N7002DW (Extended), niente sostituzione con 2× AO3400A | Nessun 2N7002DW Basic; i due SOT-23 richiederebbero di ripiazzare la zona A e risbrogliare per ~3 € |
 | 21/11/2026 | NAND W25N02KV e caricatore MCP73831 restano Extended | Nessuna NAND e nessun caricatore SOT-23-5 (nemmeno i TP4054) nella libreria Basic JLC |
 | 21/11/2026 | E73: 2 pezzi (non 3) in pre-order dal Parts Manager JLC verso My Inventory | Senza montaggio in casa la scorta non serve; i pezzi restano a JLC per il PCBA |
+| 22/11/2026 | Licenze: CERN-OHL-S-2.0 per l'hardware (`LICENSE-HARDWARE`), MIT per software e documenti (`LICENSE`) | Richieste da NLnet e dagli sponsor; la S (reciproca) obbliga a pubblicare le modifiche all'hardware |
+| 22/11/2026 | Sponsor: email a JLCPCB, Ebyte, PCBWay, Seeed Fusion, NextPCB ed Elecrow; NLnet con modulo (non email); firma «The notªpad team» | Abbattere i costi delle prime 2–5 unità, passo necessario prima della fase software; testi in `docs/sponsor_contatti.md` |
+| 22/11/2026 | Canale pubblico per gli sponsor: issue fissata #1 su GitHub; README e pagina senza nomi di aziende e senza email personali | Un rifiuto o un silenzio non deve sembrare una vetrina; i nomi si aggiungono solo come «Sponsored by» |
+| 22/11/2026 | Lista della spesa invariata dopo il confronto con dema-import.it | Utili solo la batteria 381620 (110 mAh, 3,8 mm) e il flussante; motorini 0820, resina e stagno sottile non ci sono |

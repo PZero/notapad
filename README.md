@@ -6,7 +6,8 @@
 
 [![Status: v0.1 design](https://img.shields.io/badge/status-v0.1%20in%20design-orange)](#status-and-roadmap)
 [![Hardware: nRF52840](https://img.shields.io/badge/MCU-nRF52840-blue)](#electronics-v01)
-[![License: to be decided](https://img.shields.io/badge/license-to%20be%20decided-lightgrey)](#license)
+[![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-blue)](LICENSE-HARDWARE) [![Software: MIT](https://img.shields.io/badge/software-MIT-green)](LICENSE)
+[![Sponsors wanted](https://img.shields.io/badge/sponsors-wanted-d4a017)](https://github.com/PZero/notapad/issues/1)
 [![Live presentation](https://img.shields.io/badge/presentation-GitHub%20Pages-2ea44f)](https://pzero.github.io/notapad/)
 
 [![The notªpad monolith](render/monolite_hero.png)](https://pzero.github.io/notapad/)
@@ -22,6 +23,7 @@
 - [Electronics v0.1](#electronics-v01)
 - [Manufacturing](#manufacturing)
 - [Status and roadmap](#status-and-roadmap)
+- [Looking for sponsors](#looking-for-sponsors)
 - [Project history](#project-history)
 - [Repository layout](#repository-layout)
 - [Contributing](#contributing)
@@ -84,6 +86,10 @@ The app and the MCP server are not started yet (see the roadmap).
 - **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the JLCPCB placement file (checked in their preview). A NextPCB variant was prepared and dropped for v0 (no microphone stock, higher quote).
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
+### Update, 22 Nov 2026
+- **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
+- **Sponsor search started** (see below). A thinner 381620 battery (about 110 mAh, 3.8 mm, estimate) is an alternative to the 501520; the shopping list is unchanged.
+
 Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
 
 ![Routing preview, one panel per layer](kicad/sbroglio.png)
@@ -103,13 +109,15 @@ Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of mater
 - Production files for JLCPCB, PCBWay and ALLPCB in `kicad/fab_out/`.
 - Charger changed to MCP73831; E73 socket-only variant rejected; NAND confirmed; purchase plan drafted.
 - Manufacturing route fixed: JLCPCB only, quote 97 EUR for 2 fully assembled and shipped boards (Economic PCBA, 5 bare boards, 2 assembled). Alternatives dropped: PCBWay, ALLPCB, NextPCB, a Seeed XIAO carrier variant and home assembly.
+- Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
+- Waiting for sponsor replies; nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
 - Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (501520 LiPo candidate, roughly 80 to 100 mAh, an estimate; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
-1. Buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
+1. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
 2. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 3. Build the charging base.
 
@@ -119,13 +127,22 @@ Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of mater
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
 
+## Looking for sponsors
+We are looking for a sponsor to build the **first 2 to 5 working units**: fabrication and assembly of the boards (top side only), components (nRF52840 modules, SPI NAND, PDM microphones) and the SLA resin shells. This is the step needed before the software phase (firmware, Android app and the open MCP server).
+
+**What sponsors get:** logo and "Sponsored by" credit on this README and on the presentation page, a public build diary with photos, and credit in every post and video.
+
+**Status:** several PCB and component manufacturers were contacted in November 2026; nothing is agreed yet.
+
+**Contact:** [issue #1, "Looking for sponsors: first 2–5 notªpad units"](https://github.com/PZero/notapad/issues/1).
+
 ## Project history
-Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)), all on 21 Nov 2026:
-1. Manufacturing route fixed: JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered into the JLCPCB warehouse; shopping list for outside parts.
-2. [Purchasing plan, production files and public docs update added](https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5).
-3. [Microphone stock issue noted, part verified on its datasheet](https://github.com/PZero/notapad/commit/ab7805fa6c689fa76aa890e7f2c9aea123181f45).
-4. [E73 socket-only variant rejected, module stock issue noted](https://github.com/PZero/notapad/commit/082cf999c373edec3fcccc1b11ad9b18bd77741e).
-5. [Board v0.1 moved to 4 layers and closed, production files added](https://github.com/PZero/notapad/commit/9f1f8bed521b04b1bb8905c710e02cd58c6ed17a).
+Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
+1. 22 Nov: open licences chosen (CERN-OHL-S-2.0 hardware, MIT software and documents).
+2. 22 Nov: sponsor search started; public issue #1 opened as contact channel.
+3. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
+4. 21 Nov: [purchasing plan, production files and public docs update added](https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5).
+5. 21 Nov: [board v0.1 moved to 4 layers and closed](https://github.com/PZero/notapad/commit/9f1f8bed521b04b1bb8905c710e02cd58c6ed17a).
 
 ## Repository layout
 | Path | Contents |
@@ -142,7 +159,9 @@ Latest milestones (full timeline on the [presentation page](https://pzero.github
 Issues and ideas are welcome, especially on the electronics review, enclosure casting and the MCP server design. Please open an issue before a large change. Working documents are in Italian; the README, presentation and changelog are in English.
 
 ## License
-To be decided. Until a license is added, all rights are reserved by the authors.
+- **Hardware** (KiCad project, Gerber and fabrication files, enclosure, renders): [CERN-OHL-S-2.0](LICENSE-HARDWARE), strongly reciprocal: modified hardware must stay open.
+- **Software** (scripts, firmware, app, MCP server) and documentation: [MIT](LICENSE).
+- Third-party symbols and footprints in `kicad/lib/` (generated from LCSC/EasyEDA with easyeda2kicad) keep their original terms.
 
 ## Authors
 Two friends, as a hobby project.

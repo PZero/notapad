@@ -80,6 +80,11 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 #progress .st em{font:normal 600 12px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
 #progress .st.done em{color:var(--led)}#progress .st.now em{color:var(--bronze)}
 #progress .st.now{border-color:var(--bronze)}
+#sponsors .box{margin-top:40px;background:var(--bg2);border:1px solid var(--bronze);border-radius:14px;padding:clamp(18px,4vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:24px}
+#sponsors h3{font-size:18px;margin:0 0 8px}
+#sponsors p,#sponsors li{color:var(--mute);font-size:15px}
+#sponsors ul{margin:0;padding-left:1.1em;display:grid;gap:6px}
+#sponsors .cta{display:inline-block;margin-top:28px;padding:12px 20px;border-radius:10px;background:var(--ink);color:var(--bg);font:600 15px Inter,sans-serif;text-decoration:none}
 #history .tl{margin-top:40px;display:grid;gap:28px;border-left:1px solid var(--line);padding-left:24px}
 #history .day h3{font-size:18px;margin:0 0 8px;position:relative}
 #history .day h3::before{content:"";position:absolute;left:-30px;top:7px;width:11px;height:11px;border-radius:50%;background:var(--bronze)}
@@ -98,7 +103,7 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 <canvas id="gl" aria-label="The notªpad in 3D"></canvas>
 <div id="tags" aria-hidden="true"></div>
 
-<nav><strong>notªpad</strong><a href="#oggetto">Object</a><a href="#dentro">Inside</a><a href="#cosa">What it does</a><a href="#ai">Your AI</a><a href="#progress">Progress</a><a href="#history">History</a></nav>
+<nav><strong>notªpad</strong><a href="#oggetto">Object</a><a href="#dentro">Inside</a><a href="#cosa">What it does</a><a href="#ai">Your AI</a><a href="#progress">Progress</a><a href="#sponsors">Sponsors</a><a href="#history">History</a></nav>
 
 <section id="oggetto" class="band">
   <div class="hero">
@@ -179,19 +184,44 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
     <div class="st done"><em>Done</em><h3>Charger and parts review</h3><p>Charger changed to the MCP73831 at 50 mA (shared with a sister project). The E73 variant with only a socket for an external antenna was rejected. The 256 MB NAND stays after comparing alternatives, including a pricier 2 Gbit part and a cheaper 1 Gbit one. Component cost is estimated at about 19 USD per monolith, mostly NAND and module.</p></div>
     <div class="st done"><em>Done</em><h3>Manufacturing route fixed: JLCPCB only</h3><p>Quote: 97 EUR for 2 fully assembled and shipped v0.1 boards (Economic PCBA, 5 bare boards, 2 assembled). PCBWay, ALLPCB, NextPCB and home assembly were evaluated and dropped: there is no hot plate or paste at hand, so every board is assembled by JLCPCB. A cost review found no distributor beating LCSC/JLCPCB for the key chips, and a board using only the cheapest "Basic" parts is impossible (no BLE module, NAND, PDM microphones, RGB LEDs or touch ICs in that library); the remaining 7 extra-fee parts stay.</p></div>
     <div class="st done"><em>Done</em><h3>Carrier-board variant dropped</h3><p>A variant on a Seeed XIAO nRF52840 carrier costs more than the E73 module, is 17.5 mm wide (as wide as the whole monolith) and has only 13 GPIOs against about 20 needed.</p></div>
+    <div class="st done"><em>Done</em><h3>Open licences and sponsor search (22 Nov)</h3><p>Hardware is released under CERN-OHL-S-2.0, software and documents under MIT. Requests for sponsorship were sent to several PCB and component manufacturers; nothing is agreed. A public GitHub issue is the contact channel. A smaller 381620 battery (about 110 mAh, 3.8 mm thick, an estimate from the listing) is a thinner alternative to the 501520; the shopping list is unchanged.</p></div>
     <div class="st now"><em>In progress</em><h3>Waiting for the module</h3><p>The nRF52840 module (E73-2G4M08S1C) was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to wait in the JLCPCB warehouse for assembly. The board order is placed once they arrive; a Black Friday coupon runs until 2 December (not a promise of timing).</p></div>
+    <div class="st now"><em>In progress</em><h3>Waiting for sponsor replies</h3><p>If any reply is positive, the quote will be updated and the sponsor credited here. Nothing is promised.</p></div>
     <div class="st now"><em>In progress</em><h3>Parts outside JLCPCB</h3><p>A shopping list is drafted: LiPo battery (501520 candidate, roughly 80 to 100 mAh, an estimate, to be confirmed), a 0820 coin vibration motor, a small epoxy kit, optionally an SWD probe and a magnetic pogo connector. Estimated 40 to 60 EUR; the whole v0 about 140 to 170 EUR (estimates).</p></div>
-    <div class="st"><em>Next</em><h3>Shells, bring-up and charging base</h3><p>Buy battery, motor and resin; design the two SLA half-shells for JLC3DP; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
+    <div class="st"><em>Next</em><h3>Shells, bring-up and charging base</h3><p>Fill in the online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
     <div class="st"><em>On hold</em><h3>Firmware and phone app</h3><p>Paused on purpose until the board is settled. The pinout for the firmware is already documented.</p></div>
   </div>
   <p style="text-align:center"><img src="https://raw.githubusercontent.com/PZero/notapad/main/kicad/sbroglio.png" alt="Routing preview of the 4-layer v0.1 board, one panel per layer" style="max-width:100%;border-radius:8px"></p>
   <p class="note">Routing preview of the closed board, per layer (115 vias). Follow along on <a href="https://github.com/PZero/notapad" style="color:var(--ink)">GitHub</a>. Order and timing are not promises.</p>
 </section>
 
+<section id="sponsors" class="band sec">
+  <h2>Looking for sponsors</h2>
+  <p class="lead">We are looking for a sponsor to build the first 2 to 5 working notªpad units. Several PCB and component manufacturers were contacted in November 2026; nothing is agreed yet.</p>
+  <div class="box">
+    <div><h3>What it would cover</h3><ul>
+      <li>Fabrication and assembly of the boards (top side only)</li>
+      <li>Components: nRF52840 modules, SPI NAND, PDM microphones</li>
+      <li>SLA resin shells</li>
+    </ul><p style="margin-top:10px">This is the step needed before the software phase: firmware, Android app and the open MCP server.</p></div>
+    <div><h3>What sponsors get</h3><ul>
+      <li>Logo and "Sponsored by" credit on the README and this page</li>
+      <li>A public build diary with photos</li>
+      <li>Credit in every post and video</li>
+    </ul></div>
+  </div>
+  <a class="cta" href="https://github.com/PZero/notapad/issues/1">Get in touch: GitHub issue #1</a>
+</section>
+
 <section id="history" class="band sec">
   <h2>Project history</h2>
-  <p class="lead">How the project got here, newest first. Everything so far happened on a single day of intense design work.</p>
+  <p class="lead">How the project got here, newest first. Two days of intense design work so far.</p>
   <div class="tl">
+    <div class="day"><h3>22 November 2026</h3><ul>
+      <li>Open licences chosen: CERN-OHL-S-2.0 for the hardware, MIT for software and documents.</li>
+      <li>Sponsor search started: requests sent to several manufacturers, a public GitHub issue opened as the contact channel, and a "Looking for sponsors" section added here and in the README.</li>
+      <li>A thinner battery option (381620) was compared; the shopping list stays as it is.</li>
+    </ul></div>
     <div class="day"><h3>21 November 2026</h3><ul>
       <li>Manufacturing route fixed: JLCPCB only, 97 EUR quoted for 2 assembled and shipped boards. Other manufacturers, a carrier-board variant and home assembly were dropped; the E73 module was out of stock, so 2 units were pre-ordered into the JLCPCB warehouse. A shopping list for the parts outside JLCPCB was written.</li>
       <li>Purchasing plan, production files and a public documentation update added. <a href="https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5">commit</a></li>

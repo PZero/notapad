@@ -1,5 +1,12 @@
 # Changelog
 
+## 22/11/2026
+- repo: licences added: MIT for software and documentation (`LICENSE`), CERN-OHL-S-2.0 for hardware (`LICENSE-HARDWARE`, official SPDX text); README gets license badges and a License section.
+- repo: sponsor outreach started: requests drafted for PCB makers and component suppliers in `docs/sponsor_contatti.md` (public company addresses only); public issue #1 "Looking for sponsors: first 2–5 notªpad units" pinned; "Looking for sponsors" section added to the README and the project page.
+- docs: `docs/STATO.md` rewritten; 3 new rows in `docs/DECISIONI.md`; sponsor section and battery candidates (501520 or 381620) in `docs/DOMANDE-APERTE.md`.
+- docs: README and project page updated (progress, project history, status and roadmap) to 22/11; `.claude/agents/comunicazione.md` updated with the sponsor rules.
+- electronics: no changes to components, pinout, board or export files.
+
 ## 21/11/2026
 - repo: manufacturing route fixed on JLCPCB only (PCBWay, ALLPCB, NextPCB, Seeed XIAO carrier variant and home assembly dropped); quote 97 EUR for 2 assembled and shipped v0.1 boards.
 - electronics: E73 nRF52840 module out of stock at JLCPCB; 2 units pre-ordered through the JLC Parts Manager into the JLC warehouse, board order to follow their arrival.
