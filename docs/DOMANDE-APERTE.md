@@ -5,7 +5,7 @@
 - Corpo di U6 sopra un pad di C7 (~0,05 mm, F11): controllare nel DFM di JLC.
 - Componenti interni dell'E73 (induttore DCDC, condensatori): il manuale Ebyte è un PDF cifrato. Finché non si conferma, DCDC spento nel firmware.
 - Cella molto scarica (D03): in precondizionamento il caricatore dà ~5 mA e il sistema ne consuma ~5. Serve una modalità risparmio nel firmware?
-- Pagina: controllare dall'iPhone vero lo sfarfallio dell'animazione, il layout mobile e le tre scene (non verificati su un dispositivo reale).
+- Pagina: controllare dall'iPhone vero lo sfarfallio dell'animazione, il layout mobile, le tre scene e la nuova scena del banco di prova (testo SVG ~12 px a 375 px: ingrandire se scomodo). Non verificati su un dispositivo reale.
 - Batteria: la 381620 (3,8 × 16 × 20 mm, 110 mAh) è la scelta consigliata; trovare un annuncio che dichiari la protezione (PCM) e prenderne 2–3. Con il monolite a 9 mm la 501520 (5 mm) non entra (0,6 + 3,0 + 1,0 + 5,0 + 0,6 = 10,2 mm): resta la 381620. All'arrivo verificare spessore reale, PCM (scheda verde sotto il nastro) e lato del filo +.
 - Basetta: lato di appoggio dei contatti (specchio) e polarità dei magneti da verificare col tester; mappatura dei pin XIAO RP2040 secondo la versione di `debugprobe` scelta.
 - NAND: la W25N02KVZEIR costa ~10 $; cercare una SPI NAND 2 Gbit WSON-8 8×6 cinese compatibile (XT26G02, DS35Q2GA, FM25S02) e verificarne pin e comandi sul datasheet.

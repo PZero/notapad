@@ -1,5 +1,12 @@
 # Changelog
 
+## 22/11/2026 (test bench page)
+- docs: project page gets a "test bench" section (`#bench`) with an animated four-step scene: the test board records, syncs over Bluetooth to the local web app, the app runs voice detection, Whisper with a timestamp per word, speaker separation and a voice command, and the next step moves the same blocks into the open MCP server. It replaces six test-bench cards in the progress section; the 15 "Done" cards are now a single compact card.
+- docs: README updated (update of 22 Nov, status and roadmap, project history); home-automation references removed from the README and the project page.
+- docs: `docs/STATO.md`, `docs/DECISIONI.md` (one new row: the test board and app are a bench, features move to the MCP server) and `docs/DOMANDE-APERTE.md` updated.
+- electronics: no changes to board, BOM, pinout or JLC export files.
+- firmware and app: no changes in this entry.
+
 ## 22/11/2026 (evening)
 - firmware: `firmware/xiao-prova/` gains IMU gestures for the test board: double tap starts/stops recording, single tap sends a command confirmed by 5 yellow flashes; 6 s segments around a gesture are marked in the file header and synced with priority. Compiled and flashed to the XIAO nRF52840 Sense; the gesture-to-sync path is not yet verified on the device.
 - app: speaker separation added: `app/voci.js` (WeSpeaker embeddings, owner profile as "Me", other voices as "Speaker N", turn assignment with a minimum run length) and `app/vad.js` (voice activity detection); transcript shown in chronological order with per-word timestamps. Unit tests in `app/test/voci.test.mjs` pass together with `app/test/adpcm.test.mjs`.

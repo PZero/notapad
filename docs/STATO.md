@@ -1,6 +1,6 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 22/11/2026 (sera), Fase 1: scheda v0.1 verificata, ordine JLC in attesa (E03). In parallelo, **banco di prova** XIAO nRF52840 Sense + app locale per capire funzionalità e prestazioni del software, che poi passerà al server MCP.
+**Ultimo aggiornamento:** 22/11/2026 (notte), Fase 1: scheda v0.1 verificata, ordine JLC in attesa (E03). In parallelo, **banco di prova** XIAO nRF52840 Sense + app locale per capire funzionalità e prestazioni del software, che poi passerà al server MCP.
 
 ## Fatto
 - Concept, render, pagina (`pagina/`), scheda 4 strati 1,0 mm 16,5 × 38 mm da script (ERC 0, DRC 0). Export in `kicad/fab_out/jlcpcb/`.
@@ -15,6 +15,7 @@
   - Testo sempre in ordine cronologico, qualunque sia l'ordine di scarico.
   - **Comandi vocali** (`comandi.js`): «Comando, accendi/spegni la luce del bagno», tollerante agli errori di Whisper (spenni, bagnio…); secondo trascrittore (whisper-base su CPU) solo per i comandi, in parallelo. Primi test riusciti di accensione e spegnimento di luci domestiche.
 - Test: `node app/test/adpcm.test.mjs` e `node app/test/voci.test.mjs` passano.
+- **Pagina:** il banco di prova non è più una serie di card «Done» ma una scena animata (sezione `#bench`, prima di Progress): registrazione → Bluetooth → app (voce, Whisper, chi parla, comando) → *Next* server MCP. Layout orizzontale su desktop, verticale su telefono; provata nel browser simulato (375–1440 px), non su un iPhone vero.
 
 ## In corso
 - **E03, bloccante:** E73 «Standard Only» su JLC. Verificare nel carrello se l'Economic PCBA lo accetta; poi selezionare l'E73 su U1 e pagare (coupon fino al **2/12**).

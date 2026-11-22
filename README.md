@@ -91,7 +91,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
 ### Update, 22 Nov 2026
-- **Test bench defined (evening):** Whisper with word timing and speech detection, speaker recognition (WeSpeaker), tap gestures and first voice-command tests; see [Test bench](#test-bench-exploration-now-mcp-server-later). Exploration only; the features are meant to move into the MCP server later.
+- **Test bench defined (evening), now one animated scene on the presentation page ([#bench](https://pzero.github.io/notapad/#bench)):** Whisper with word timing and speech detection, speaker recognition (WeSpeaker), tap gestures and first voice-command tests; see [Test bench](#test-bench-exploration-now-mcp-server-later). Exploration only; the features are meant to move into the MCP server later.
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
 - **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith length is 41 mm; 38 mm is the board length.
 - **Wallpapers approved:** all eight phone wallpapers, published below; the three LEDs are drawn as separate lights.
@@ -139,7 +139,7 @@ This is an **exploration phase, not the product**. The XIAO nRF52840 Sense firmw
 - **Whisper in the browser** (transformers.js, models that return the time of every word): the audio never leaves the device. A speech detector sends only the stretches with a voice to the model; the default on a PC is the small model.
 - **Who is speaking:** voice prints with WeSpeaker ResNet34. The transcript shows "Me" (the owner, whose profile comes from the microphone or from confirming "that's me" on a transcript) and "Speaker 1, 2, 3...". Text is always in chronological order.
 - **Gestures** on the device (motion sensor): double tap starts or stops recording; single tap is a command (5 yellow flashes, the next 6 seconds become a separate piece downloaded with priority, then recording continues).
-- **First voice-command tests with home automation:** "Command, turn on/off the light" switched real smart lights. Recognition uses tolerant rules instead of an AI, so it copes with Whisper's mistakes, and a second small transcriber is dedicated to commands. First tests only.
+- **First voice-command tests:** a spoken "Command, ..." is recognised and acted on. Recognition uses tolerant rules instead of an AI, so it copes with Whisper's mistakes, and a second small transcriber is dedicated to commands. First tests only.
 - **Later:** transcription, speaker recognition and commands are meant to move into the MCP server, so the AI the user picks can use them as tools.
 
 ## Wallpapers
@@ -162,7 +162,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
-- Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice commands to smart lights. First tests only; not measured.
+- Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
 - Automatic on-device-browser transcription in the test app (22 Nov): Whisper via transformers.js, Italian; 17 s transcribed in 4.8 s (base model, WebGPU). Audio does not leave the device.
 - All eight wallpapers approved and published (22 Nov).
@@ -208,7 +208,7 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov (evening): test bench defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests with smart lights.
+1. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
 2. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
 3. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
 4. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
