@@ -9,6 +9,7 @@
 - docs: monolith size corrected from 38 to 41 × 17.5 × 8 mm in the page text and the "inside" panel (38 mm is the board length); progress and history of the page updated.
 - docs: README update (CAD fit check added as next step, project history with the last five milestones); `docs/STATO.md` rewritten; new row in `docs/DECISIONI.md`; two new open questions in `docs/DOMANDE-APERTE.md` (battery fit in the 8 mm thickness, check of the animation on the published page).
 - electronics: no changes to components, pinout, board or export files.
+- docs: presentation page reworked for phones: the 3D object is framed to fill the free space above the title, a single centred caption replaces the floating labels, hero text fades on scroll, the 3D view hides when the next section arrives, wider exploded-view framing, tighter typography and iPhone safe-area padding. Desktop layout unchanged; tested at 375 and 390 px, not yet on a real iPhone.
 
 ## 21/11/2026
 - repo: manufacturing route fixed on JLCPCB only (PCBWay, ALLPCB, NextPCB, Seeed XIAO carrier variant and home assembly dropped); quote 97 EUR for 2 assembled and shipped v0.1 boards.

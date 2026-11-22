@@ -10,6 +10,7 @@
 - **Sponsor (22/11):** email inviate a JLCPCB, Ebyte, PCBWay, Seeed Fusion, NextPCB ed Elecrow (testi in `docs/sponsor_contatti.md`). Issue pubblica fissata https://github.com/PZero/notapad/issues/1; sezione "Looking for sponsors" su README e pagina (senza nomi di aziende).
 - Confronto con dema-import.it: utile solo la batteria 381620 (110 mAh, 3,8 × 16 × 20 mm, PCM, 2,50 €) e il flussante; la lista Amazon resta com'è (`acquisti/spesa_amazon.md`).
 - **Pagina (22/11, fine sessione):** eliminato lo sfarfallio nell'animazione del monolite (la batteria del modello 3D condivideva la faccia posteriore col guscio: ora è 15 × 19 × 3,2 mm e sta 0,2 mm dentro). Dimensione corretta da 38 a 41 mm nel testo. Non verificato a schermo (l'anteprima interna non carica Three.js): da controllare sulla pagina pubblicata.
+- **Pagina su telefono (22/11):** oggetto inquadrato grande sopra il titolo, una sola didascalia centrata al posto delle etichette sovrapposte, testo che sfuma scorrendo, vista esplosa più larga. Provata a 375 e 390 px, non ancora su un iPhone vero.
 
 ## In corso
 - Attendere l'email JLC sul prezzo del pre-order E73 e l'arrivo in **My Inventory**; poi riaprire il preventivo PCBA, selezionare la scorta su U1, controllare l'antenna e pagare (coupon Black Friday fino al **2/12**).
