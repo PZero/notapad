@@ -2,9 +2,10 @@
 
 ## Elettronica
 - Ingombro in CAD (scheda 1 mm + motorino 2 mm + batteria) dentro gli 8 mm del monolite: da fare prima di pagare il PCBA; la 501520 da 5 mm non lascia margine di resina.
-- Pagina: controllare sulla versione pubblicata che lo sfarfallio dell'animazione sia sparito (non verificato in anteprima).
-- Batteria: 501520 su Amazon (120 mAh dichiarati, 5 mm) oppure 381620 su dema-import (110 mAh, 3,8 × 16 × 20 mm, più sottile di 1,2 mm): decidere. In ogni caso verificare all'arrivo spessore reale, PCM e lato del filo +.
-- Diametro dei fori dei pin dorati J1–J4 (ora 1,0 mm): dipende dai pin che comprerete.
+- Pagina: controllare dall'iPhone vero lo sfarfallio dell'animazione, il layout mobile e le tre scene (non verificati su un dispositivo reale).
+- Batteria: la 381620 (3,8 × 16 × 20 mm, 110 mAh) è la scelta consigliata; trovare un annuncio che dichiari la protezione (PCM) e prenderne 2–3. La 501520 solo se il monolite passa a 9 mm. All'arrivo verificare spessore reale, PCM (scheda verde sotto il nastro) e lato del filo +.
+- Diametro della coda dei contatti "target" (AliExpress 4000437657657): non indicato nell'annuncio; chiedere le quote al venditore e, se serve, allargare i fori di J1–J4 (ora 1,0 mm) prima di pagare JLC.
+- Basetta: lato di appoggio dei contatti (specchio) e polarità dei magneti da verificare col tester; mappatura dei pin XIAO RP2040 secondo la versione di `debugprobe` scelta.
 - NAND: la W25N02KVZEIR costa ~10 $; cercare una SPI NAND 2 Gbit WSON-8 8×6 cinese compatibile (XT26G02, DS35Q2GA, FM25S02) e verificarne pin e comandi sul datasheet.
 - IO2/IO3 della NAND senza pull-up: verificare sul datasheet Winbond.
 - Corrente di carica: tenere R1 = 20 kΩ (50 mA) o passare a 33 kΩ (30 mA)? Con 470 Ω i LED verde e blu sono tenui (~1 mA).

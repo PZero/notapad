@@ -73,7 +73,7 @@ The app and the MCP server are not started yet (see the roadmap).
 - **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
 - **Power:** ~60 mAh LiPo with protection circuit, MCP73831 charger at 50 mA, 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
 - **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
-- **Battery:** the 60 mAh figure is for the cell planned so far. A 502025 cell does not fit; a 501520 (5 x 15 x 20 mm, roughly 80 to 100 mAh, estimate) is the candidate, still to be confirmed.
+- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 only if the monolith goes to 9 mm.
 - **Estimated consumption:** about 4.6 mA average, about 11.5 h on 60 mAh.
 
 ### What changed during design review (21 Nov 2026)
@@ -88,8 +88,9 @@ The app and the MCP server are not started yet (see the roadmap).
 
 ### Update, 22 Nov 2026
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
-- **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Not yet checked on the published page. The monolith size is 41 x 17.5 x 8 mm; 38 mm is the board length.
-- **Sponsor search started** (see below). A thinner 381620 battery (about 110 mAh, 3.8 mm, estimate) is an alternative to the 501520; the shopping list is unchanged.
+- **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith size is 41 x 17.5 x 8 mm; 38 mm is the board length.
+- **Sponsor search started** (see below). Batteries 602030, 401020, 401230 and 402020 ruled out; 381620 is the candidate (estimates).
+- **Contacts:** flat-head target contacts (monolith) and single pogo pins (charging base) identified; wiring plan for the base (8 solder joints).
 
 Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
 
@@ -115,13 +116,14 @@ Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of mater
 **In progress**
 - Waiting for sponsor replies; nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
-- Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (501520 LiPo candidate, roughly 80 to 100 mAh, an estimate; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
+- Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
-1. Check in CAD that board, motor and battery fit inside the 8 mm thickness before paying for assembly.
-2. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
-3. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
-4. Build the charging base.
+1. Check the shank diameter of the target contacts against the 1.0 mm holes of J1-J4 before paying JLCPCB.
+2. Check in CAD that board, motor and battery fit inside the 8 mm thickness before paying for assembly.
+3. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
+4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
+5. Build the charging base.
 
 **On hold by choice (restart after the board)**
 - Firmware on a XIAO nRF52840 (same chip): recording, LC3, NAND, BLE sync.
@@ -140,11 +142,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: presentation animation flicker fixed; monolith size corrected to 41 mm in the text.
-2. 22 Nov: open licences chosen (CERN-OHL-S-2.0 hardware, MIT software and documents).
-3. 22 Nov: sponsor search started; public issue #1 opened as contact channel.
-4. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
-5. 21 Nov: [purchasing plan, production files and public docs update added](https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5).
+1. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); batteries shortlisted (381620) and contacts identified.
+2. 22 Nov: [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3).
+3. 22 Nov: [animation flicker fixed, monolith size corrected to 41 mm](https://github.com/PZero/notapad/commit/09df9c1).
+4. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
+5. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
 
 ## Repository layout
 | Path | Contents |
