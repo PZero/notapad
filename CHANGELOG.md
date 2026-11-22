@@ -10,6 +10,7 @@
 - docs: README update (CAD fit check added as next step, project history with the last five milestones); `docs/STATO.md` rewritten; new row in `docs/DECISIONI.md`; two new open questions in `docs/DOMANDE-APERTE.md` (battery fit in the 8 mm thickness, check of the animation on the published page).
 - electronics: no changes to components, pinout, board or export files.
 - docs: presentation page reworked for phones: the 3D object is framed to fill the free space above the title, a single centred caption replaces the floating labels, hero text fades on scroll, the 3D view hides when the next section arrives, wider exploded-view framing, tighter typography and iPhone safe-area padding. Desktop layout unchanged; tested at 375 and 390 px, not yet on a real iPhone.
+- docs: presentation page scenes reworked. The MCP diagram redraws vertically on phones (no more horizontal scroll). The group scene shows two overlapping groups: a note to group A reaches all its members, then a note to group B reaches all of its own, and the person in both gets both. The squeeze scene now shows gestures as points of attention and priority sync on a recording timeline, next to a reassignable "your settings" card; the text says touch, light and vibration behaviours are customisable, like the AI processing.
 
 ## 21/11/2026
 - repo: manufacturing route fixed on JLCPCB only (PCBWay, ALLPCB, NextPCB, Seeed XIAO carrier variant and home assembly dropped); quote 97 EUR for 2 assembled and shipped v0.1 boards.
