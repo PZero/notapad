@@ -1,5 +1,5 @@
 Rif.,Componente,Come
-J1..J4,Pin dorati passanti 5V/GND/SWDIO/SWCLK,a mano o THT JLC se a catalogo
-BT1,LiPo ~3.5x16x19 mm ~60 mAh con PCM,"a mano, piazzole BT+ BT- sul retro"
+J1..J4,"Target dorati 2,0 x 4,0 mm (coda 0,9 nei fori da 1,1) 5V/GND/SWDIO/SWCLK","a mano, spalla sul retro, saldatura sul lato componenti"
+BT1,"LiPo 381620 3,8x16x20 mm ~110 mAh con PCM","a mano, piazzole BT+ BT- sul retro"
 M1,Motorino a moneta 0820 (8x2 mm),"nello strato batteria sotto la zona A, fili a piazzole M+ M- sul retro"
 "TP_A, TP_B",Fili verso i listelli tattili,a mano

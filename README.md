@@ -21,6 +21,7 @@
 - [The object](#the-object)
 - [Architecture](#architecture)
 - [Electronics v0.1](#electronics-v01)
+- [Pre-order verification](#pre-order-verification)
 - [Manufacturing](#manufacturing)
 - [Status and roadmap](#status-and-roadmap)
 - [Looking for sponsors](#looking-for-sponsors)
@@ -43,7 +44,7 @@ Design goals:
 ## The object
 | | |
 |---|---|
-| Size | about 41 × 17.5 × 8 mm (fallback 9 mm; thickness may grow 1 to 2 mm for a larger battery), cast resin |
+| Size | about 41 × 17.5 × 9 mm (it was 8 mm until 22 Nov; 38 mm is the board length), cast resin |
 | Attachment | steel ring cast in with a bushing, so it cannot come off |
 | Controls | touch sensors on **both** sides (metal strips as electrodes); a touch counts only when both are active (the "squeeze" gesture), to avoid accidental triggers from the chest |
 | Signalling | 3 RGB LEDs behind a 10 mm front slit, vibration motor |
@@ -71,9 +72,9 @@ The app and the MCP server are not started yet (see the roadmap).
 - **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
 - **Storage:** W25N02KV QSPI NAND, 256 MB (about 10 to 11 h of stereo LC3 audio).
 - **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
-- **Power:** ~60 mAh LiPo with protection circuit, MCP73831 charger at 50 mA, 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
+- **Power:** ~60 mAh LiPo with protection circuit, MCP73832 charger at 50 mA (open-drain status output), 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
 - **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
-- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 only if the monolith goes to 9 mm.
+- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 stays a possible, larger alternative (to be confirmed).
 - **Estimated consumption:** about 4.6 mA average, about 11.5 h on 60 mAh.
 
 ### What changed during design review (21 Nov 2026)
@@ -81,20 +82,45 @@ The app and the MCP server are not started yet (see the roadmap).
 - **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock at JLCPCB.
 - **Space savings.** One resistor per LED on the common anode instead of one per colour (LEDs multiplexed, one colour at a time); an extra 1 uF capacitor on the latch so a reset at low battery does not power the device off.
 - **Board closed on 4 layers.** With 2 layers 7 connections stayed open; JLCPCB Economic assembly does not accept 4 layers at 0.8 mm, so the board is 1.0 mm. Length fixed at 38 mm (at 35 mm 4 connections stayed open). Checks: ERC 0, DRC 0 violations, 0 unconnected, schematic-board parity 0.
-- **Charger changed to MCP73831** (50 mA), the same part as a sister project, so one extra-fee component is shared in a combined panel.
+- **Charger changed to MCP73831** (50 mA), the same part as a sister project, so one extra-fee component is shared in a combined panel. *Superseded on 22 Nov by the MCP73832, see the pre-order verification below.*
 - **Manufacturing route fixed (late 21 Nov).** JLCPCB only. The XIAO carrier variant costs more than the E73 module, is 17.5 mm wide (as wide as the monolith) and has 13 GPIOs against about 20 needed; home assembly dropped (no hot plate or paste), so JLCPCB assembles every board. No distributor beats LCSC/JLCPCB for the key chips, and a Basic-parts-only board is impossible (no BLE, NAND, PDM microphones, RGB LEDs or touch ICs in that library); 7 extra-fee parts stay. Q2 stays a dual 2N7002DW; NAND and charger stay extra-fee parts.
 - **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the JLCPCB placement file (checked in their preview). A NextPCB variant was prepared and dropped for v0 (no microphone stock, higher quote).
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
 ### Update, 22 Nov 2026
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
-- **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith size is 41 x 17.5 x 8 mm; 38 mm is the board length.
+- **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith length is 41 mm; 38 mm is the board length.
 - **Sponsor search started** (see below). Batteries 602030, 401020, 401230 and 402020 ruled out; 381620 is the candidate (estimates).
 - **Contacts:** flat-head target contacts (monolith) and single pogo pins (charging base) identified; wiring plan for the base (8 solder joints).
+- **Pre-order verification, third run:** 41 passed, 25 warnings, 1 failure, 2 not verifiable (69 tests). Charger changed to the MCP73832; monolith now **9 mm** (at 8 mm only 0.1 mm of resin was left per face, now 0.6 mm); contact targets 2.0 x 4.0 mm with the tip 0.1 mm out of the back, and the four holes widened from 1.0 to 1.1 mm (only the drill files changed, copper identical, DRC clean). The section drawing of the target in the 9 mm monolith is [`verifica/target_sezione.png`](verifica/target_sezione.png) (labels in Italian).
 
 Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
 
 ![Routing preview, one panel per layer](kicad/sbroglio.png)
+
+## Pre-order verification
+The board is generated by scripts, which makes mistakes repeatable too. On 22 Nov 2026, before paying for assembly, a reviewer agent went through the whole board with **69 automated tests in 8 areas**:
+
+| Area | What is checked |
+|---|---|
+| A | Rules, ERC and DRC, also with the ignored rules switched back on |
+| B | Pinout of every component against its datasheet |
+| C | Schematic symbol against footprint |
+| D | Circuit analysis with numbers: latch, reset, dividers, LEDs, LDO, microphones, consumption |
+| E | Bill of materials and placement file for JLCPCB: codes, extra-fee parts, rotations |
+| F | Mechanics: courtyards, stack-up in the thickness, battery, motor, LEDs in the slit, microphone ports, contacts, antenna keep-out |
+| G | Gerber files |
+| H | Consistency between documents |
+
+Every value is cross-checked against at least two independent sources (datasheet, the single Python definition, schematic, netlist, board, Gerber, BOM and placement file, documents). Each test is a repeatable script in [`verifica/`](verifica/) that ends in PASS, WARN, FAIL or NOT VERIFIABLE, so the review can be rerun before every order.
+
+**First run:** 37 passed, 26 warnings, 3 failures, 2 not verifiable. **Second run, after the charger fix:** 39 / 26 / 2 / 2. **Third run, after the 9 mm and 1.1 mm hole changes:** 41 passed, 25 warnings, 1 failure, 2 not verifiable. The real problems it found:
+- **Charger.** The MCP73831 status output is tri-state and powered from the 5V rail, so it would have pulled an nRF52840 pin to about 5 V, above its maximum. Fixed by switching to the MCP73832: same footprint and pinout, open-drain output, Gerber files unchanged.
+- **Assembly tier (open, the one failure left).** JLCPCB lists the E73 module as assemblable only with Standard PCBA, so the 97 EUR Economic quote has to be rechecked before paying.
+- **Thickness (fixed).** With the 3 mm module and the 3.8 mm battery, 8 mm left 0.1 mm of resin per face; at 9 mm there is 0.6 mm. Only the shells change.
+- **Contact holes (fixed).** The 2.0 x 4.0 mm target contacts need 1.1 mm holes instead of 1.0 mm; only the drill files changed.
+
+What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna keep-out. The remaining warnings concern shells, firmware and bring-up, not the board. A review like this cannot replace testing the real boards, and it does not guarantee they will work.
 
 ## Manufacturing
 - **PCB and assembly (v0):** JLCPCB only. Economic PCBA, 4 layers, 1.0 mm, 5 bare boards, 2 assembled; quote 97 EUR for the 2 assembled boards, shipped (estimate until the order is placed). The E73 module was out of stock, so 2 units are pre-ordered into the JLCPCB warehouse; the board order follows their arrival. Production files are generated by script in [`kicad/fab_out/`](kicad/fab_out/).
@@ -105,23 +131,25 @@ Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of mater
 
 ## Status and roadmap
 **Done**
+- Automated pre-order verification (22 Nov): 69 tests in 8 areas, three runs, the last with 41 passed, 25 warnings, 1 failure (assembly tier), 2 not verifiable. Charger corrected to MCP73832; monolith set to 9 mm; contact targets 2.0 x 4.0 mm with 1.1 mm holes.
 - Concept, finish renders, animated presentation, BOM and netlist for v0.1.
 - Datasheet checks (E73 pinout, microphone port) and the resulting corrections above.
 - v0.1 board closed in KiCad: 4 layers, 1.0 mm, 16.5 x 38 mm; ERC 0, DRC 0, no unconnected nets.
 - Production files for JLCPCB, PCBWay and ALLPCB in `kicad/fab_out/`.
-- Charger changed to MCP73831; E73 socket-only variant rejected; NAND confirmed; purchase plan drafted.
+- Charger first changed to MCP73831, then to MCP73832 after the pre-order review; E73 socket-only variant rejected; NAND confirmed; purchase plan drafted.
 - Manufacturing route fixed: JLCPCB only, quote 97 EUR for 2 fully assembled and shipped boards (Economic PCBA, 5 bare boards, 2 assembled). Alternatives dropped: PCBWay, ALLPCB, NextPCB, a Seeed XIAO carrier variant and home assembly.
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
+- Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
 - Waiting for sponsor replies; nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
 - Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
-1. Check the shank diameter of the target contacts against the 1.0 mm holes of J1-J4 before paying JLCPCB.
-2. Check in CAD that board, motor and battery fit inside the 8 mm thickness before paying for assembly.
-3. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
+1. Settle the assembly quote in the JLCPCB cart and pay once the E73 arrives.
+2. Buy the parts outside JLCPCB: 381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin.
+3. Design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing); fill in online sponsor forms and prepare a grant application.
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 5. Build the charging base.
 
@@ -142,16 +170,17 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); batteries shortlisted (381620) and contacts identified.
-2. 22 Nov: [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3).
-3. 22 Nov: [animation flicker fixed, monolith size corrected to 41 mm](https://github.com/PZero/notapad/commit/09df9c1).
+1. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
+2. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); batteries shortlisted (381620) and contacts identified.
+3. 22 Nov: [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3) and [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
 4. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
-5. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
+5. 21 Nov: [manufacturing route fixed](https://github.com/PZero/notapad/commit/1835875), JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
 
 ## Repository layout
 | Path | Contents |
 |---|---|
 | `docs/` | project state, decisions, open questions, pinout (working documents, in Italian) |
+| `verifica/` | pre-order verification: test scripts and results |
 | `jlc/` | bill of materials, netlist, board outline DXF, generator script |
 | `kicad/` | KiCad project, LCSC-derived library, generation and routing scripts |
 | `render/` | monolith renders and the script that makes them |

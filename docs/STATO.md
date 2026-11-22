@@ -1,34 +1,37 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 22/11/2026, Fase 1: scheda v0.1 chiusa, ordine v0 su JLC in attesa dell'E73, ricerca sponsor avviata
+**Ultimo aggiornamento:** 22/11/2026, Fase 1: scheda v0.1 verificata e corretta prima dell'ordine; ordine JLC in attesa dell'E73 e della conferma del tipo di PCBA
 
 ## Fatto
-- Concept, render, pagina di presentazione (`pagina/`), distinta e collegamenti v0.1 (`jlc/`), libreria KiCad dai codici LCSC (`kicad/lib/`).
-- **Scheda chiusa:** 4 strati, 1,0 mm, 16,5 × 38 mm, componenti solo sopra. ERC 0, DRC 0, 0 scollegati, 115 via. Export in `kicad/fab_out/jlcpcb/`. Pinout E73 e microfono MSM261DGT003 (top-port) verificati sui datasheet.
-- **Preventivo JLC: 97 € per 2 schede montate e spedite** (Economic PCBA, 5 PCB, 2 montate). E73: 2 pezzi in pre-order verso My Inventory (coupon).
-- **Licenze (22/11):** hardware CERN-OHL-S-2.0, software e documenti MIT. **Sponsor:** email inviate a 6 aziende (testi in `docs/sponsor_contatti.md`); issue pubblica fissata #1; sezione "Looking for sponsors" su README e pagina (senza nomi di aziende).
-- **Pagina (22/11):** sfarfallio dell'animazione eliminato (batteria del modello 3D 15 × 19 × 3,2 mm, 0,2 mm dentro il guscio); dimensione corretta a 41 mm; layout telefono rifatto (oggetto grande, didascalia unica, schema MCP verticale senza scroll orizzontale); animazione dei gruppi con due insiemi A e B (uno in comune); gesti come punti di attenzione e sync prioritaria su timeline, con tocco, luci e vibrazione personalizzabili. Controllata a 375, 390 e 1280 px, non su un iPhone vero.
-- **Batteria (22/11):** scartate 602030, 401020, 401230 e 402020 (troppo larghe, lunghe o povere di mAh); migliore la 381620 (3,8 × 16 × 20 mm, 110 mAh) con PCM da confermare; 501520 solo se il monolite passa a 9 mm.
-- **Contatti (22/11):** trovati su AliExpress i "target" a testa piatta per il monolite (femmina PCB, altezza 7,0 mm) e su eBay le molle pogo singole 6-1,5-3,0-1,5-0,8 mm per la basetta. Schema della basetta fatto (8 saldature, 4 pogo + 4 fili allo XIAO RP2040).
+- Concept, render, pagina di presentazione (`pagina/`), libreria KiCad dai codici LCSC, scheda 4 strati 1,0 mm 16,5 × 38 mm generata da script (ERC 0, DRC 0, parità 0). Export in `kicad/fab_out/jlcpcb/`.
+- **Verifica pre-ordine automatica (22/11):** `verifica/`, con 69 test in 8 aree (A regole/DRC, B pinout vs datasheet, C simbolo↔impronta, D circuito, E BOM/CPL, F meccanica, G Gerber, H documenti). Ogni dato è incrociato su almeno 2 fonti e ogni test ha uno script ripetibile in `verifica/script/`. Esiti in `verifica/risultati.json`; la pagina `verifica/index.html` è generata da `genera_pagina.py`, con avanzamento in diretta. È pubblicata come artefatto privato (link nella conversazione, non nel repo).
+  - Giro 1: 37 PASS, 26 WARN, 3 FAIL, 2 N/V. Giro 2, dopo il cambio caricatore: 39 PASS, 26 WARN, 2 FAIL, 2 N/V. Giro 3, con fori 1,1 e 9 mm: **41 PASS, 25 WARN, 1 FAIL (E03), 2 N/V**, nessun WARN alto.
+- **Caricatore:** MCP73831 → **MCP73832T-2ACI/OT (C38066)**, perché lo STAT tri-state del 31, alimentato dal 5V, portava P0.07 a ~5 V. Stessa impronta: cambiano solo BOM e valori, Gerber invariati.
+- **Monolite 9 mm** (a 8 mm restavano 0,1 mm di resina per faccia).
+- **Contatti J1–J4:** target 2,0 × 4,0 mm (coda Ø0,9 × 2, spalla Ø2 × 0,5, corpo Ø1,5 × 4,0), la punta esce di 0,1 mm dal retro. Fori allargati a **1,1 mm** (piazzola 1,6). Cambiano solo i file di foratura; DRC con parità pulito. Disegno in sezione: `verifica/target_sezione.png`.
+- **Comunicazione:** sezione "Pre-order verification" nel README e "Checked before we pay" nella pagina. 8 sfondi per cellulare in `sfondi/` (iPhone e Android, spazio "Sponsor" separato nel sorgente), con galleria in `sfondi/index.html`.
+- Preventivo JLC precedente: 97 € per 2 schede montate (Economic PCBA), E73 in pre-order verso My Inventory.
 
 ## In corso
-- Attendere l'email JLC sul prezzo del pre-order E73 e l'arrivo in **My Inventory**; poi selezionare la scorta su U1, controllare l'antenna e pagare (coupon Black Friday fino al **2/12**).
-- Attendere le risposte degli sponsor. Se arrivano buoni: aggiornare il preventivo e citare lo sponsor su README e pagina.
+- **E03, bloccante:** sulla pagina JLC l'E73 (C356849) è «Standard Only» con X-ray. Bisogna verificare nel carrello se l'Economic PCBA lo accetta; se no, rifare il preventivo con lo Standard PCBA.
+- Attendere l'E73 in My Inventory, poi selezionarlo su U1, controllare l'anteprima (rotazioni E05, DFM: corpo di U6 su un pad di C7, F11) e pagare (coupon fino al **2/12**).
+- Scelta di 4 sfondi su 8 da parte dell'utente; prima correggere i 3 LED (oggi disegnati come barra unica) e le didascalie dello sfondo 7.
+- Risposte degli sponsor.
 
 ## Prossimi passi
-1. **Prima di pagare il PCBA:** controllo di ingombro in CAD (scheda 1 mm + motorino 2 mm + batteria negli 8 mm) e verifica del diametro della coda dei target contro i fori da 1,0 mm di J1–J4: se serve, si allargano ora.
-2. Ordinare i pezzi fuori JLC: batteria 381620 con protezione (2–3 pezzi), target 7,0 mm, motorini 0820, resina, stagno sottile; pogo e magneti solo per la basetta.
-3. Compilare i moduli online di PCBWay ed Elecrow; proposta NLnet (scadenza probabile 3/1/2027, da verificare).
-4. Disegnare i due mezzi gusci SLA per JLC3DP; alle schede in arrivo saldare batteria, motorino e J1–J4 e collaudare.
-5. Basetta di ricarica con molle pogo e magneti (polarità garantita): dopo il collaudo.
+1. Chiudere E03 nel carrello JLC e pagare.
+2. Ordinare i pezzi fuori JLC: batteria 381620 con PCM, target 2,0 × 4,0 mm, motorini 0820, resina, stagno.
+3. Disegnare i due mezzi gusci SLA a **9 mm**, con canale per MK2, sigillatura delle porte dei microfoni e boccola dell'anello (F07, F09).
+4. Firmware, da ricordare (dalla verifica): clock PDM 1,280 MHz, DCDC spento finché non è confermato, risparmio con 5V presente e VBAT < 3,1 V, pull-up interno su STAT.
+5. Basetta con pogo e magneti a polarità certa (D15: SWD senza ESD).
 
 ## In pausa (per scelta dell'utente)
-- Firmware e app: si riparte dopo la scheda. Pinout in `docs/pinout_v0.1.md`. Nota: `CLAUDE.md` cita ancora il firmware per XIAO nRF52840, ma la v0.1 usa il modulo E73.
-- Cartella locale `ncs` con download parziale della toolchain Nordic (1,5 GB).
+- Firmware e app. Pinout in `docs/pinout_v0.1.md`.
+- Cartella locale `ncs` (toolchain Nordic parziale).
 
-## Abbandonato (21/11)
-- Variante XIAO (Seeed Fusion), PCBWay, ALLPCB, NextPCB per la produzione: solo JLC (restano come possibili sponsor). Montaggio in casa: tutte le schede montate da JLC.
+## Abbandonato
+- XIAO/Seeed, PCBWay, ALLPCB, NextPCB per la produzione: solo JLC. Montaggio in casa.
 
 ## Costi
-- 2 schede montate: 97 € (E73 coperto da coupon). Pezzi fuori JLC ~40–60 €. Totale v0 stimato ~140–170 € (senza gusci SLA e saldatore), azzerabile in parte dagli sponsor.
-- Tasse Extended JLC: 7 componenti × 3 $ a ordine.
+- 2 schede montate: 97 € (da riconfermare se serve lo Standard PCBA). Pezzi fuori JLC ~40–60 €. Totale v0 ~140–170 €.
+- Extended JLC: 7 componenti × 3 $ a ordine (l'MCP73832 sostituisce l'MCP73831, il conto non cambia).

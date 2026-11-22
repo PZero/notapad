@@ -25,7 +25,9 @@ P = {
     "E73":   ("E73-2G4M08S1C", "WIRELM-SMD_E73-2G4M08S1C", "C356849", "E73-2G4M08S1C nRF52840"),
     "NAND":  ("W25N02KVZEIR", "WSON-8_L8.0-W6.0-P1.27-TL-EP-1", "C3010298", "W25N02KVZEIR 2Gbit NAND"),
     # caricatore condiviso con SwimTimer (un solo Extended in caso di pannello unico); pinout come il TP4054
-    "CHG":   ("MCP73831T-2ACI_OT", "SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL", "C424093", "MCP73831T-2ACI/OT"),
+    # MCP73832 (22/11): STAT open-drain; l'MCP73831 ha STAT tri-state alimentato dal 5V e porterebbe P0.07 a ~5 V.
+    # Stessa piedinatura: il simbolo di libreria resta quello del 31.
+    "CHG":   ("MCP73831T-2ACI_OT", "SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL", "C38066", "MCP73832T-2ACI/OT"),
     "LDO":   ("XC6206P332MR", "SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR", "C5446", "XC6206P332MR 3.3V"),
     "TTP":   ("TTP223-BA6-TD", "SOT-23-6_L2.9-W1.6-P0.95-LS2.9-BL", "C42422127", "TTP223-BA6-TD"),
     "LED":   ("MHPA1010RGBDT", "LED-ARRAY-SMD_4P-L1.0-W1.0-TR-RD", "C404280", "MHPA1010RGBDT RGB anodo comune"),

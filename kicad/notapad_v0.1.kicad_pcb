@@ -562,7 +562,7 @@
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 1.6 1.6)
-			(drill 1)
+			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "VBUS")
@@ -1643,7 +1643,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP73831T-2ACI/OT"
+		(property "Value" "MCP73832T-2ACI/OT"
 			(at 0 5.154 90)
 			(layer "F.Fab")
 			(uuid "c3756e84-5a96-4458-84a0-fdc921c191ee")
@@ -1676,7 +1676,7 @@
 				)
 			)
 		)
-		(property "LCSC Part" "C424093"
+		(property "LCSC Part" "C38066"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -5622,7 +5622,7 @@
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 1.6 1.6)
-			(drill 1)
+			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "SWCLK")
@@ -8098,7 +8098,7 @@
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 1.6 1.6)
-			(drill 1)
+			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
@@ -8899,7 +8899,7 @@
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 1.6 1.6)
-			(drill 1)
+			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "SWDIO")

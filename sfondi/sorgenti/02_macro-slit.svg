@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 2400" preserveAspectRatio="xMidYMid slice" font-family="'Inter Tight','Inter','Segoe UI',Helvetica,Arial,sans-serif">
+<defs><radialGradient id="bg" cx=".5" cy=".55" r=".8"><stop offset="0" stop-color="#17181d"/><stop offset="1" stop-color="#020203"/></radialGradient>
+<linearGradient id="rf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".0"/><stop offset=".3" stop-color="#fff" stop-opacity=".09"/><stop offset=".34" stop-color="#fff" stop-opacity=".0"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="b1" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="26"/></filter>
+<filter id="b2" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="b3" x="-50%" y="-300%" width="200%" height="700%"><feGaussianBlur stdDeviation="90"/></filter>
+<linearGradient id="edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".08" stop-color="#fff" stop-opacity=".05"/><stop offset=".92" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".3"/></linearGradient>
+<linearGradient id="stl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f6"/><stop offset=".45" stop-color="#6c6e76"/><stop offset=".7" stop-color="#dcdde2"/><stop offset="1" stop-color="#4a4b52"/></linearGradient><filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/><feColorMatrix type="saturate" values="0"/></filter></defs>
+<rect width="1080" height="2400" fill="url(#bg)"/>
+<rect x="80" y="1000" width="920" height="1500" rx="96" fill="#0a0a0d" stroke="url(#edge)" stroke-width="3"/>
+<rect x="80" y="1000" width="920" height="1500" rx="96" fill="url(#rf)"/>
+<circle cx="540.0" cy="910" r="130" fill="none" stroke="url(#stl)" stroke-width="40"/>
+<path d="M176 1000 H904" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
+<ellipse cx="380" cy="1362.0" rx="150" ry="70" fill="#ff3a55" opacity=".55" filter="url(#b1)" style="mix-blend-mode:screen"/>
+<ellipse cx="540.0" cy="1362.0" rx="150" ry="70" fill="#35ff9a" opacity=".55" filter="url(#b1)" style="mix-blend-mode:screen"/>
+<ellipse cx="700" cy="1362.0" rx="150" ry="70" fill="#3a7bff" opacity=".55" filter="url(#b1)" style="mix-blend-mode:screen"/>
+<ellipse cx="540.0" cy="1522.0" rx="420" ry="300" fill="#8fe8ff" opacity=".12" filter="url(#b3)"/>
+<rect x="288" y="1318" width="504" height="88" rx="14" fill="#000"/>
+<rect x="300" y="1330" width="480" height="64" rx="6" fill="#050507"/>
+<rect x="300" y="1330" width="160" height="64" fill="#ff3a55" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="460" y="1330" width="160" height="64" fill="#35ff9a" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="620" y="1330" width="160" height="64" fill="#3a7bff" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="306" y="1344" width="468" height="36" rx="4" fill="#fff" opacity=".96" filter="url(#b2)"/>
+<rect x="310" y="1352" width="460" height="20" rx="3" fill="#fff"/>
+<text x="540.0" y="1750" text-anchor="middle" font-size="22" letter-spacing="8" fill="#9a968e" opacity=".8">THREE LEDS. ONE SLIT.</text>
+<g id="wordmark" text-anchor="middle" fill="#efebe3"><text x="540.0" y="2120" font-size="44" font-weight="600" letter-spacing="-1" opacity="0.9">notªpad</text></g>
+<rect width="1080" height="2400" filter="url(#grain)" opacity="0.06" style="mix-blend-mode:overlay"/>
+<!-- SPONSOR PLACEHOLDER: replace the content of this group with the real logo, centred at (540, 2290) -->
+<g id="sponsor" opacity="0.5" transform="translate(540.0,2290)" fill="none" stroke="#efebe3">
+  <rect x="-150" y="-30" width="300" height="60" rx="30" stroke-width="1.6"/>
+  <text x="3" y="8" text-anchor="middle" font-size="22" letter-spacing="7" fill="#efebe3" stroke="none" font-weight="500">SPONSOR</text>
+</g>
+</svg>

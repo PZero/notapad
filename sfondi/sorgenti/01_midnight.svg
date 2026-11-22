@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 2400" preserveAspectRatio="xMidYMid slice" font-family="'Inter Tight','Inter','Segoe UI',Helvetica,Arial,sans-serif">
+<defs><radialGradient id="bg" cx=".5" cy=".58" r=".75"><stop offset="0" stop-color="#1b2c58"/><stop offset=".55" stop-color="#0a1128"/><stop offset="1" stop-color="#04050b"/></radialGradient>
+<radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#5fd3c8" stop-opacity=".32"/><stop offset="1" stop-color="#5fd3c8" stop-opacity="0"/></radialGradient>
+<radialGradient id="floor" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#b8895a" stop-opacity=".18"/><stop offset="1" stop-color="#b8895a" stop-opacity="0"/></radialGradient><filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/><feColorMatrix type="saturate" values="0"/></filter></defs>
+<rect width="1080" height="2400" fill="url(#bg)"/>
+<ellipse cx="540.0" cy="1360" rx="560" ry="760" fill="url(#halo)"/>
+<defs>
+<linearGradient id="af" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16295a"/><stop offset="1" stop-color="#071331"/></linearGradient>
+<linearGradient id="ash" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".25" stop-color="#fff" stop-opacity=".02"/><stop offset=".8" stop-color="#000" stop-opacity=".10"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>
+<linearGradient id="asd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b7390"/><stop offset="1" stop-color="#222b48"/></linearGradient>
+<linearGradient id="aed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".35" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".18"/></linearGradient>
+<linearGradient id="agold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a5230"/><stop offset=".4" stop-color="#f0cf9c"/><stop offset="1" stop-color="#9a6d40"/></linearGradient>
+<linearGradient id="ast" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f6"/><stop offset=".45" stop-color="#6c6e76"/><stop offset=".7" stop-color="#dcdde2"/><stop offset="1" stop-color="#4a4b52"/></linearGradient>
+<linearGradient id="aled" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff7a8a"/><stop offset=".18" stop-color="#e8ffff"/><stop offset=".5" stop-color="#ffffff"/><stop offset=".82" stop-color="#e8fff0"/><stop offset="1" stop-color="#7affb8"/></linearGradient>
+<filter id="aglow" x="-60%" y="-400%" width="220%" height="900%"><feGaussianBlur stdDeviation="13.1"/></filter>
+<filter id="aglow2" x="-100%" y="-800%" width="300%" height="1700%"><feGaussianBlur stdDeviation="45.1"/></filter>
+<clipPath id="acl"><rect x="327.8" y="960.0" width="424.4" height="880.0" rx="37.6"/></clipPath>
+</defs>
+<defs><linearGradient id="acg" gradientUnits="userSpaceOnUse" x1="0" y1="-20" x2="0" y2="853"><stop offset="0" stop-color="#26262a" stop-opacity="0"/><stop offset=".55" stop-color="#2c2c31" stop-opacity=".95"/><stop offset="1" stop-color="#34343a"/></linearGradient></defs>
+<g fill="none" stroke="url(#acg)" stroke-width="6.8" stroke-linecap="round">
+<path d="M70 -20 C282 469 427 768 540 857"/>
+<path d="M1010 -20 C798 469 653 768 540 857"/></g>
+<g id="aring"><circle cx="540.0" cy="914.9" r="62.0" fill="none" stroke="url(#ast)" stroke-width="18.8"/><circle cx="540.0" cy="914.9" r="71.4" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="1"/></g>
+<g clip-path="url(#acl)"><rect x="327.8" y="960.0" width="375.6" height="880.0" fill="url(#af)"/>
+<rect x="327.8" y="960.0" width="375.6" height="880.0" fill="url(#ash)"/>
+<rect x="703.4" y="960.0" width="48.8" height="880.0" fill="url(#asd)"/>
+<rect x="721.0" y="1329.6" width="14.6" height="237.6" rx="2.4" fill="url(#agold)"/>
+<rect x="699.5" y="960.0" width="7.8" height="880.0" fill="#000" opacity=".35"/>
+<polygon points="328,960 561,960 328,1400" fill="#fff" opacity="0.16"/>
+</g>
+<rect x="327.8" y="960.0" width="424.4" height="880.0" rx="37.6" fill="none" stroke="url(#aed)" stroke-width="2.3"/>
+<rect x="406.4" y="1184.8" width="218.3" height="36.2" rx="8.5" fill="#000" opacity=".55"/>
+<rect x="410.4" y="1188.8" width="210.3" height="28.2" fill="url(#aled)" filter="url(#aglow2)" opacity=".55"/>
+<rect x="410.4" y="1188.8" width="210.3" height="28.2" fill="url(#aled)" filter="url(#aglow)" opacity=".9"/>
+<rect id="aslit" x="410.4" y="1188.8" width="210.3" height="28.2" rx="3.4" fill="url(#aled)"/>
+<ellipse cx="540.0" cy="2010" rx="330" ry="46" fill="url(#floor)"/>
+<g id="wordmark" text-anchor="middle" fill="#efebe3"><text x="540.0" y="2090" font-size="46" font-weight="600" letter-spacing="-1" opacity="0.9">notªpad</text><text x="540.0" y="2130" font-size="21" letter-spacing="5" fill="#9a968e" opacity=".9">OPEN WEARABLE RECORDER</text></g>
+<rect width="1080" height="2400" filter="url(#grain)" opacity="0.07" style="mix-blend-mode:overlay"/>
+<!-- SPONSOR PLACEHOLDER: replace the content of this group with the real logo, centred at (540, 2290) -->
+<g id="sponsor" opacity="0.5" transform="translate(540.0,2290)" fill="none" stroke="#efebe3">
+  <rect x="-150" y="-30" width="300" height="60" rx="30" stroke-width="1.6"/>
+  <text x="3" y="8" text-anchor="middle" font-size="22" letter-spacing="7" fill="#efebe3" stroke="none" font-weight="500">SPONSOR</text>
+</g>
+</svg>
