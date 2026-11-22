@@ -108,7 +108,7 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 <section id="oggetto" class="band">
   <div class="hero">
     <h1>notªpad</h1>
-    <p>A 38 × 17.5 × 8 mm resin monolith you wear around your neck. It listens, records and remembers: the AI of your choice does the rest.</p>
+    <p>A 41 × 17.5 × 8 mm resin monolith you wear around your neck. It listens, records and remembers: the AI of your choice does the rest.</p>
     <div class="sw" role="group" aria-label="Finish">
       <span id="swatches" style="display:contents"></span>
       <output id="fname">Forged carbon</output>
@@ -185,10 +185,11 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
     <div class="st done"><em>Done</em><h3>Manufacturing route fixed: JLCPCB only</h3><p>Quote: 97 EUR for 2 fully assembled and shipped v0.1 boards (Economic PCBA, 5 bare boards, 2 assembled). PCBWay, ALLPCB, NextPCB and home assembly were evaluated and dropped: there is no hot plate or paste at hand, so every board is assembled by JLCPCB. A cost review found no distributor beating LCSC/JLCPCB for the key chips, and a board using only the cheapest "Basic" parts is impossible (no BLE module, NAND, PDM microphones, RGB LEDs or touch ICs in that library); the remaining 7 extra-fee parts stay.</p></div>
     <div class="st done"><em>Done</em><h3>Carrier-board variant dropped</h3><p>A variant on a Seeed XIAO nRF52840 carrier costs more than the E73 module, is 17.5 mm wide (as wide as the whole monolith) and has only 13 GPIOs against about 20 needed.</p></div>
     <div class="st done"><em>Done</em><h3>Open licences and sponsor search (22 Nov)</h3><p>Hardware is released under CERN-OHL-S-2.0, software and documents under MIT. Requests for sponsorship were sent to several PCB and component manufacturers; nothing is agreed. A public GitHub issue is the contact channel. A smaller 381620 battery (about 110 mAh, 3.8 mm thick, an estimate from the listing) is a thinner alternative to the 501520; the shopping list is unchanged.</p></div>
+    <div class="st done"><em>Done</em><h3>Animation fix and size correction (22 Nov)</h3><p>The flickering panel that appeared while the monolith rotates is gone: the battery in the internal 3D model shared its back face with the shell. It is now 15 × 19 × 3.2 mm and sits 0.2 mm inside. Not yet checked on the published page. The monolith size in the text is now 41 × 17.5 × 8 mm (38 mm is the board length).</p></div>
     <div class="st now"><em>In progress</em><h3>Waiting for the module</h3><p>The nRF52840 module (E73-2G4M08S1C) was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to wait in the JLCPCB warehouse for assembly. The board order is placed once they arrive; a Black Friday coupon runs until 2 December (not a promise of timing).</p></div>
     <div class="st now"><em>In progress</em><h3>Waiting for sponsor replies</h3><p>If any reply is positive, the quote will be updated and the sponsor credited here. Nothing is promised.</p></div>
     <div class="st now"><em>In progress</em><h3>Parts outside JLCPCB</h3><p>A shopping list is drafted: LiPo battery (501520 candidate, roughly 80 to 100 mAh, an estimate, to be confirmed), a 0820 coin vibration motor, a small epoxy kit, optionally an SWD probe and a magnetic pogo connector. Estimated 40 to 60 EUR; the whole v0 about 140 to 170 EUR (estimates).</p></div>
-    <div class="st"><em>Next</em><h3>Shells, bring-up and charging base</h3><p>Fill in the online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
+    <div class="st"><em>Next</em><h3>Shells, bring-up and charging base</h3><p>Check in CAD that board, motor and battery fit inside the 8 mm thickness; fill in the online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
     <div class="st"><em>On hold</em><h3>Firmware and phone app</h3><p>Paused on purpose until the board is settled. The pinout for the firmware is already documented.</p></div>
   </div>
   <p style="text-align:center"><img src="https://raw.githubusercontent.com/PZero/notapad/main/kicad/sbroglio.png" alt="Routing preview of the 4-layer v0.1 board, one panel per layer" style="max-width:100%;border-radius:8px"></p>
@@ -218,8 +219,9 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
   <p class="lead">How the project got here, newest first. Two days of intense design work so far.</p>
   <div class="tl">
     <div class="day"><h3>22 November 2026</h3><ul>
+      <li>Presentation animation fixed: the flicker seen while the monolith rotates came from the internal battery model sharing a face with the shell. The text now gives the monolith size as 41 mm long (38 mm is the board). Still to be checked on the published page.</li>
       <li>Open licences chosen: CERN-OHL-S-2.0 for the hardware, MIT for software and documents.</li>
-      <li>Sponsor search started: requests sent to several manufacturers, a public GitHub issue opened as the contact channel, and a "Looking for sponsors" section added here and in the README.</li>
+      <li>Sponsor search started: requests sent to several manufacturers, a public GitHub issue opened as the contact channel, and a "Looking for sponsors" section added here and in the README. <a href="https://github.com/PZero/notapad/commit/a103695">commit</a></li>
       <li>A thinner battery option (381620) was compared; the shopping list stays as it is.</li>
     </ul></div>
     <div class="day"><h3>21 November 2026</h3><ul>
@@ -261,7 +263,7 @@ swWrap.innerHTML = finishes.map((f,i)=>`<button type="button" aria-pressed="${i=
 
 /* ---------------- parts ("inside" panel) ---------------- */
 const parts = [
-  ['Solid resin shell','38 × 17.5 × 8 mm'],
+  ['Solid resin shell','41 × 17.5 × 8 mm'],
   ['3 RGB LEDs + 2 PDM microphones','front and top'],
   ['4-layer board, 16.5 × 38 mm','JLCPCB'],
   ['Modulo nRF52840 (Ebyte E73)','Bluetooth LE'],
@@ -351,7 +353,7 @@ if (THREE_OK) {
   [-3.4,0,3.4].forEach((x,i)=>box(1,1,.6,std(0xf3f3f3,.3,0),x,11,1.3,pcbG));
   [[4.5,8],[6.8,6.6],[-6.5,7.6],[-6.6,12.8],[4,13.6],[6.8,1.6],[-1.2,8.4]].forEach(([x,y])=>box(2.9,1.6,1.1,std(0x111112,.5,0),x,y,1.55,pcbG));
   for(let i=0;i<26;i++){const x=-7+((i*37)%140)/10, y=-.5+((i*53)%150)/10; if(Math.abs(x)<7.8 && y<16.2) box(1,.5,.5,std(i%3?0x8c6a3f:0xb9b2a5,.5,.3),x,y,1.25,pcbG);}
-  const bat = box(16,19,3.5,std(0xaab3bd,.35,.85),0,-3,-2.25);
+  const bat = box(15,19,3.2,std(0xaab3bd,.35,.85),0,-3,-2.2); /* stays inside the shell: a shared back face flickered (z-fighting) */
   const motor = cyl(4,2,std(0xb0b4ba,.3,.9),0,10.5,-2,Math.PI/2);
   const backG = new THREE.Group(); obj.add(backG);
   const pins = [-7,-4.2,4.2,7].map(x=>cyl(.8,4.2,gold,x,16,-2,Math.PI/2,backG));

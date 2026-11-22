@@ -88,6 +88,7 @@ The app and the MCP server are not started yet (see the roadmap).
 
 ### Update, 22 Nov 2026
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
+- **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Not yet checked on the published page. The monolith size is 41 x 17.5 x 8 mm; 38 mm is the board length.
 - **Sponsor search started** (see below). A thinner 381620 battery (about 110 mAh, 3.8 mm, estimate) is an alternative to the 501520; the shopping list is unchanged.
 
 Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
@@ -117,9 +118,10 @@ Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of mater
 - Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (501520 LiPo candidate, roughly 80 to 100 mAh, an estimate; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
-1. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
-2. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
-3. Build the charging base.
+1. Check in CAD that board, motor and battery fit inside the 8 mm thickness before paying for assembly.
+2. Fill in online sponsor forms and prepare a grant application; buy battery, motor and resin; design the two SLA half-shells for JLC3DP.
+3. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
+4. Build the charging base.
 
 **On hold by choice (restart after the board)**
 - Firmware on a XIAO nRF52840 (same chip): recording, LC3, NAND, BLE sync.
@@ -138,11 +140,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: open licences chosen (CERN-OHL-S-2.0 hardware, MIT software and documents).
-2. 22 Nov: sponsor search started; public issue #1 opened as contact channel.
-3. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
-4. 21 Nov: [purchasing plan, production files and public docs update added](https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5).
-5. 21 Nov: [board v0.1 moved to 4 layers and closed](https://github.com/PZero/notapad/commit/9f1f8bed521b04b1bb8905c710e02cd58c6ed17a).
+1. 22 Nov: presentation animation flicker fixed; monolith size corrected to 41 mm in the text.
+2. 22 Nov: open licences chosen (CERN-OHL-S-2.0 hardware, MIT software and documents).
+3. 22 Nov: sponsor search started; public issue #1 opened as contact channel.
+4. 21 Nov: manufacturing route fixed, JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
+5. 21 Nov: [purchasing plan, production files and public docs update added](https://github.com/PZero/notapad/commit/e134c4fe3421e4ed552cf2a572049745e943e3e5).
 
 ## Repository layout
 | Path | Contents |

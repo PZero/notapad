@@ -1,6 +1,8 @@
 # Domande aperte
 
 ## Elettronica
+- Ingombro in CAD (scheda 1 mm + motorino 2 mm + batteria) dentro gli 8 mm del monolite: da fare prima di pagare il PCBA; la 501520 da 5 mm non lascia margine di resina.
+- Pagina: controllare sulla versione pubblicata che lo sfarfallio dell'animazione sia sparito (non verificato in anteprima).
 - Batteria: 501520 su Amazon (120 mAh dichiarati, 5 mm) oppure 381620 su dema-import (110 mAh, 3,8 × 16 × 20 mm, più sottile di 1,2 mm): decidere. In ogni caso verificare all'arrivo spessore reale, PCM e lato del filo +.
 - Diametro dei fori dei pin dorati J1–J4 (ora 1,0 mm): dipende dai pin che comprerete.
 - NAND: la W25N02KVZEIR costa ~10 $; cercare una SPI NAND 2 Gbit WSON-8 8×6 cinese compatibile (XT26G02, DS35Q2GA, FM25S02) e verificarne pin e comandi sul datasheet.

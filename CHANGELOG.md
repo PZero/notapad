@@ -5,6 +5,9 @@
 - repo: sponsor outreach started: requests drafted for PCB makers and component suppliers in `docs/sponsor_contatti.md` (public company addresses only); public issue #1 "Looking for sponsors: first 2–5 notªpad units" pinned; "Looking for sponsors" section added to the README and the project page.
 - docs: `docs/STATO.md` rewritten; 3 new rows in `docs/DECISIONI.md`; sponsor section and battery candidates (501520 or 381620) in `docs/DOMANDE-APERTE.md`.
 - docs: README and project page updated (progress, project history, status and roadmap) to 22/11; `.claude/agents/comunicazione.md` updated with the sponsor rules.
+- docs: presentation page animation fixed: the flicker (z-fighting) while the monolith rotates came from the internal battery model sharing its back face with the shell; the model battery is now 15 × 19 × 3.2 mm and sits 0.2 mm inside. Not yet checked on the published page.
+- docs: monolith size corrected from 38 to 41 × 17.5 × 8 mm in the page text and the "inside" panel (38 mm is the board length); progress and history of the page updated.
+- docs: README update (CAD fit check added as next step, project history with the last five milestones); `docs/STATO.md` rewritten; new row in `docs/DECISIONI.md`; two new open questions in `docs/DOMANDE-APERTE.md` (battery fit in the 8 mm thickness, check of the animation on the published page).
 - electronics: no changes to components, pinout, board or export files.
 
 ## 21/11/2026
