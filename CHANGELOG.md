@@ -1,6 +1,10 @@
 # Changelog
 
 ## 22/11/2026
+- app: automatic transcription with Whisper in the browser added: new `app/trascrittore.js` (Web Worker, transformers.js 4.3.2 from jsDelivr, WebGPU or WASM, `onnx-community/whisper-*` models); `app/app.js` stores transcripts in IndexedDB (`trascrizioni`), queues transcription after each sync, shows a timestamp per sentence, exports TXT and filters silence and hallucinations; new Transcription section in `app/index.html`. Tested: 17 s of Italian speech transcribed in 4.8 s with whisper-base on WebGPU. Not yet tested on the real device.
+- app: `app/sw.js` sends COOP/COEP headers for multithreaded WASM and caches the transcription library; `app/LEGGIMI.md` updated; ADPCM tests still pass.
+- docs: `docs/STATO.md` rewritten; three new rows in `docs/DECISIONI.md` (Whisper in the browser; PWA also for Android with Flutter postponed; battery 501520 does not fit the 9 mm monolith); new entries in `docs/DOMANDE-APERTE.md`; firmware/app paragraph in `CLAUDE.md`.
+- electronics: no changes to board, BOM, pinout or JLC export files.
 - firmware: test firmware `firmware/xiao-prova/` added for a Seeed XIAO nRF52840 Sense with battery (Arduino + Bluefruit): records at 16 kHz in IMA ADPCM on a 512-sector ring in the 2 MB QSPI flash; asks for sync at 80% memory; each sector is erased only after an ACK with CRC32; shutdown at 3.50 V; watchdog. Compiles (16% flash, 13% RAM); not yet tested on the board.
 - app: test app `app/` added: a local PWA for Windows (`avvia.cmd` opens localhost:8787; Web Bluetooth, IndexedDB, WAV export); ADPCM tests `app/test/adpcm.test.mjs` pass. Not yet tested with the real device.
 - docs: README and project page updated with the firmware and app test status, progress and history; references to a sister project removed.

@@ -37,7 +37,14 @@ audio{height:34px;width:100%;max-width:340px}
 label.cb{display:inline-flex;gap:8px;align-items:center;color:var(--mut)}
 .vuoto{color:var(--mut);padding:10px 0}
 #avviso{display:none;border-color:var(--err);color:var(--err);margin-top:14px}
-@media(max-width:640px){td:nth-child(3),th:nth-child(3){display:none}}
+select{font:inherit;color:var(--ink);background:#24242a;border:1px solid #34343b;border-radius:9px;padding:7px 8px;min-height:40px;max-width:100%}
+.nota{color:var(--mut);font-size:13px;margin:12px 0 0}
+tr.tr td{padding-top:0}
+.testo{flex:1 1 100%;max-height:4.6em;overflow:hidden;color:#d6d2ca;font-size:14px}
+.testo.aperto{max-height:none}
+.testo p{margin:0 0 2px}.testo time{color:var(--mut);font:12px Consolas,monospace;margin-right:6px}
+.az{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.az small{color:var(--mut)}
+@media(max-width:640px){td:nth-child(3),th:nth-child(3){display:none}tr.tr td:nth-child(1){display:table-cell}}
 </style>
 </head>
 <body>
@@ -68,6 +75,32 @@ label.cb{display:inline-flex;gap:8px;align-items:center;color:var(--mut)}
     <div class="kpi"><b id="kSync">—</b><span>scarico</span></div>
     <div class="kpi"><b id="kFw">—</b><span>firmware · acceso da</span></div>
   </div>
+</div>
+
+<h2>Trascrizione</h2>
+<div class="pan">
+  <div class="riga">
+    <label class="cb"><input type="checkbox" id="cTrascrivi" checked> Trascrivi da sola dopo la sincronizzazione</label>
+  </div>
+  <div class="riga" style="margin-top:10px">
+    <label class="cb">Modello <select id="sModello">
+      <option value="auto">automatico (small sul PC, base sul telefono)</option>
+      <option value="tiny">tiny · ~40 MB, veloce, impreciso</option>
+      <option value="base">base · ~80 MB</option>
+      <option value="small">small · ~250 MB, buono in italiano</option>
+      <option value="turbo">large-v3-turbo · ~560 MB, solo WebGPU</option>
+    </select></label>
+    <label class="cb">Lingua <select id="sLingua">
+      <option value="italian">italiano</option><option value="english">inglese</option><option value="">automatica</option>
+    </select></label>
+    <label class="cb">Motore <select id="sMotore"><option value="auto">WebGPU se c'è</option><option value="wasm">solo WASM (CPU)</option></select></label>
+    <button id="bModello">Scarica il modello ora</button>
+  </div>
+  <div class="griglia">
+    <div class="kpi"><b id="kTr">—</b><span>trascrizione</span></div>
+    <div class="kpi"><b id="kMotore">—</b><span>motore · modello</span></div>
+  </div>
+  <p class="nota">Whisper gira dentro il browser: l'audio non esce da questo dispositivo. Il modello si scarica una volta sola da Hugging Face (meglio col Wi-Fi) e resta nella cache del browser.</p>
 </div>
 
 <h2>Registrazioni sul PC</h2>

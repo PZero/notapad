@@ -25,8 +25,10 @@
 - Programmatore SWD: il Raspberry Pi 3 basta per il nRF52840? Altrimenti Raspberry Pi Debug Probe o Pico con `debugprobe`.
 
 ## App
-- App di prova PWA per Windows (`app/`): da provare col tag vero; installazione come app e service worker da verificare in Edge.
-- App mobile, più avanti: confermare Flutter + Android per primo.
+- App di prova con la XIAO vera: collegamento, registrazione e scarico provati; restano da provare sync automatica all'80%, qualità audio, velocità di scarico, installazione come app e service worker in Edge.
+- Trascrizione Whisper: provata solo con 17 s di voce sintetica (base, WebGPU). Da provare con parlato vero e rumore (audio 16 kHz ADPCM): modello small sul PC, tempi e qualità in italiano, WASM sul telefono.
+- Android: pubblicare l'app su https (GitHub Pages) nel repo pubblico? Dentro `pagina/` o in una cartella separata? Web Bluetooth non lavora a schermo spento: basta per la sync o serve l'app nativa (Flutter)?
+- Peso dei modelli (base ~80 MB, small ~250 MB) sul telefono: scaricarli solo con il Wi-Fi?
 - Repository dell'app: questo stesso o uno separato? Invitare l'amico come collaboratore.
 - Qualcuno di voi ha un telefono Android?
 

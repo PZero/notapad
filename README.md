@@ -41,7 +41,7 @@ Design goals:
 - **No screen, no app to open.** Interaction is a squeeze gesture, three LEDs and a vibration motor.
 - **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 4-layer board assembled by JLCPCB, a resin shell cast in a silicone mould.
 
-> Honest status: this is a design in progress. Nothing has been manufactured yet; the first firmware and app tests (on a development board) have been written but not yet run. Figures such as runtime and capacity are estimates.
+> Honest status: this is a design in progress. Nothing has been manufactured yet; the first firmware and app tests (on a development board) have run on a development board (connection, recording, download and transcription work; deeper tests are pending). Figures such as runtime and capacity are estimates.
 
 ## The object
 | | |
@@ -76,7 +76,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
 - **Power:** ~60 mAh LiPo with protection circuit, MCP73832 charger at 50 mA (open-drain status output), 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
 - **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
-- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 stays a possible, larger alternative (to be confirmed).
+- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 does not fit the 9 mm monolith.
 - **Estimated consumption:** about 4.6 mA average, about 11.5 h on 60 mAh.
 
 ### What changed during design review (21 Nov 2026)
@@ -93,7 +93,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
 - **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith length is 41 mm; 38 mm is the board length.
 - **Wallpapers approved:** all eight phone wallpapers, published below; the three LEDs are drawn as separate lights.
-- **Firmware and app tests begun** on a development board (see below).
+- **Firmware and app tested on a development board** (see below): connection, recording and download confirmed on a real XIAO nRF52840 Sense; automatic Whisper transcription added to the app; the app stays a PWA also for Android (https page still to publish). Battery 501520 dropped (does not fit 9 mm).
 - **Sponsor search started** (see below). Batteries 602030, 401020, 401230 and 402020 ruled out; 381620 is the candidate (estimates).
 - **Contacts:** flat-head target contacts (monolith) and single pogo pins (charging base) identified; wiring plan for the base (8 solder joints).
 - **Pre-order verification, third run:** 41 passed, 25 warnings, 1 failure, 2 not verifiable (69 tests). Charger changed to the MCP73832; monolith now **9 mm** (at 8 mm only 0.1 mm of resin was left per face, now 0.6 mm); contact targets 2.0 x 4.0 mm with the tip 0.1 mm out of the back, and the four holes widened from 1.0 to 1.1 mm (only the drill files changed, copper identical, DRC clean). The section drawing of the target in the 9 mm monolith is [`verifica/target_sezione.png`](verifica/target_sezione.png) (labels in Italian).
@@ -129,8 +129,8 @@ What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna k
 ## First firmware and app tests
 Started on 22 Nov 2026, before the v0.1 boards arrive. They run on a **Seeed XIAO nRF52840 Sense** with a battery: a development board with the same nRF52840 chip, a PDM microphone and 2 MB of flash, used to try the whole chain early.
 - **Firmware** ([`firmware/xiao-prova/`](firmware/xiao-prova/), Arduino with the Bluefruit library): records at 16 kHz, compresses with IMA ADPCM and stores the audio in a ring of 512 sectors of 4 KB, about 4 minutes. At 80% full it asks to sync and the connected app downloads by itself. Each sector is erased only after the app has received it, verified its CRC and saved it. Shutdown at 3.50 V and a watchdog are included.
-- **App** ([`app/`](app/)): a local-only web app for Windows (localhost, Web Bluetooth in Edge or Chrome). It stores in the browser (IndexedDB), with playback and WAV export, and no cloud.
-- **Honest status:** the firmware compiles and the format tests pass, but it has **not yet been flashed or run on the board**. The first test on the board is next. The final firmware for the v0.1 board (Zephyr is the option) and the real phone app (Flutter) are separate and still on hold.
+- **App** ([`app/`](app/)): a web app (PWA), local-only for now (localhost, Web Bluetooth in Edge or Chrome). It stores in the browser (IndexedDB), with playback and WAV export, and no cloud. Since 22 Nov it also **transcribes automatically after each sync** with Whisper running in the browser (transformers.js in a Web Worker, WebGPU or WASM; small model on a PC, base on a phone; Italian), keeping the time of each sentence, with TXT export. The audio never leaves the device. Test: 17 s of Italian speech in 4.8 s with whisper-base on WebGPU.
+- **Honest status:** the firmware was flashed on a real XIAO nRF52840 Sense and tested with the app on 22 Nov: Bluetooth connection, recording and audio download work. **Not tested in depth yet:** automatic sync at 80%, audio quality, download speed, the small Whisper model, Edge as an installed app and an Android phone. The final firmware for the v0.1 board (Zephyr is the option) is separate and still on hold; the phone app stays a PWA for now (Flutter postponed).
 
 ## Wallpapers
 Eight phone wallpapers, all approved. The clock area is kept clear and a discreet "Sponsor" slot sits above the home bar. Each comes as a full-size PNG for iPhone (1179 x 2556) and Android (1080 x 2400); sources and generator scripts are in [`sfondi/`](sfondi/).
@@ -152,7 +152,8 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
-- First firmware and app tests written (22 Nov) for a XIAO nRF52840 Sense development board: 16 kHz ADPCM recording into a 4-minute flash ring, sync with a local Windows web app. Compiles and the format tests pass; not yet run on the board.
+- Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
+- Automatic on-device-browser transcription in the test app (22 Nov): Whisper via transformers.js, Italian; 17 s transcribed in 4.8 s (base model, WebGPU). Audio does not leave the device.
 - All eight wallpapers approved and published (22 Nov).
 - Automated pre-order verification (22 Nov): 69 tests in 8 areas, three runs, the last with 41 passed, 25 warnings, 1 failure (assembly tier), 2 not verifiable. Charger corrected to MCP73832; monolith set to 9 mm; contact targets 2.0 x 4.0 mm with 1.1 mm holes.
 - Concept, finish renders, animated presentation, BOM and netlist for v0.1.
@@ -164,7 +165,8 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
-- First test of the test firmware and app on the XIAO board: flash, record, store and sync.
+- Deeper tests on the XIAO board and the app: automatic sync at 80%, audio quality, download speed, battery, the small Whisper model, Edge as installed app.
+- Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
 - Waiting for sponsor replies; nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
@@ -179,7 +181,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 **On hold by choice (restart after the board)**
 - Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
-- Real phone app (proposal: Flutter, Android first; the test app is a local web app) and the MCP server.
+- Native phone app (Flutter postponed: the test app stays a PWA, also for Android) and the MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
 
@@ -194,7 +196,7 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: first firmware and app tests written for a XIAO nRF52840 Sense development board (not yet run on it); all eight wallpapers approved and published.
+1. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
 2. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
 3. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
 4. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
