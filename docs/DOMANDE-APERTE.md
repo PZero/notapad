@@ -24,17 +24,15 @@
 - Pannello unico notªpad + tag SwimTimer (file pronto in `kicad/pannello/`): confrontare il preventivo con le schede separate.
 - Programmatore SWD: il Raspberry Pi 3 basta per il nRF52840? Altrimenti Raspberry Pi Debug Probe o Pico con `debugprobe`.
 
-## App (in pausa)
-- Confermare Flutter + Android per primo.
+## App
+- App di prova PWA per Windows (`app/`): da provare col tag vero; installazione come app e service worker da verificare in Edge.
+- App mobile, più avanti: confermare Flutter + Android per primo.
 - Repository dell'app: questo stesso o uno separato? Invitare l'amico come collaboratore.
 - Qualcuno di voi ha un telefono Android?
 
 ## Basetta di ricarica (idea, dopo il primo ordine del monolite)
 - Basetta con **XIAO RP2040** + molle pogo: alimenta il 5V per la carica e fa da **programmatore SWD** (firmware `debugprobe`, come un Pico), collegata al PC via USB-C.
 - Il monolite invece non ci rientra: lo XIAO nRF52840 è troppo grande (21×17,8 mm) e ha troppo pochi GPIO.
-
-## Sfondi per cellulare
-- Quali 4 degli 8 sfondi (`sfondi/`) approvare per pagina e README.
 
 ## Design
 - Effetto "monolite che si illumina tutto" (resina traslucida, più LED): eventualmente per una versione successiva.

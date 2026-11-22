@@ -22,6 +22,8 @@
 - [Architecture](#architecture)
 - [Electronics v0.1](#electronics-v01)
 - [Pre-order verification](#pre-order-verification)
+- [First firmware and app tests](#first-firmware-and-app-tests)
+- [Wallpapers](#wallpapers)
 - [Manufacturing](#manufacturing)
 - [Status and roadmap](#status-and-roadmap)
 - [Looking for sponsors](#looking-for-sponsors)
@@ -39,7 +41,7 @@ Design goals:
 - **No screen, no app to open.** Interaction is a squeeze gesture, three LEDs and a vibration motor.
 - **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 4-layer board assembled by JLCPCB, a resin shell cast in a silicone mould.
 
-> Honest status: this is a design in progress. Nothing has been manufactured or tested yet. Figures such as runtime and capacity are estimates.
+> Honest status: this is a design in progress. Nothing has been manufactured yet; the first firmware and app tests (on a development board) have been written but not yet run. Figures such as runtime and capacity are estimates.
 
 ## The object
 | | |
@@ -66,7 +68,7 @@ flowchart LR
   APP --> MCP[Open MCP server]
   MCP --> AI[AI of the user's choice<br/>transcription and notes]
 ```
-The app and the MCP server are not started yet (see the roadmap).
+The real app and the MCP server are not started yet; a test app for a development board exists (see the roadmap).
 
 ## Electronics v0.1
 - **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
@@ -82,7 +84,7 @@ The app and the MCP server are not started yet (see the roadmap).
 - **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock at JLCPCB.
 - **Space savings.** One resistor per LED on the common anode instead of one per colour (LEDs multiplexed, one colour at a time); an extra 1 uF capacitor on the latch so a reset at low battery does not power the device off.
 - **Board closed on 4 layers.** With 2 layers 7 connections stayed open; JLCPCB Economic assembly does not accept 4 layers at 0.8 mm, so the board is 1.0 mm. Length fixed at 38 mm (at 35 mm 4 connections stayed open). Checks: ERC 0, DRC 0 violations, 0 unconnected, schematic-board parity 0.
-- **Charger changed to MCP73831** (50 mA), the same part as a sister project, so one extra-fee component is shared in a combined panel. *Superseded on 22 Nov by the MCP73832, see the pre-order verification below.*
+- **Charger changed to MCP73831** (50 mA), chosen at the time to keep the number of extra-fee components down. *Superseded on 22 Nov by the MCP73832, see the pre-order verification below.*
 - **Manufacturing route fixed (late 21 Nov).** JLCPCB only. The XIAO carrier variant costs more than the E73 module, is 17.5 mm wide (as wide as the monolith) and has 13 GPIOs against about 20 needed; home assembly dropped (no hot plate or paste), so JLCPCB assembles every board. No distributor beats LCSC/JLCPCB for the key chips, and a Basic-parts-only board is impossible (no BLE, NAND, PDM microphones, RGB LEDs or touch ICs in that library); 7 extra-fee parts stay. Q2 stays a dual 2N7002DW; NAND and charger stay extra-fee parts.
 - **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the JLCPCB placement file (checked in their preview). A NextPCB variant was prepared and dropped for v0 (no microphone stock, higher quote).
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
@@ -90,6 +92,8 @@ The app and the MCP server are not started yet (see the roadmap).
 ### Update, 22 Nov 2026
 - **Licences chosen:** CERN-OHL-S-2.0 for hardware, MIT for software and documents.
 - **Presentation animation fixed:** the flicker while the monolith rotates came from the internal battery model sharing a face with the shell (now 15 x 19 x 3.2 mm, 0.2 mm inside). Page layout reworked for phones; group, gesture and MCP scenes redone. Checked at 375, 390 and 1280 px, not on a real iPhone. The monolith length is 41 mm; 38 mm is the board length.
+- **Wallpapers approved:** all eight phone wallpapers, published below; the three LEDs are drawn as separate lights.
+- **Firmware and app tests begun** on a development board (see below).
 - **Sponsor search started** (see below). Batteries 602030, 401020, 401230 and 402020 ruled out; 381620 is the candidate (estimates).
 - **Contacts:** flat-head target contacts (monolith) and single pogo pins (charging base) identified; wiring plan for the base (8 solder joints).
 - **Pre-order verification, third run:** 41 passed, 25 warnings, 1 failure, 2 not verifiable (69 tests). Charger changed to the MCP73832; monolith now **9 mm** (at 8 mm only 0.1 mm of resin was left per face, now 0.6 mm); contact targets 2.0 x 4.0 mm with the tip 0.1 mm out of the back, and the four holes widened from 1.0 to 1.1 mm (only the drill files changed, copper identical, DRC clean). The section drawing of the target in the 9 mm monolith is [`verifica/target_sezione.png`](verifica/target_sezione.png) (labels in Italian).
@@ -122,6 +126,23 @@ Every value is cross-checked against at least two independent sources (datasheet
 
 What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna keep-out. The remaining warnings concern shells, firmware and bring-up, not the board. A review like this cannot replace testing the real boards, and it does not guarantee they will work.
 
+## First firmware and app tests
+Started on 22 Nov 2026, before the v0.1 boards arrive. They run on a **Seeed XIAO nRF52840 Sense** with a battery: a development board with the same nRF52840 chip, a PDM microphone and 2 MB of flash, used to try the whole chain early.
+- **Firmware** ([`firmware/xiao-prova/`](firmware/xiao-prova/), Arduino with the Bluefruit library): records at 16 kHz, compresses with IMA ADPCM and stores the audio in a ring of 512 sectors of 4 KB, about 4 minutes. At 80% full it asks to sync and the connected app downloads by itself. Each sector is erased only after the app has received it, verified its CRC and saved it. Shutdown at 3.50 V and a watchdog are included.
+- **App** ([`app/`](app/)): a local-only web app for Windows (localhost, Web Bluetooth in Edge or Chrome). It stores in the browser (IndexedDB), with playback and WAV export, and no cloud.
+- **Honest status:** the firmware compiles and the format tests pass, but it has **not yet been flashed or run on the board**. The first test on the board is next. The final firmware for the v0.1 board (Zephyr is the option) and the real phone app (Flutter) are separate and still on hold.
+
+## Wallpapers
+Eight phone wallpapers, all approved. The clock area is kept clear and a discreet "Sponsor" slot sits above the home bar. Each comes as a full-size PNG for iPhone (1179 x 2556) and Android (1080 x 2400); sources and generator scripts are in [`sfondi/`](sfondi/).
+
+|   |   |   |   |
+|---|---|---|---|
+| <img src="pagina/sfondi/01_midnight.jpg" width="150" alt="Wallpaper 1: Midnight"> | <img src="pagina/sfondi/02_macro-slit.jpg" width="150" alt="Wallpaper 2: Macro slit"> | <img src="pagina/sfondi/03_gold-contacts.jpg" width="150" alt="Wallpaper 3: Gold contacts"> | <img src="pagina/sfondi/04_exploded-board.jpg" width="150" alt="Wallpaper 4: Exploded view"> |
+| **1. Midnight**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/01_midnight_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/01_midnight_android.png) | **2. Macro slit**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/02_macro-slit_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/02_macro-slit_android.png) | **3. Gold contacts**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/03_gold-contacts_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/03_gold-contacts_android.png) | **4. Exploded view**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/04_exploded-board_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/04_exploded-board_android.png) |
+| <img src="pagina/sfondi/05_two-microphones.jpg" width="150" alt="Wallpaper 5: Two microphones"> | <img src="pagina/sfondi/06_ivory-light.jpg" width="150" alt="Wallpaper 6: Ivory"> | <img src="pagina/sfondi/07_six-finishes.jpg" width="150" alt="Wallpaper 7: Six finishes"> | <img src="pagina/sfondi/08_recording.jpg" width="150" alt="Wallpaper 8: Recording"> |
+| **5. Two microphones**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/05_two-microphones_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/05_two-microphones_android.png) | **6. Ivory**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/06_ivory-light_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/06_ivory-light_android.png) | **7. Six finishes**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/07_six-finishes_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/07_six-finishes_android.png) | **8. Recording**<br>[iPhone](https://github.com/PZero/notapad/raw/main/sfondi/png/08_recording_iphone.png) · [Android](https://github.com/PZero/notapad/raw/main/sfondi/png/08_recording_android.png) |
+
+
 ## Manufacturing
 - **PCB and assembly (v0):** JLCPCB only. Economic PCBA, 4 layers, 1.0 mm, 5 bare boards, 2 assembled; quote 97 EUR for the 2 assembled boards, shipped (estimate until the order is placed). The E73 module was out of stock, so 2 units are pre-ordered into the JLCPCB warehouse; the board order follows their arrival. Production files are generated by script in [`kicad/fab_out/`](kicad/fab_out/).
 - **Later batches:** also assembled by JLCPCB (home assembly dropped: no hot plate or paste). Component cost is estimated at about 19 USD per monolith, mostly NAND and module.
@@ -131,6 +152,8 @@ What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna k
 
 ## Status and roadmap
 **Done**
+- First firmware and app tests written (22 Nov) for a XIAO nRF52840 Sense development board: 16 kHz ADPCM recording into a 4-minute flash ring, sync with a local Windows web app. Compiles and the format tests pass; not yet run on the board.
+- All eight wallpapers approved and published (22 Nov).
 - Automated pre-order verification (22 Nov): 69 tests in 8 areas, three runs, the last with 41 passed, 25 warnings, 1 failure (assembly tier), 2 not verifiable. Charger corrected to MCP73832; monolith set to 9 mm; contact targets 2.0 x 4.0 mm with 1.1 mm holes.
 - Concept, finish renders, animated presentation, BOM and netlist for v0.1.
 - Datasheet checks (E73 pinout, microphone port) and the resulting corrections above.
@@ -141,6 +164,7 @@ What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna k
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
+- First test of the test firmware and app on the XIAO board: flash, record, store and sync.
 - Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
 - Waiting for sponsor replies; nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
@@ -154,8 +178,8 @@ What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna k
 5. Build the charging base.
 
 **On hold by choice (restart after the board)**
-- Firmware on a XIAO nRF52840 (same chip): recording, LC3, NAND, BLE sync.
-- Phone app (proposal: Flutter, Android first) and the MCP server.
+- Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
+- Real phone app (proposal: Flutter, Android first; the test app is a local web app) and the MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
 
@@ -170,9 +194,9 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
-2. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); batteries shortlisted (381620) and contacts identified.
-3. 22 Nov: [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3) and [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
+1. 22 Nov: first firmware and app tests written for a XIAO nRF52840 Sense development board (not yet run on it); all eight wallpapers approved and published.
+2. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
+3. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
 4. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
 5. 21 Nov: [manufacturing route fixed](https://github.com/PZero/notapad/commit/1835875), JLCPCB only, 97 EUR quoted for 2 assembled boards; E73 module pre-ordered.
 
@@ -184,7 +208,10 @@ Latest milestones (full timeline on the [presentation page](https://pzero.github
 | `jlc/` | bill of materials, netlist, board outline DXF, generator script |
 | `kicad/` | KiCad project, LCSC-derived library, generation and routing scripts |
 | `render/` | monolith renders and the script that makes them |
-| `pagina/` | animated presentation (three.js), published on GitHub Pages |
+| `pagina/` | animated presentation (three.js), published on GitHub Pages, with reduced wallpaper previews |
+| `sfondi/` | phone wallpapers: SVG sources, PNG for iPhone and Android, generator scripts |
+| `firmware/` | test firmware for the XIAO nRF52840 Sense development board |
+| `app/` | test app (local web app, Web Bluetooth) |
 | `.claude/` | project agents and commands used to keep documents in sync |
 | `CHANGELOG.md` | change history |
 

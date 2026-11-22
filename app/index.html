@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>notªpad</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone/icona-192.png">
+<meta name="theme-color" content="#0e0e10">
+<style>
+:root{color-scheme:dark;--bg:#0e0e10;--pan:#17171a;--ink:#efebe3;--mut:#9a968e;--line:#2a2a2f;--acc:#5fd3c4;--warn:#e3a008;--err:#e5544b;--ok:#3fb27f}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:26px;margin:0;font-weight:600}h1 small{font-size:14px;color:var(--mut);font-weight:400;margin-left:8px}
+h2{font-size:16px;margin:26px 0 10px;font-weight:600}
+.pan{background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:16px}
+button{font:inherit;color:var(--ink);background:#24242a;border:1px solid #34343b;border-radius:9px;padding:8px 14px;min-height:40px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.45;cursor:default}
+button.pri{background:var(--acc);color:#071513;border-color:var(--acc);font-weight:600}
+.riga{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.griglia{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.kpi b{display:block;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}.kpi span{color:var(--mut);font-size:13px}
+.barra{position:relative;height:16px;border-radius:8px;background:#26262c;overflow:hidden;margin-top:14px}
+.barra i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);transition:width .4s}
+.barra .soglia{position:absolute;top:-2px;bottom:-2px;left:80%;width:2px;background:var(--warn)}
+.stato{display:inline-flex;align-items:center;gap:8px;color:var(--mut)}
+.pall{width:10px;height:10px;border-radius:50%;background:#555}.pall.on{background:var(--ok)}.pall.rec{background:var(--err);animation:p 1.2s infinite}
+@keyframes p{50%{opacity:.3}}
+.chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.chip.w{border-color:var(--warn);color:var(--warn)}.chip.e{border-color:var(--err);color:var(--err)}.chip.a{border-color:var(--acc);color:var(--acc)}
+table{width:100%;border-collapse:collapse}td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:500;font-size:13px}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+audio{height:34px;width:100%;max-width:340px}
+#log{font:12px Consolas,monospace;color:var(--mut);max-height:220px;overflow:auto;white-space:pre-wrap;margin:0}
+label.cb{display:inline-flex;gap:8px;align-items:center;color:var(--mut)}
+.vuoto{color:var(--mut);padding:10px 0}
+#avviso{display:none;border-color:var(--err);color:var(--err);margin-top:14px}
+@media(max-width:640px){td:nth-child(3),th:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>notªpad <small>app di prova · solo locale</small></h1>
+  <div class="riga">
+    <span class="stato"><span id="pall" class="pall"></span><span id="statoTxt">non collegato</span></span>
+    <button id="bCollega" class="pri">Collega il dispositivo</button>
+    <button id="bScollega" disabled>Scollega</button>
+  </div>
+</header>
+<div id="avviso" class="pan"></div>
+
+<h2>Dispositivo</h2>
+<div class="pan">
+  <div class="riga">
+    <button id="bRec" disabled>Avvia registrazione</button>
+    <button id="bSync" disabled>Sincronizza ora</button>
+    <label class="cb"><input type="checkbox" id="cAuto" checked> Sincronizza da sola all'80%</label>
+    <span id="chips"></span>
+  </div>
+  <div class="barra" title="Memoria del dispositivo: la linea gialla è la soglia dell'80%"><i id="barra" style="width:0"></i><span class="soglia"></span></div>
+  <div class="griglia">
+    <div class="kpi"><b id="kMem">—</b><span>memoria usata</span></div>
+    <div class="kpi"><b id="kMin">—</b><span>audio da scaricare</span></div>
+    <div class="kpi"><b id="kBatt">—</b><span>batteria</span></div>
+    <div class="kpi"><b id="kSync">—</b><span>scarico</span></div>
+    <div class="kpi"><b id="kFw">—</b><span>firmware · acceso da</span></div>
+  </div>
+</div>
+
+<h2>Registrazioni sul PC</h2>
+<div class="pan">
+  <table><thead><tr><th>Inizio</th><th class="n">Durata</th><th>Settori</th><th>Ascolta</th><th></th></tr></thead>
+  <tbody id="lista"></tbody></table>
+  <div id="vuota" class="vuoto">Ancora nessuna registrazione scaricata.</div>
+</div>
+
+<h2>Registro</h2>
+<div class="pan"><pre id="log"></pre>
+  <div class="riga" style="margin-top:10px"><button id="bInfo" disabled>Diagnostica</button><button id="bWipe" disabled>Svuota la memoria del dispositivo</button></div>
+</div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

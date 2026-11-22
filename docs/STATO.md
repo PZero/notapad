@@ -1,6 +1,6 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 22/11/2026, Fase 1: scheda v0.1 verificata e corretta prima dell'ordine; ordine JLC in attesa dell'E73 e della conferma del tipo di PCBA
+**Ultimo aggiornamento:** 22/11/2026 (sera), Fase 1: scheda v0.1 verificata, ordine JLC in attesa dell'E73 e del tipo di PCBA; iniziati i test di firmware e app su una XIAO nRF52840 Sense
 
 ## Fatto
 - Concept, render, pagina di presentazione (`pagina/`), libreria KiCad dai codici LCSC, scheda 4 strati 1,0 mm 16,5 × 38 mm generata da script (ERC 0, DRC 0, parità 0). Export in `kicad/fab_out/jlcpcb/`.
@@ -9,13 +9,15 @@
 - **Caricatore:** MCP73831 → **MCP73832T-2ACI/OT (C38066)**, perché lo STAT tri-state del 31, alimentato dal 5V, portava P0.07 a ~5 V. Stessa impronta: cambiano solo BOM e valori, Gerber invariati.
 - **Monolite 9 mm** (a 8 mm restavano 0,1 mm di resina per faccia).
 - **Contatti J1–J4:** target 2,0 × 4,0 mm (coda Ø0,9 × 2, spalla Ø2 × 0,5, corpo Ø1,5 × 4,0), la punta esce di 0,1 mm dal retro. Fori allargati a **1,1 mm** (piazzola 1,6). Cambiano solo i file di foratura; DRC con parità pulito. Disegno in sezione: `verifica/target_sezione.png`.
-- **Comunicazione:** sezione "Pre-order verification" nel README e "Checked before we pay" nella pagina. 8 sfondi per cellulare in `sfondi/` (iPhone e Android, spazio "Sponsor" separato nel sorgente), con galleria in `sfondi/index.html`.
+- **Comunicazione:** sezione "Pre-order verification" nel README e "Checked before we pay" nella pagina. 8 sfondi per cellulare in `sfondi/` (iPhone e Android, spazio "Sponsor" separato nel sorgente), approvati tutti e 8 e pubblicati su pagina e README.
+- **Firmware di prova** (`firmware/xiao-prova/`, XIAO nRF52840 Sense con batteria, Arduino + Bluefruit): registra a 16 kHz in IMA ADPCM, anello di 512 settori sulla QSPI da 2 MB (~4 min), sincronizzazione all'80%, ACK + CRC, spegnimento a 3,50 V, watchdog. Compila (16 % flash, 13 % RAM); **non ancora caricato né provato sulla scheda**.
+- **App di prova** (`app/`): PWA per Windows solo locale (`avvia.cmd` → localhost:8787, Edge/Chrome, Web Bluetooth, IndexedDB), con auto-sincronizzazione all'80%, ascolto ed export WAV. Prove del formato `node app/test/adpcm.test.mjs` superate; Bluetooth vero non provato.
 - Preventivo JLC precedente: 97 € per 2 schede montate (Economic PCBA), E73 in pre-order verso My Inventory.
 
 ## In corso
 - **E03, bloccante:** sulla pagina JLC l'E73 (C356849) è «Standard Only» con X-ray. Bisogna verificare nel carrello se l'Economic PCBA lo accetta; se no, rifare il preventivo con lo Standard PCBA.
 - Attendere l'E73 in My Inventory, poi selezionarlo su U1, controllare l'anteprima (rotazioni E05, DFM: corpo di U6 su un pad di C7, F11) e pagare (coupon fino al **2/12**).
-- Scelta di 4 sfondi su 8 da parte dell'utente; prima correggere i 3 LED (oggi disegnati come barra unica) e le didascalie dello sfondo 7.
+- Primo collaudo della XIAO: caricare `firmware/xiao-prova`, collegare l'app, verificare registrazione, sincronizzazione all'80%, qualità dell'audio e velocità di scarico.
 - Risposte degli sponsor.
 
 ## Prossimi passi
@@ -26,7 +28,7 @@
 5. Basetta con pogo e magneti a polarità certa (D15: SWD senza ESD).
 
 ## In pausa (per scelta dell'utente)
-- Firmware e app. Pinout in `docs/pinout_v0.1.md`.
+- Firmware per la scheda v0.1 (E73, NAND, LC3) e app mobile: dopo i test sulla XIAO. Pinout in `docs/pinout_v0.1.md`.
 - Cartella locale `ncs` (toolchain Nordic parziale).
 
 ## Abbandonato

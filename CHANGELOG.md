@@ -1,11 +1,14 @@
 # Changelog
 
 ## 22/11/2026
+- firmware: test firmware `firmware/xiao-prova/` added for a Seeed XIAO nRF52840 Sense with battery (Arduino + Bluefruit): records at 16 kHz in IMA ADPCM on a 512-sector ring in the 2 MB QSPI flash; asks for sync at 80% memory; each sector is erased only after an ACK with CRC32; shutdown at 3.50 V; watchdog. Compiles (16% flash, 13% RAM); not yet tested on the board.
+- app: test app `app/` added: a local PWA for Windows (`avvia.cmd` opens localhost:8787; Web Bluetooth, IndexedDB, WAV export); ADPCM tests `app/test/adpcm.test.mjs` pass. Not yet tested with the real device.
+- docs: README and project page updated with the firmware and app test status, progress and history; references to a sister project removed.
 - electronics: charger changed from MCP73831 to MCP73832T-2ACI/OT (C38066): its STAT output is open-drain, so P0.07 no longer sits near 5 V; same footprint, def, schematic, PCB values, BOM and pinout updated; copper Gerbers unchanged.
 - electronics: monolith raised from 8 to 9 mm (page, 3D model, README, CLAUDE.md); battery candidate 381620 (3.8 × 16 × 20 mm) with 501520 as fallback.
 - electronics: charging contacts J1–J4 set to 2.0 × 4.0 mm targets in 1.0–1.1 mm holes; export files in `kicad/fab_out/` regenerated (only drill files changed); DRC clean, layer parity clean.
 - repo: pre-order verification added in `verifica/`: 69 cross-checks in 8 areas (scripts in `verifica/script/`, results in `verifica/risultati.json`, page `verifica/index.html`, target section drawing); last run 41 PASS, 25 WARN, 1 FAIL (E73 "Standard Only" at JLCPCB, quote to be reconfirmed), 2 N/V.
-- repo: wallpaper drafts added in `sfondi/` (8 phone wallpapers as SVG sources and PNG for Android and iPhone, gallery page, scripts); drafts, not yet approved and not linked from the README or the project page.
+- repo: wallpaper drafts added in `sfondi/` (8 phone wallpapers as SVG sources and PNG for Android and iPhone, gallery page, scripts); all 8 approved and published, previews in `pagina/sfondi/`, linked from the README and the project page; LED light corrected to three separate lights and the wallpaper 7 captions aligned.
 - docs: README and project page updated with the pre-order verification section, progress, history and the 9 mm monolith; `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md` and the hand-assembly list updated.
 - repo: licences added: MIT for software and documentation (`LICENSE`), CERN-OHL-S-2.0 for hardware (`LICENSE-HARDWARE`, official SPDX text); README gets license badges and a License section.
 - repo: sponsor outreach started: requests drafted for PCB makers and component suppliers in `docs/sponsor_contatti.md` (public company addresses only); public issue #1 "Looking for sponsors: first 2–5 notªpad units" pinned; "Looking for sponsors" section added to the README and the project page.

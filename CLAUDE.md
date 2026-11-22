@@ -38,7 +38,7 @@ Al 21/11: scheda chiusa, ERC 0, DRC 0 violazioni, 0 scollegati, parità 0 (114 v
 3. FATTO: progetto KiCad generato, sbrogliato a 4 strati ed esportato.
 4. FATTO: preventivo JLC 97 € per 2 schede montate e spedite. SOLO JLC (21/11): XIAO/Seeed, PCBWay, ALLPCB, NextPCB e montaggio in casa abbandonati.
 5. Ordine v0 su JLC: E73 (C356849) 2 pezzi in pre-order verso "My Inventory" (coperti da coupon); quando arrivano, selezionarli su U1, controllare l'antenna e pagare (coupon Black Friday fino al 2/12). Pezzi fuori JLC: `acquisti/spesa_amazon.md`.
-Firmware (XIAO nRF52840, Zephyr) e app sono IN PAUSA per scelta dell'utente: si riparte dopo la scheda. Per l'app la proposta è Flutter, partendo da Android: nessuno dei due ha un Mac (c'è solo quello della sorella) e iOS si compila nel cloud.
+Firmware e app ripartiti il 22/11 su richiesta dell'utente: firmware di prova su XIAO nRF52840 Sense con batteria (Arduino + Bluefruit) in `firmware/xiao-prova/`, app di prova PWA per Windows solo locale in `app/` (Web Bluetooth, IndexedDB). Sincronizzazione automatica all'80% della memoria. Per la scheda definitiva resta l'ipotesi Zephyr; per l'app mobile (più avanti) Flutter partendo da Android.
 
 ## Metodo di lavoro e memoria
 - Sei il coordinatore e l'unico interlocutore dell'utente. Deleghi ai sottoagenti (`.claude/agents/`) e riporti solo la sintesi. Niente lavoro sul software finché l'utente non lo chiede: è attento ai token e ai costi (ogni componente JLC Extended costa 3 $ a ordine).

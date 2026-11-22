@@ -113,9 +113,15 @@ def monolith(cx, top, h, fkey, p, led=True, cord=False, side=True, cord_x=None):
     if led:
         sx, sy, sw, sh = cx - s / 2 - w * .28, top + h * .26, w * .56, w * .075
         out.append(f'<rect x="{sx-4:.1f}" y="{sy-4:.1f}" width="{sw+8:.1f}" height="{sh+8:.1f}" rx="{sh*.3:.1f}" fill="#000" opacity=".55"/>')
-        out.append(f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{sw:.1f}" height="{sh:.1f}" fill="url(#{p}led)" filter="url(#{p}glow2)" opacity=".55"/>')
-        out.append(f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{sw:.1f}" height="{sh:.1f}" fill="url(#{p}led)" filter="url(#{p}glow)" opacity=".9"/>')
-        out.append(f'<rect id="{p}slit" x="{sx:.1f}" y="{sy:.1f}" width="{sw:.1f}" height="{sh:.1f}" rx="{sh*.12:.1f}" fill="url(#{p}led)"/>')
+        out.append(f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{sw:.1f}" height="{sh:.1f}" rx="{sh*.12:.1f}" fill="#050506"/>')
+        lw = sw * .29
+        gap = (sw - 3 * lw) / 4
+        for k, c in enumerate(("#ff3a55", "#35ff9a", "#3a7bff")):
+            lx = sx + gap * (k + 1) + lw * k
+            out.append(f'<rect x="{lx:.1f}" y="{sy:.1f}" width="{lw:.1f}" height="{sh:.1f}" fill="{c}" filter="url(#{p}glow2)" opacity=".55" style="mix-blend-mode:screen"/>')
+            out.append(f'<rect x="{lx:.1f}" y="{sy:.1f}" width="{lw:.1f}" height="{sh:.1f}" fill="{c}" filter="url(#{p}glow)" opacity=".9"/>')
+            out.append(f'<rect x="{lx:.1f}" y="{sy+sh*.2:.1f}" width="{lw:.1f}" height="{sh*.6:.1f}" rx="{sh*.15:.1f}" fill="#fff" opacity=".85"/>')
+            out.append(f'<rect id="{p}led{k}" x="{lx:.1f}" y="{sy+sh*.1:.1f}" width="{lw:.1f}" height="{sh*.8:.1f}" rx="{sh*.2:.1f}" fill="{c}" opacity=".6"/>')
     geom = dict(w=w, s=s, x0=x0, ringc=ringc, ringr=ringr, top=top, h=h)
     return "\n".join(out) + "\n", geom
 
@@ -166,10 +172,12 @@ def s2():
     s += f'<ellipse cx="{CX}" cy="{sy+sh/2+160}" rx="420" ry="300" fill="#8fe8ff" opacity=".12" filter="url(#b3)"/>\n'
     s += f'<rect x="{sx-12}" y="{sy-12}" width="{sw+24}" height="{sh+24}" rx="14" fill="#000"/>\n'
     s += f'<rect x="{sx}" y="{sy}" width="{sw}" height="{sh}" rx="6" fill="#050507"/>\n'
-    for c, x0 in (("#ff3a55", sx), ("#35ff9a", sx + sw / 3), ("#3a7bff", sx + 2 * sw / 3)):
-        s += f'<rect x="{x0:.0f}" y="{sy}" width="{sw/3:.0f}" height="{sh}" fill="{c}" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>\n'
-    s += f'<rect x="{sx+6}" y="{sy+14}" width="{sw-12}" height="{sh-28}" rx="4" fill="#fff" opacity=".96" filter="url(#b2)"/>\n'
-    s += f'<rect x="{sx+10}" y="{sy+22}" width="{sw-20}" height="{sh-44}" rx="3" fill="#fff"/>\n'
+    lw = 132
+    for c, x0 in (("#ff3a55", sx + 22), ("#35ff9a", sx + 174), ("#3a7bff", sx + 326)):
+        s += f'<rect x="{x0}" y="{sy+6}" width="{lw}" height="{sh-12}" rx="5" fill="{c}" opacity=".7" filter="url(#b2)" style="mix-blend-mode:screen"/>\n'
+        s += f'<rect x="{x0}" y="{sy+12}" width="{lw}" height="{sh-24}" rx="5" fill="#fff" opacity=".9" filter="url(#b2)"/>\n'
+        s += f'<rect x="{x0}" y="{sy+14}" width="{lw}" height="{sh-28}" rx="4" fill="{c}"/>\n'
+        s += f'<rect x="{x0+6}" y="{sy+22}" width="{lw-12}" height="{sh-44}" rx="3" fill="#fff" opacity=".9"/>\n'
     s += f'<text x="{CX}" y="1750" text-anchor="middle" font-size="22" letter-spacing="8" fill="{MUTE}" opacity=".8">THREE LEDS. ONE SLIT.</text>\n'
     s += wordmark(2120, size=44)
     s += grain_rect(.06) + sponsor()
@@ -322,10 +330,10 @@ def s7():
     for i, k in enumerate(keys):
         col, row = i % 3, i // 3
         x = xs[col]
-        top = 890 + row * 560 + (40 if col == 1 else 0)
+        top = 890 + row * 560
         m, g = monolith(x, top, 380, k, f"m{i}")
         s += m
-        s += f'<text x="{x}" y="{top+380+52}" text-anchor="middle" font-size="22" letter-spacing="1" fill="{INK}" opacity=".75">{FINISHES[k]["name"]}</text>\n'
+        s += f'<text x="{x}" y="{890+row*560+380+52}" text-anchor="middle" font-size="22" letter-spacing="1" fill="{INK}" opacity=".75">{FINISHES[k]["name"]}</text>\n'
     s += wordmark(2110, size=44, sub="SIX FINISHES")
     s += grain_rect(.06) + sponsor()
     write(7, "six-finishes", s)

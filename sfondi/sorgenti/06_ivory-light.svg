@@ -31,9 +31,19 @@
 </g>
 <rect x="327.8" y="940.0" width="424.4" height="880.0" rx="37.6" fill="none" stroke="url(#aed)" stroke-width="2.3"/>
 <rect x="406.4" y="1164.8" width="218.3" height="36.2" rx="8.5" fill="#000" opacity=".55"/>
-<rect x="410.4" y="1168.8" width="210.3" height="28.2" fill="url(#aled)" filter="url(#aglow2)" opacity=".55"/>
-<rect x="410.4" y="1168.8" width="210.3" height="28.2" fill="url(#aled)" filter="url(#aglow)" opacity=".9"/>
-<rect id="aslit" x="410.4" y="1168.8" width="210.3" height="28.2" rx="3.4" fill="url(#aled)"/>
+<rect x="410.4" y="1168.8" width="210.3" height="28.2" rx="3.4" fill="#050506"/>
+<rect x="417.3" y="1168.8" width="61.0" height="28.2" fill="#ff3a55" filter="url(#aglow2)" opacity=".55" style="mix-blend-mode:screen"/>
+<rect x="417.3" y="1168.8" width="61.0" height="28.2" fill="#ff3a55" filter="url(#aglow)" opacity=".9"/>
+<rect x="417.3" y="1174.4" width="61.0" height="16.9" rx="4.2" fill="#fff" opacity=".85"/>
+<rect id="aled0" x="417.3" y="1171.6" width="61.0" height="22.5" rx="5.6" fill="#ff3a55" opacity=".6"/>
+<rect x="485.1" y="1168.8" width="61.0" height="28.2" fill="#35ff9a" filter="url(#aglow2)" opacity=".55" style="mix-blend-mode:screen"/>
+<rect x="485.1" y="1168.8" width="61.0" height="28.2" fill="#35ff9a" filter="url(#aglow)" opacity=".9"/>
+<rect x="485.1" y="1174.4" width="61.0" height="16.9" rx="4.2" fill="#fff" opacity=".85"/>
+<rect id="aled1" x="485.1" y="1171.6" width="61.0" height="22.5" rx="5.6" fill="#35ff9a" opacity=".6"/>
+<rect x="552.9" y="1168.8" width="61.0" height="28.2" fill="#3a7bff" filter="url(#aglow2)" opacity=".55" style="mix-blend-mode:screen"/>
+<rect x="552.9" y="1168.8" width="61.0" height="28.2" fill="#3a7bff" filter="url(#aglow)" opacity=".9"/>
+<rect x="552.9" y="1174.4" width="61.0" height="16.9" rx="4.2" fill="#fff" opacity=".85"/>
+<rect id="aled2" x="552.9" y="1171.6" width="61.0" height="22.5" rx="5.6" fill="#3a7bff" opacity=".6"/>
 <g id="wordmark" text-anchor="middle" fill="#2a2620"><text x="540.0" y="2100" font-size="44" font-weight="600" letter-spacing="-1" opacity="0.9">notªpad</text><text x="540.0" y="2140" font-size="21" letter-spacing="5" fill="#9a968e" opacity=".9">IVORY</text></g>
 <rect width="1080" height="2400" filter="url(#grain)" opacity="0.08" style="mix-blend-mode:overlay"/>
 <!-- SPONSOR PLACEHOLDER: replace the content of this group with the real logo, centred at (540, 2290) -->

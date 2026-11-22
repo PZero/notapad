@@ -17,11 +17,18 @@
 <ellipse cx="540.0" cy="1522.0" rx="420" ry="300" fill="#8fe8ff" opacity=".12" filter="url(#b3)"/>
 <rect x="288" y="1318" width="504" height="88" rx="14" fill="#000"/>
 <rect x="300" y="1330" width="480" height="64" rx="6" fill="#050507"/>
-<rect x="300" y="1330" width="160" height="64" fill="#ff3a55" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
-<rect x="460" y="1330" width="160" height="64" fill="#35ff9a" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
-<rect x="620" y="1330" width="160" height="64" fill="#3a7bff" opacity=".55" filter="url(#b2)" style="mix-blend-mode:screen"/>
-<rect x="306" y="1344" width="468" height="36" rx="4" fill="#fff" opacity=".96" filter="url(#b2)"/>
-<rect x="310" y="1352" width="460" height="20" rx="3" fill="#fff"/>
+<rect x="322" y="1336" width="132" height="52" rx="5" fill="#ff3a55" opacity=".7" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="322" y="1342" width="132" height="40" rx="5" fill="#fff" opacity=".9" filter="url(#b2)"/>
+<rect x="322" y="1344" width="132" height="36" rx="4" fill="#ff3a55"/>
+<rect x="328" y="1352" width="120" height="20" rx="3" fill="#fff" opacity=".9"/>
+<rect x="474" y="1336" width="132" height="52" rx="5" fill="#35ff9a" opacity=".7" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="474" y="1342" width="132" height="40" rx="5" fill="#fff" opacity=".9" filter="url(#b2)"/>
+<rect x="474" y="1344" width="132" height="36" rx="4" fill="#35ff9a"/>
+<rect x="480" y="1352" width="120" height="20" rx="3" fill="#fff" opacity=".9"/>
+<rect x="626" y="1336" width="132" height="52" rx="5" fill="#3a7bff" opacity=".7" filter="url(#b2)" style="mix-blend-mode:screen"/>
+<rect x="626" y="1342" width="132" height="40" rx="5" fill="#fff" opacity=".9" filter="url(#b2)"/>
+<rect x="626" y="1344" width="132" height="36" rx="4" fill="#3a7bff"/>
+<rect x="632" y="1352" width="120" height="20" rx="3" fill="#fff" opacity=".9"/>
 <text x="540.0" y="1750" text-anchor="middle" font-size="22" letter-spacing="8" fill="#9a968e" opacity=".8">THREE LEDS. ONE SLIT.</text>
 <g id="wordmark" text-anchor="middle" fill="#efebe3"><text x="540.0" y="2120" font-size="44" font-weight="600" letter-spacing="-1" opacity="0.9">notªpad</text></g>
 <rect width="1080" height="2400" filter="url(#grain)" opacity="0.06" style="mix-blend-mode:overlay"/>
