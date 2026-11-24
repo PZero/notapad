@@ -23,7 +23,9 @@ md = open(os.path.join(prj, "docs", "pinout_v0.1.md"), encoding="utf-8").read()
 e73 = D.C["U1"][1]
 MAP = {"QSPI_IO0": "QSPI_IO0", "QSPI_SCK": "QSPI_SCK", "QSPI_IO3": "QSPI_IO3", "QSPI_IO1": "QSPI_IO1", "QSPI_IO2": "QSPI_IO2",
        "QSPI_CS": "QSPI_CS", "PDM_CLK": "PDM_CLK", "PDM_DATA": "PDM_DATA", "TOUCH_A": "TOUCH_A", "TOUCH_B": "TOUCH_B",
-       "MOTOR_G": "MOTOR_G", "HOLD": "HOLD", "VBAT_SENSE": "VBAT_SENSE", "VBUS_SENSE": "VBUS_SENSE", "STAT": "STAT", "NRESET": "NRESET"}
+       "MOTOR_G": "MOTOR_G", "HOLD": "HOLD", "VBAT_SENSE": "VBAT_SENSE", "NRESET": "NRESET",
+       # 24/11: VBUS_SENSE e STAT tolti; nuovi segnali
+       "VBUS": "VBUS", "I2C_SDA": "I2C_SDA", "I2C_SCL": "I2C_SCL", "MIC_WAKE": "MIC_WAKE", "BUZ_G": "BUZ_G"}
 for line in md.splitlines():
     cells = [c.strip() for c in line.strip("|").split("|")]
     if len(cells) < 3:
@@ -63,8 +65,9 @@ for nome, txt in (("CLAUDE.md", cl), ("STATO.md", st)):
         P.append(f"{nome}: cita ancora C424093/MCP73831 come caricatore")
 an = json.load(open(os.path.join(prj, "kicad", "anteprima.json"), encoding="utf-8"))
 bt = [o for o in an if o["ref"] == "BT1P"]
-if bt and abs(bt[0]["pads"][0][1] - (pcb_y := [f for f in pcb["footprints"] if f["ref"] == "BT1P"][0]["y"] - 100)) > 0.3:
-    P.append(f"kicad/anteprima.json non aggiornato (BT1P y {bt[0]['pads'][0][1]:.2f} vs pcb {pcb_y:.2f})")
+# il rettangolo del pad in anteprima.json è (x, y, w, h) dall'angolo: si confronta il centro
+if bt and abs((cy := bt[0]["pads"][0][1] + bt[0]["pads"][0][3] / 2) - (pcb_y := [f for f in pcb["footprints"] if f["ref"] == "BT1P"][0]["y"] - 100)) > 0.3:
+    P.append(f"kicad/anteprima.json non aggiornato (BT1P y {cy:.2f} vs pcb {pcb_y:.2f})")
 # foro dei contatti e spessore del monolite nei documenti
 drill_j = [f for f in pcb["footprints"] if f["ref"] == "J1"][0]["pads"][0]["drill"]
 docs = {n: open(os.path.join(prj, *n.split("/")), encoding="utf-8").read() for n in ("CLAUDE.md", "docs/STATO.md", "docs/DOMANDE-APERTE.md", "docs/pinout_v0.1.md", "kicad/fab_out/jlcpcb/LEGGIMI.md")}

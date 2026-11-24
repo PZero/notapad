@@ -2,6 +2,9 @@
 """Elenco dei test della revisione pre-ordine notapad v0.1 (dati per scrivi_risultati.py)."""
 P = ""  # percorsi relativi alla radice del repository
 FONTI = [
+    {"id": "DS_VM3011", "descrizione": "Vesper VM3011 datasheet preliminare U0.0.8: VDD 1,6-3,6 V, ZPL ~10 uA a clock fermo, DOUT flag, L/R select, I2C 0x60/0x61, pin 1 DATA 2 SDA 3 DOUT 4 SCL 5 CLK 6 VDD 7 L/R 8 GND", "url_o_percorso": "https://cdn.sparkfun.com/assets/learn_tutorials/1/7/9/1/Vesper_Technologies_VM3011_Datasheet_5b5_5d-1893207.pdf"},
+    {"id": "LCSC_LIS2DH12", "descrizione": "LCSC C110926 LIS2DH12TR LGA-12 2x2, 1,71-3,6 V; simbolo LCSC 1 SCL 2 CS 3 SDO/SA0 4 SDA 5 RES 6-8 GND 9 VDD 10 VDD_IO 11 INT2 12 INT1", "url_o_percorso": "https://www.lcsc.com/product-detail/C110926.html"},
+    {"id": "LCSC_DMN2004", "descrizione": "LCSC C156343 DMN2004DWK-7 doppio N-MOS SOT-363, 20 V 540 mA, 0,4 ohm a 4,5 V, 0,5 ohm a 2,5 V", "url_o_percorso": "https://www.lcsc.com/product-detail/C156343.html"},
     {"id": "DEF", "descrizione": "Definizione unica componenti/reti/piazzamento", "url_o_percorso": P + "kicad/notapad_def.py"},
     {"id": "SCH", "descrizione": "Schema KiCad", "url_o_percorso": P + "kicad/notapad_v0.1.kicad_sch"},
     {"id": "NET", "descrizione": "Netlist esportata ora con kicad-cli 10.0.8", "url_o_percorso": "scratchpad verifica/out/netlist.net"},
@@ -95,8 +98,8 @@ T("B04", "E73: componenti interni (induttore DCDC, condensatori, quarzi)", "Rice
 T("B05", "W25N02KVZEIR: piedinatura WSON-8", "Simbolo LCSC, def.py e netlist contro la piedinatura Winbond standard WSON-8", ["LIB", "DEF", "NET", "JLC_NAND"],
   "1 /CS, 2 DO(IO1), 3 /WP(IO2), 4 GND, 5 DI(IO0), 6 CLK, 7 /HOLD(IO3), 8 VCC, EP GND",
   "Coincide: CS->QSPI_CS, IO1, IO2, GND, IO0, SCK, IO3, 3V3, EP->GND; package JLC WSON-8-EP 6x8 come l'impronta", "PASS", "alta", "", "test_C_simbolo_impronta.py")
-T("B06", "MSM261DGT003: pin e porta", "Datasheet (testo estratto) contro simbolo, def.py e netlist", ["DS_MIC", "LIB", "DEF", "NET"],
-  "1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R; top-port; VDD 1,6-3,6 V",
+T("B06", "Microfoni MSM261 (MK1) e VM3011 (MK2): pin e porta", "Datasheet contro simbolo, def.py e netlist", ["DS_MIC", "DS_VM3011", "LIB", "DEF", "NET"],
+  "MK1: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R=GND, top-port. MK2 VM3011: 1 DATA, 2 SDA, 3 DOUT, 4 SCL, 5 CLK, 6 VDD, 7 L/R=3V3, 8 GND, bottom-port",
   "Coincide; datasheet: 'omnidirectional, Top-ported', 4 x 2 x 1,1 mm, foro Ø0,65; MK1 L/R=GND, MK2 L/R=3V3, DATA e CLK in comune (configurazione stereo del datasheet)", "PASS", "alta", "", "pdf_testo.py")
 T("B07", "MCP73831T-2ACI/OT: pin, corrente e tensione", "Simbolo e reti contro la piedinatura SOT-23-5 del caricatore; formula IREG = 1000 V / RPROG", ["LIB", "DEF", "NET", "JLC_CHG", "MCP_DS"],
   "1 STAT, 2 VSS, 3 VBAT, 4 VDD, 5 PROG; 50 mA con 20 kOhm; 4,20 V ('-2')",
@@ -108,9 +111,9 @@ T("B08", "MCP73831: livello dell'uscita STAT su P0.07", "Tipo di uscita STAT (MC
   "Senza toccare i Gerber: sostituire U3 con MCP73832T-2ACI/OT (LCSC C38066, stesso SOT-23-5 e piedinatura, STAT open-drain, Extended come prima) e usare il pull-up interno di P0.07 (basso = in carica, alto = finita o senza 5V; VBUS_SENSE distingue). Aggiornare def.py/BOM e pinout.md", "")
 T("B09", "XC6206P332MR: piedinatura SOT-23", "Simbolo e reti contro la piedinatura Torex (MR: 1 VSS, 2 VOUT, 3 VIN)", ["LIB", "DEF", "NET", "JLC_LDO"],
   "1 GND, 2 3V3, 3 VSYS", "1 GND, 2 Vout=3V3, 3 Vin=VSYS", "PASS", "alta", "", "test_C_simbolo_impronta.py")
-T("B10", "AO3401A e AO3400A: G/S/D e soglie", "Simbolo (1 G, 2 S, 3 D) e reti; soglie dei datasheet AOS", ["LIB", "DEF", "JLC_Q1", "JLC_Q4"],
-  "Q1 P-MOS: S=VBAT, D=VSYS, G=LATCH_G; Q4 N-MOS: S=GND, D=MOTOR_N, G=MOTOR_G",
-  "Coincide. Q4 Vgs 3,3 V >> Vth (0,65-1,45 V); Q1 Vgs = -VBAT (-3,5...-4,2 V) >> |Vth| (0,5-1,3 V)", "PASS", "alta", "", "test_C_simbolo_impronta.py")
+T("B10", "AO3401A (Q1) e DMN2004DWK (Q4): pin e soglie", "Simboli e reti; soglie dei datasheet", ["LIB", "DEF", "JLC_Q1", "LCSC_DMN2004"],
+  "Q1 P-MOS: S=VBAT, D=VSYS, G=LATCH_G; Q4 FET1 S=GND D=MOTOR_N G=MOTOR_G, FET2 S=GND D=BUZ_N G=BUZ_G",
+  "Coincide. Q4 Vgs 3,3 V >> Vth; Rds 0,5 ohm a 2,5 V: ~40 mV a 80 mA (motorino), ~50 mV a 100 mA (cicalino); Q1 Vgs = -VBAT >> |Vth|", "PASS", "alta", "", "test_C_simbolo_impronta.py")
 T("B11", "2N7002DW-7-F: piedinatura SOT-363", "Gruppi di pin del simbolo LCSC ({1,2,6} e {4,5,3}) contro le reti; piedinatura Diodes S1-G1-D2-S2-G2-D1", ["LIB", "DEF", "JLC_Q2"],
   "FET A: S=GND, G=LATCH_ON, D=LATCH_G; FET B: S=GND, G=RST_G, D=NRESET",
   "Coincide (1 S, 2 G, 6 D; 4 S, 5 G, 3 D). Il simbolo LCSC scambia le etichette 1/2 dei due FET, ma i transistor sono identici: nessun effetto", "PASS", "alta", "", "test_C_simbolo_impronta.py")
@@ -122,7 +125,10 @@ T("B13", "MHPA1010RGBDT: anodo comune e colori", "Simbolo LCSC contro reti; data
   "Rete coerente col simbolo LCSC (1 +, 2 R-, 3 G-, 4 B-); anodo comune confermato da JLC. Datasheet solo immagini: assegnazione dei pad non confermata da fonte indipendente", "WARN", "bassa",
   "Controllare nell'anteprima JLC il segno di polarità; se i colori risultano scambiati si corregge nel firmware (non serve rifare la scheda, purché il pad 1 sia l'anodo)", "")
 T("B14", "1N4148WS: polarità", "Impronta SOD-323 (pad 1 col segno di catodo) e simbolo (1 K, 2 A) contro le reti", ["LIB", "DEF"],
-  "D4 K=VSYS (ricircolo), D5 K=VBUS_D, D6 K=LATCH_ON", "Coincide per D4, D5, D6", "PASS", "alta", "", "test_C_simbolo_impronta.py")
+  "D4 K=VSYS (ricircolo), D5 K=VBUS_D, D6 K=LATCH_ON, D7 K=VSYS (cicalino)", "Coincide per D4, D5, D6, D7", "PASS", "alta", "", "test_C_simbolo_impronta.py")
+
+T("B15", "LIS2DH12: pin e indirizzo I2C", "Simbolo LCSC e reti contro la piedinatura", ["LCSC_LIS2DH12", "LIB", "DEF", "NET"],
+  "1 SCL, 2 CS=VDD_IO (I2C), 3 SA0=GND (0x18), 4 SDA, 5 RES=GND, 6-8 GND, 9 VDD, 10 VDD_IO, 11/12 INT liberi", "", "IN_ATTESA", "alta", "", "giro2.py")
 
 # ---------------- C ----------------
 T("C01", "Simbolo = impronta = def = netlist = pcb", "Per ogni componente: numeri pin del simbolo vs pad dell'impronta, reti di def.py vs netlist kicad-cli vs pad del pcb, posizione/rotazione/impronta/lato", ["LIB", "DEF", "NET", "PCB"],
@@ -150,7 +156,7 @@ T("D04", "Impulso di reset dal 5V su P0.18", "C10 100 nF, R5 100k, Q2B", ["DEF",
 T("D05", "Partitore VBAT 1M/1M per il SAADC", "Impedenza e range contro il SAADC del nRF52840", ["DEF"],
   "<= 800 kOhm con TACQ 40 us; tensione nel range", "500 kOhm + C11 100 nF (serbatoio), 4,2 V -> 2,1 V < 3,6 V fondo scala (gain 1/6, rif. 0,6 V); 2,1 uA a latch chiuso. Misura VSYS (dopo Q1), praticamente VBAT", "PASS", "media",
   "Firmware: TACQ 40 us", "")
-T("D06", "Partitore VBUS 100k/100k", "Livello su P0.28", ["DEF"], "<= VDD+0,3 V", "5,0-5,25 V -> 2,5-2,6 V: ok a nRF acceso. Con cella scarica (3V3 assente) e 5V presente inietta ~40 uA nel pin non alimentato (Thevenin 50k)", "WARN", "bassa",
+T("D06", "Rilevamento del 5V", "5V dei contatti sul pin VBUS del nRF52840 (dal 24/11, prima partitore su P0.28)", ["DEF"], "nessun livello oltre VDD+0,3 V su un GPIO", "5,0-5,25 V -> 2,5-2,6 V: ok a nRF acceso. Con cella scarica (3V3 assente) e 5V presente inietta ~40 uA nel pin non alimentato (Thevenin 50k)", "WARN", "bassa",
   "Accettabile; eventualmente R7 a 47k nei lotti futuri", "")
 T("D07", "LDO XC6206: dropout, picco, condensatori", "Calcolo con dropout tipico e carichi di picco", ["DEF", "JLC_LDO", "PCB"],
   "3,3 V stabili fino a 3,5 V di batteria; Cin/Cout >= 1 uF", "Picco ~55 mA (radio 17 mA + NAND ~25-35 mA + mic ~1,5 mA + CPU): dropout ~60-140 mV, regola fino a ~3,4-3,45 V. Cout 1 uF + 4,7 uF vicini; Cin C3 1 uF su VSYS a ~7 mm dal pin di ingresso", "WARN", "bassa",
@@ -159,7 +165,7 @@ T("D08", "LED: correnti reali", "(VSYS - Vf - VOL)/470 con Vf JLC", ["JLC_LED", 
   "Rosso: 2,8 mA a 3,5 V, 4,3 mA a 4,2 V (serve high-drive H0 per il pieno). Verde/blu (Vf 2,5-3,5 V, tip. ~3,0): ~0,8 mA a 3,5 V, ~2,3 mA a 4,2 V; con Vf al massimo a 3,5 V restano spenti. Catodo da spento a ~2,0-2,8 V < VDD: nessuna iniezione", "WARN", "bassa",
   "Firmware: drive H0S1 sui catodi; aspettarsi verde/blu fiochi sotto ~3,6 V", "")
 T("D09", "Motorino: MOSFET, diodo, pull-down", "Reti di Q4, D4, R10, M1P/M1N", ["DEF", "NET"], "MOS a basso lato, diodo di ricircolo, gate a massa da spento",
-  "Q4 AO3400A tra MOTOR_N e GND, D4 catodo su VSYS anodo su MOTOR_N (ricircolo corretto), R10 100k pull-down, piste 0,2 mm sufficienti per ~80 mA", "PASS", "media",
+  "Q4 DMN2004DWK: FET1 tra MOTOR_N e GND con D4 (K VSYS) e R10 100k; FET2 tra BUZ_N e GND con D7 (K VSYS) e R14 100k; piste 0,2 mm sufficienti per ~80-100 mA", "PASS", "media",
   "Firmware: PWM per non superare i ~3 V nominali del motorino con la cella a 4,2 V", "")
 T("D10", "Tocco TTP223", "Alimentazione, uscita, condensatori", ["DEF", "PCB", "TTP_DS"], "3V3, uscita CMOS attiva alta, 100 nF locale",
   "3V3 e uscite su P0.08/P0.31 ok; Cs 10 pF. Nessun 100 nF dedicato: U6 ha C7 a ~1,7 mm, U5 ha il condensatore 3V3 più vicino (C4/C5) a ~7 mm", "WARN", "bassa",
@@ -181,6 +187,8 @@ T("D15", "Contatti esposti: ESD, sudore, inversione", "Reti di J1-J4", ["DEF", "
   "Basetta con polarità meccanica certa (magneti); nei lotti futuri valutare resistenze serie da 100-470 Ohm su SWD", "")
 
 # ---------------- E ----------------
+T("D16", "Standby acustico, I2C e cicalino", "Reti e datasheet VM3011 contro i pin del nRF", ["DS_VM3011", "DEF", "PINOUT"],
+  "DOUT su un GPIO, I2C con indirizzi distinti, cicalino da VSYS con FET e diodo", "", "IN_ATTESA", "media", "", "giro2.py")
 T("E01", "Riferimenti in BOM e CPL", "Insieme dei ref di def.py (esclusi i montati a mano) contro BOM, CPL, jlc/BOM", ["DEF", "BOM", "CPL"],
   "43 componenti SMD in entrambi, nessun extra", "43 in CPL e in BOM (19 righe), jlc/ BOM uguale; J1-J4, BT1P/N, M1P/N, TPA/TPB esclusi", "PASS", "alta", "", "test_E_bom_cpl.py")
 T("E02", "Codici LCSC, package, Basic/Extended", "Pagine JLC dei codici", ["JLC_E73", "JLC_NAND", "JLC_MIC", "JLC_CHG", "JLC_TTP", "JLC_LED", "JLC_Q2", "JLC_LDO", "JLC_Q1", "JLC_Q4", "JLC_D", "JLC_C5", "BOM"],
@@ -212,14 +220,14 @@ T("F05", "Piazzole a mano sul retro accessibili", "Piazzole BT1P/BT1N, TPA/TPB, 
   "Saldare i fili prima di posare la cella, lato PCM in alto e fili ripiegati; oppure nei lotti futuri spostare BT+/BT- ai fianchi del motorino", "test_F_meccanica.py")
 T("F06", "LED nella fessura frontale", "Posizioni D1-D3 contro una fessura da 10 mm centrata", ["PCB", "DOC"], "dentro, centrati, stesso y",
   "x 5,25/8,25/11,25 (passo 3,0), ingombro 4,7-11,8 mm dentro 3,25-13,25; tutti a y 8,5; emissione verso il lato componenti = fronte", "PASS", "media", "", "test_F_meccanica.py")
-T("F07", "Porte dei microfoni", "Orientamento della porta (top-port) e cosa c'è sopra", ["DS_MIC", "PCB"], "porte libere verso la faccia giusta",
-  "Entrambe le porte sono sul coperchio, rivolte verso il FRONTE. MK1 (14,6; 16,4) ok per il foro frontale. MK2 (8,25; 1,35) guarda il fronte: il canalino verso la faccia superiore deve piegare a 90° nel guscio. Nessun componente sopra", "WARN", "bassa",
-  "Gusci: canale a L per MK2; sigillare le porte durante la colata (la resina nel foro distrugge il mic)", "")
+T("F07", "Porte dei microfoni", "Orientamento della porta e cosa c'è sopra/sotto", ["DS_MIC", "DS_VM3011", "PCB"], "porte libere verso la faccia giusta",
+  "MK1 MSM261 (14,6; 16,4) top-port verso il FRONTE: ok per il foro frontale. MK2 VM3011 (8,25; 1,65) bottom-port: foro metallizzato Ø0,8 a (7,52; 1,65) che esce sul RETRO della scheda, tra i target J2 e J3 e sopra il motorino; da lì un canalino nella resina sale alla faccia superiore", "WARN", "bassa",
+  "Gusci: canalino dal foro sul retro alla faccia superiore; sigillare entrambe le porte durante la colata (la resina nel foro distrugge il mic)", "")
 T("F08", "Contatti J1-J4: fori e target", "Fori 1,0 mm (pad 1,6) contro i target 7,0 mm; profondità dal retro della scheda alla faccia posteriore", ["PCB", "DOC", "GBR"],
   "coda che entra nel foro; altezza del target = spazio dietro la scheda",
   "Fori 1,0 mm PTH (anello 0,3), coppie a x 1,8/4,6 e 11,9/14,7 sul bordo alto, distanza dai componenti sopra >= 0,008 mm (C10/J3, D5/J1-J2: saldatura a mano stretta). Diametro coda sconosciuto. Dietro la scheda servono ~4,3 mm (batteria 3,8 + resina): un target da 7,0 mm sporge di ~2,7 mm", "WARN", "alta",
   "Prima di pagare: avere dal venditore diametro coda e altezza; se la coda > 0,9 mm allargare i fori (unica modifica che tocca i Gerber); scegliere target ~4-4,5 mm o accettare la sporgenza", "test_F_meccanica.py")
-T("F09", "Anello e boccola", "Spazio libero sopra la zona A", ["PCB", "DOC"], "volume riservato per la boccola", "Nessuno spazio riservato sulla scheda: MK2 è al centro del bordo alto (y 0,3-2,4) e J1-J4 occupano il resto; con 41 mm di monolite restano ~1,5 mm di resina sopra la scheda se centrata", "WARN", "media",
+T("F09", "Anello e boccola", "Spazio libero sopra la zona A", ["PCB", "DOC"], "volume riservato per la boccola", "Nessuno spazio riservato sulla scheda: MK2 (VM3011, y 0,2-3,1) è al centro del bordo alto e J1-J4 occupano il resto; con 41 mm di monolite restano ~1,5 mm di resina sopra la scheda se centrata", "WARN", "media",
   "Gusci: spostare la scheda verso il basso (antenna a ~0,5 mm dal fondo) per avere ~2,5 mm sopra, o boccola laterale; da decidere nel CAD del guscio", "")
 T("F11", "Ingombro reale: corpi sopra pad altrui (courtyard LCSC = solo corpo)", "pcbnew: poligono della courtyard (corpo) di ogni componente contro i poligoni dei pad degli altri; corpi a meno di 0,2 mm",
   ["PCB", "LIB"], "nessun corpo sopra pad altrui", "", "IN_ATTESA", "media", "Nell'anteprima/DFM JLC controllare C7 accanto a U6; nei lotti futuri allontanarlo di 0,2 mm", "test_F_ingombri.py")
@@ -244,8 +252,8 @@ T("H03", "Numeri nei documenti", "Via, misure, valori in CLAUDE.md/STATO.md cont
   "CLAUDE.md e STATO.md dicono 115 via, il pcb e il drill ne hanno 114; il resto (misure, C14, C4/C5, R11-R13) coerente", "WARN", "bassa", "Correggere 115 -> 114", "test_H_documenti.py")
 T("H04", "File superati", "montaggio_a_mano.csv e kicad/anteprima.json contro STATO e pcb", ["MANO", "DOC", "PCB"], "aggiornati",
   "montaggio_a_mano.csv cita la cella ~3,5 x 16 x 19 (60 mAh) e 'pin dorati' invece di 381620 e target; anteprima.json ha posizioni della scheda da 35 mm (BT1P y 11,2 invece di 13,5)", "WARN", "bassa", "Aggiornare o segnare come superati", "test_H_documenti.py")
-T("H05", "Descrizione di STAT in pinout.md", "Testo contro il componente montato", ["PINOUT", "MCP_STAT"], "coerente col caricatore",
-  "Descrive STAT come open-drain con pull-up interno ('ex CHRG del TP4054'): vero per MCP73832, non per MCP73831 (vedi B08)", "WARN", "media", "Si risolve con la correzione di B08", "test_H_documenti.py")
+T("H05", "STAT e VBUS_SENSE in pinout.md", "Testo contro la scheda (dal 24/11 STAT non collegato e VBUS sul pin VBUS del nRF)", ["PINOUT", "DEF"], "pinout.md li dichiara tolti",
+  "", "IN_ATTESA", "media", "", "test_H_documenti.py")
 
 SINTESI = ("Scheda elettricamente pulita: ERC/DRC 0 anche con le regole ignorate riattivate, parità 0, Gerber identici al pcb, "
  "simbolo-impronta-netlist-documenti coerenti, keepout antenna vuoto su tutti gli strati, BOM/CPL completi e con 7 Extended. "

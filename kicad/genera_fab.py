@@ -52,7 +52,9 @@ with zipfile.ZipFile(zsrc, "w", zipfile.ZIP_DEFLATED) as z:
 
 # ---- posizioni (coordinate assolute, come nei Gerber) ----
 pos_csv = os.path.join(TMP, "pos.csv")
-run("pcb", "export", "pos", "--output", pos_csv, "--format", "csv", "--units", "mm", "--side", "front", "--exclude-fp-th", PCB)
+# niente --exclude-fp-th: il VM3011 (MK2) ha il foro acustico metallizzato e verrebbe escluso;
+# i pezzi a foro passante montati a mano (J1-J4) sono già fuori dal CPL perché in D.HAND
+run("pcb", "export", "pos", "--output", pos_csv, "--format", "csv", "--units", "mm", "--side", "front", PCB)
 pos = {r["Ref"]: r for r in csv.DictReader(open(pos_csv, encoding="utf-8"))}
 
 # ---- produttore e MPN dai simboli LCSC ----
@@ -73,7 +75,9 @@ for ref, (fam, pads, _) in D.C.items():
         cpl.append([ref, f'{float(p["PosX"]):.4f}', f'{float(p["PosY"]):.4f}', "Top", f'{float(p["Rot"]) % 360:g}'])
 cpl.sort(key=lambda r: key(r[0]))
 
-VERIFICA = {"LED", "MIC", "NMOS2", "E73"}
+VERIFICA = {"LED", "MIC", "NMOS2", "E73", "MICZ", "ACC", "NMOSD"}
+# 24/11: il simbolo del caricatore è quello dell'MCP73831 (stessa impronta), ma il pezzo è l'MCP73832
+MPN_FORZATO = {"CHG": "MCP73832T-2ACI/OT"}
 rows_jlc, rows_full = [], []
 for fam, refs in sorted(groups.items(), key=lambda kv: key(sorted(kv[1], key=key)[0])):
     refs = sorted(refs, key=key)
@@ -84,6 +88,8 @@ for fam, refs in sorted(groups.items(), key=lambda kv: key(sorted(kv[1], key=key
         continue
     manu = re.sub(r"\(.*?\)", "", prop(sym, "Manufacturer")).strip()
     mpn = prop(sym, "MPN") or sym
+    # simbolo di libreria riusato per un componente diverso con la stessa impronta: vale il codice scelto
+    mpn = MPN_FORZATO.get(fam, mpn)
     note = []
     if not manu: note.append("produttore da verificare")
     if fam in VERIFICA: note.append("verificare l'orientamento a vista")
@@ -116,9 +122,10 @@ for fab in ("jlcpcb", "pcbway", "allpcb"):
             w = csv.writer(f); w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])
             # Correzioni verificate nell'anteprima JLC (21/11/2026): il modello JLC del microfono
             # C48227730 ha il pin 1 opposto al pad 1 dell'impronta EasyEDA -> +180 gradi.
-            JLC_ROT = {"MK": 180}
+            # correzione JLC per famiglia (21/11: impronta MSM261); dal 24/11 MK2 è un VM3011 e non la eredita
+            JLC_ROT = {"MIC": 180}
             def rot_jlc(ref, rot):
-                off = next((v for k, v in JLC_ROT.items() if re.fullmatch(k + r"\d+", ref)), 0)
+                off = JLC_ROT.get(D.C[ref][0], 0)
                 return f'{(float(rot) + off) % 360:g}'
             w.writerows([[r[0], r[1] + "mm", r[2] + "mm", r[3], rot_jlc(r[0], r[4])] for r in cpl])
         extra = "Economic PCBA, codici LCSC già nella BOM. Controllare le rotazioni nell'anteprima JLC.\n"

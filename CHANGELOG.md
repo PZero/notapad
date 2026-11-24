@@ -1,5 +1,14 @@
 # Changelog
 
+## 24/11/2026 (board revision)
+- electronics: board v0.1 regenerated (16.5 × 38 mm, 4 layers, ERC 0, DRC 0, parity 0, 130 vias): MK2 replaced by the Vesper VM3011 PDM microphone with acoustic wake-up (about 10 µA listening, metallised acoustic hole); new LIS2DH12 accelerometer on I2C; 4×4 mm buzzer on the back driven by Q4, now a DMN2004DWK dual MOSFET shared with the vibration motor; 5V from the contacts goes to the nRF52840 VBUS pin (R6/R7 and STAT read removed); P0.28/P0.07 are now I2C. Reason: acoustic standby and hardware groundwork for Google Find Hub and Apple Find My (DULT: sound emitter mandatory, motion sensor recommended).
+- electronics: JLC BOM, placement and Gerber exports regenerated in `kicad/fab_out/` and `jlc/`.
+- repo: `kicad/genera_sch.py` stops if a component is missing from the schematic; `kicad/genera_fab.py` corrects the MCP73832 part code in the PCBWay/ALLPCB BOM, no longer drops the acoustic-hole footprint from the placement file, and applies the JLC rotation correction for the MSM261 family. New footprints and symbols for VM3011, LGA-12 (LIS2DH12) and DMN2004DWK.
+- docs: `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md`, `docs/pinout_v0.1.md`, `CLAUDE.md` and the `jlc/` files updated.
+- repo: test suite `verifica/` extended to 71 tests (new B15 and D16): 45 PASS, 23 WARN, 2 not verifiable, 1 FAIL (E02: JLC page not re-checked).
+- firmware and app: no changes yet; the new pinout (VM3011 on P0.03, I2C on P0.28/P0.07) is not implemented in the firmware.
+- docs: project page gets a concept animation, section `#find` («Finding a lost notªpad»), showing how an item-finding network would locate a board left behind; README updated to match. No hardware or firmware change.
+
 ## 24/11/2026
 - docs: README and project page no longer name suppliers; rule added to `.claude/agents/comunicazione.md`; battery life corrected to about 20 h with the 110 mAh cell and about 11–12 h of memory.
 - docs: technical article for a sponsorship request in Italian and English (`docs/pcbway_articolo_it.md`, `docs/pcbway_article_en.md`), with a PDF bundle in `docs/pcbway_pdf/` (HTML, PDF, images, form field text in `campi_modulo.md`). Sponsor application under review.

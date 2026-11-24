@@ -1,10 +1,25 @@
 {
- "aggiornato": "2026-11-22T16:24:13+01:00",
- "stato_lavoro": "Giro 3 concluso",
- "concluso": true,
+ "aggiornato": "2026-11-24T13:20:20+01:00",
+ "stato_lavoro": "G06: PASS",
+ "concluso": false,
  "data": "2026-11-22",
  "scheda": "notapad v0.1",
  "fonti": [
+  {
+   "id": "DS_VM3011",
+   "descrizione": "Vesper VM3011 datasheet preliminare U0.0.8: VDD 1,6-3,6 V, ZPL ~10 uA a clock fermo, DOUT flag, L/R select, I2C 0x60/0x61, pin 1 DATA 2 SDA 3 DOUT 4 SCL 5 CLK 6 VDD 7 L/R 8 GND",
+   "url_o_percorso": "https://cdn.sparkfun.com/assets/learn_tutorials/1/7/9/1/Vesper_Technologies_VM3011_Datasheet_5b5_5d-1893207.pdf"
+  },
+  {
+   "id": "LCSC_LIS2DH12",
+   "descrizione": "LCSC C110926 LIS2DH12TR LGA-12 2x2, 1,71-3,6 V; simbolo LCSC 1 SCL 2 CS 3 SDO/SA0 4 SDA 5 RES 6-8 GND 9 VDD 10 VDD_IO 11 INT2 12 INT1",
+   "url_o_percorso": "https://www.lcsc.com/product-detail/C110926.html"
+  },
+  {
+   "id": "LCSC_DMN2004",
+   "descrizione": "LCSC C156343 DMN2004DWK-7 doppio N-MOS SOT-363, 20 V 540 mA, 0,4 ohm a 4,5 V, 0,5 ohm a 2,5 V",
+   "url_o_percorso": "https://www.lcsc.com/product-detail/C156343.html"
+  },
   {
    "id": "DEF",
    "descrizione": "Definizione unica componenti/reti/piazzamento",
@@ -212,7 +227,8 @@
    "azione": "",
    "script": "kicad-cli (vedi LEGGIMI script)",
    "giro": 3,
-   "ora": "14:24:15"
+   "ora": "13:18:36",
+   "_prec_giro": "PASS"
   },
   {
    "id": "A02",
@@ -230,7 +246,8 @@
    "azione": "",
    "script": "kicad-cli",
    "giro": 3,
-   "ora": "16:22:08"
+   "ora": "13:18:39",
+   "_prec_giro": "PASS"
   },
   {
    "id": "A03",
@@ -242,13 +259,15 @@
     "PCB"
    ],
    "atteso": "nessuna violazione",
-   "trovato": "solo testo sotto il minimo JLC: {'text_thickness': 1, 'text_height': 1} (scritta «notªpad v0.1» 0,8 mm / 0,12 mm su B.Silkscreen)",
+   "trovato": "solo avvisi noti: {'footprint_type_mismatch': 1, 'text_thickness': 1, 'text_height': 1} (scritta «notªpad v0.1» 0,8 mm / 0,12 mm su B.Silkscreen; MK2 VM3011 è SMD con il foro acustico metallizzato nel pad GND, quindi KiCad lo vede come 'tipo misto')",
    "esito": "WARN",
    "gravita": "bassa",
    "azione": "Facoltativo: portare il testo a 1,0 mm / 0,15 mm, altrimenti può risultare poco leggibile (è comunque sul retro, sotto la batteria)",
    "script": "test_A_drc_severo.py",
    "giro": 3,
-   "ora": "16:22:12"
+   "ora": "13:18:41",
+   "_prec_giro": "FAIL",
+   "esito_prec": "FAIL"
   },
   {
    "id": "A04",
@@ -261,13 +280,14 @@
     "DOC"
    ],
    "atteso": "pista/spazio >= 0,09, via foro >= 0,15 e diam. >= 0,25 (senza sovrapprezzo 0,25/0,45), rame-bordo >= 0,2, foro-foro >= 0,254 (reti diverse)",
-   "trovato": "pista/spazio 0.1/0.1; via [(0.25, 0.45)] x 114; rame-bordo 0.25 (via-bordo reale 0.264); foro-foro minimo 0.318 mm; pista più stretta 0.1; fori PTH J1-J4 [(1.6, 1.1)] -> anello 0.250 mm (JLC min 0,15, consigliato 0,25)",
+   "trovato": "pista/spazio 0.1/0.1; via [(0.25, 0.45)] x 130; rame-bordo 0.25 (via-bordo reale 0.266); foro-foro minimo 0.317 mm; pista più stretta 0.1; fori PTH J1-J4 [(1.56, 0.8), (1.6, 1.1)] -> anello 0.250 mm (JLC min 0,15, consigliato 0,25)",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "estrai_pcb.py",
    "giro": 3,
-   "ora": "16:22:13"
+   "ora": "13:18:43",
+   "_prec_giro": "PASS"
   },
   {
    "id": "A05",
@@ -278,13 +298,14 @@
     "PCB"
    ],
    "atteso": "In1 un solo poligono fino al keepout; isole rimosse",
-   "trovato": "In1: 1 poligono (478.6 mm², fino a y 32.8); F.Cu 16 e B.Cu 4 poligoni, rimozione isole 'sempre'",
+   "trovato": "In1: 1 poligono (474.4 mm², fino a y 32.8); F.Cu 22 e B.Cu 11 poligoni, rimozione isole 'sempre'",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "estrai_pcb.py",
    "giro": 3,
-   "ora": "16:22:13"
+   "ora": "13:18:43",
+   "_prec_giro": "PASS"
   },
   {
    "id": "A06",
@@ -303,7 +324,8 @@
    "azione": "",
    "script": "test_G_gerber.py",
    "giro": 3,
-   "ora": "16:22:18"
+   "ora": "13:20:10",
+   "_prec_giro": "PASS"
   },
   {
    "id": "A07",
@@ -314,13 +336,14 @@
     "PCB"
    ],
    "atteso": "nessuna via nei pad (risucchio di stagno)",
-   "trovato": "via GND nel pad U1.5 a [14.6, 28.675]",
+   "trovato": "via GND nel pad U1.5 a [14.75, 28.972]; via GND nel pad U1.24 a [4.62, 21.44]",
    "esito": "WARN",
    "gravita": "bassa",
    "azione": "Accettabile su un pad di massa castellato; se si risbroglia spostarla fuori dal pad (o chiedere via tappate)",
    "script": "test_A_via_in_pad.py",
    "giro": 3,
-   "ora": "16:22:19"
+   "ora": "13:20:12",
+   "_prec_giro": "WARN"
   },
   {
    "id": "A08",
@@ -338,7 +361,9 @@
    "azione": "",
    "script": "test_G_gerber.py",
    "giro": 3,
-   "ora": "16:22:19"
+   "ora": "13:20:12",
+   "_prec_giro": "FAIL",
+   "esito_prec": "FAIL"
   },
   {
    "id": "A09",
@@ -356,7 +381,8 @@
    "azione": "Nessuna per l'ordine; eventualmente rinominare TP1/TP2, BT1/BT2, M1/M2",
    "script": "",
    "giro": 3,
-   "ora": "16:22:21"
+   "ora": "13:18:52",
+   "_prec_giro": "WARN"
   },
   {
    "id": "B01",
@@ -371,13 +397,14 @@
     "E73_MAN"
    ],
    "atteso": "pad 4 P0.28, 7 P0.02, 8 P0.29, 9 P0.31, 10 P0.30, 11 P0.00, 12 P0.26, 13 P0.01, 14 P0.06, 15 P0.05, 16 P0.08, 17 P1.09, 18 P0.04, 20 P0.12, 22 P0.07, 26 P0.18, 28 P0.15, 30 P0.17, 32 P0.20, 33 P0.13, 34 P0.22, 35 P0.24, 36 P1.00, 37 SWDIO, 38 P1.02, 39 SWCLK, 40 P1.04",
-   "trovato": "32 pad usati: simbolo LCSC, def.py, netlist e pinout.md coincidono; manuale Ebyte non leggibile (PDF cifrato), quindi fonte indipendente mancante",
+   "trovato": "35 pad usati: simbolo LCSC, def.py, netlist e pinout.md coincidono; manuale Ebyte non leggibile (PDF cifrato), quindi fonte indipendente mancante",
    "esito": "WARN",
    "gravita": "bassa",
    "azione": "Confronto a vista una tantum con la tabella 'Pin definition' del manuale Ebyte (il simbolo LCSC e l'impronta hanno la stessa origine)",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:14"
+   "giro": 3,
+   "ora": "13:18:53",
+   "_prec_giro": "WARN"
   },
   {
    "id": "B02",
@@ -390,13 +417,14 @@
     "DEF"
    ],
    "atteso": "Nessuno di P0.11/14/16/19/21/23/25/27, P1.01; segnali veloci (QSPI, PDM) non su pin low-frequency",
-   "trovato": "nessun pin non esposto; sui pin low-frequency solo segnali lenti: P0.31:TOUCH_B, P0.30:MOTOR_G, P0.29:HOLD, P0.02:VBAT_SENSE, P0.28:VBUS_SENSE, P1.02:D3_G, P1.04:D3_B",
+   "trovato": "nessun pin non esposto; sui pin low-frequency solo segnali lenti: P0.31:TOUCH_B, P0.30:MOTOR_G, P0.29:HOLD, P0.02:VBAT_SENSE, P0.28:I2C_SCL, P0.03:MIC_WAKE, P1.13:BUZ_G, P1.02:D3_G, P1.04:D3_B",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:15"
+   "giro": 3,
+   "ora": "13:18:54",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B03",
@@ -409,13 +437,14 @@
     "E73_EASYEDA"
    ],
    "atteso": "Modalità normale: VDD e VDDH entrambi a 3V3, DCCH libero, VBUS libero se non si usa USB, tutte le GND collegate",
-   "trovato": "19=3V3, 23=3V3, 25=libero, 27=libero, 5/21/24=['GND', 'GND', 'GND']",
+   "trovato": "19=3V3, 23=3V3, 25 (DCC)=libero, 27 (VBUS del nRF)=VBUS (5V dei contatti, max 5,5 V), 5/21/24=['GND', 'GND', 'GND']",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:15"
+   "giro": 3,
+   "ora": "13:18:54",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B04",
@@ -431,8 +460,9 @@
    "gravita": "media",
    "azione": "Firmware: lasciare il DCDC spento finché non si conferma l'induttore interno; in caso positivo abilitarlo (consumo CPU quasi dimezzato)",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:16"
+   "giro": 3,
+   "ora": "13:18:55",
+   "_prec_giro": "NON_VERIFICABILE"
   },
   {
    "id": "B05",
@@ -451,28 +481,31 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:33"
+   "giro": 3,
+   "ora": "13:18:55",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B06",
    "categoria": "B",
-   "titolo": "MSM261DGT003: pin e porta",
-   "metodo": "Datasheet (testo estratto) contro simbolo, def.py e netlist",
+   "titolo": "Microfoni MSM261 (MK1) e VM3011 (MK2): pin e porta",
+   "metodo": "Datasheet contro simbolo, def.py e netlist",
    "fonti": [
     "DS_MIC",
+    "DS_VM3011",
     "LIB",
     "DEF",
     "NET"
    ],
-   "atteso": "1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R; top-port; VDD 1,6-3,6 V",
-   "trovato": "MK1 e MK2: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R (MK1 GND, MK2 3V3) come il datasheet; top-ported 4 x 2 x 1,1 mm",
+   "atteso": "MK1: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R=GND, top-port. MK2 VM3011: 1 DATA, 2 SDA, 3 DOUT, 4 SCL, 5 CLK, 6 VDD, 7 L/R=3V3, 8 GND, bottom-port",
+   "trovato": "MK1 MSM261: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R=GND, top-port; MK2 VM3011: 1 DATA, 2 SDA, 3 DOUT=MIC_WAKE, 4 SCL, 5 CLK, 6 VDD, 7 L/R=3V3 (destro, I2C 0x61), 8 GND; bottom-port con foro acustico metallizzato Ø0,8 nel pad 8",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "pdf_testo.py",
-   "giro": 2,
-   "ora": "14:02:33"
+   "giro": 3,
+   "ora": "13:18:56",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B07",
@@ -487,13 +520,14 @@
     "MCP_DS"
    ],
    "atteso": "1 STAT, 2 VSS, 3 VBAT, 4 VDD, 5 PROG; 50 mA con 20 kOhm; 4,20 V ('-2')",
-   "trovato": "U3 = MCP73832T-2ACI/OT (C38066); 1 STAT, 2 VSS, 3 VBAT, 4 VDD=VBUS, 5 PROG: coincide (MCP73832 stessa piedinatura SOT-23-5 dell'MCP73831); R1 20k -> 50 mA; '-2' = 4,20 V. Pagina JLC C38066: MCP73832T-2ACI/OT, SOT-23-5, Extended, PCBA Type 'Economic and Standard' (letta alle 22/11 giro 2)",
+   "trovato": "U3 = MCP73832T-2ACI/OT (C38066); 1 STAT non collegato (24/11), 2 VSS, 3 VBAT, 4 VDD=VBUS, 5 PROG: coincide (MCP73832 stessa piedinatura SOT-23-5 dell'MCP73831); R1 20k -> 50 mA; '-2' = 4,20 V. Pagina JLC C38066: non letta",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:51"
+   "giro": 3,
+   "ora": "13:18:56",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B08",
@@ -507,14 +541,14 @@
     "PINOUT"
    ],
    "atteso": "Su un GPIO a 3,3 V serve un'uscita open-drain o un livello <= VDD+0,3 V",
-   "trovato": "U3 ora MCP73832T-2ACI/OT (C38066): STAT open-drain (stati L e Hi-Z, fonte MCP_STAT), rete STAT solo U3.1-U1.22 senza pull-up esterni verso il 5V: P0.07 vede al massimo il suo pull-up interno a 3,3 V",
+   "trovato": "U3 MCP73832T-2ACI/OT (C38066), STAT non collegato dal 24/11 (P0.07 ora I2C_SDA): nessun percorso dal 5V a un GPIO; lo stato di carica si ricava da VBUS e dalla tensione della batteria",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:51",
-   "esito_prec": "FAIL"
+   "giro": 3,
+   "ora": "13:18:56",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B09",
@@ -533,28 +567,30 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:52"
+   "giro": 3,
+   "ora": "13:18:57",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B10",
    "categoria": "B",
-   "titolo": "AO3401A e AO3400A: G/S/D e soglie",
-   "metodo": "Simbolo (1 G, 2 S, 3 D) e reti; soglie dei datasheet AOS",
+   "titolo": "AO3401A (Q1) e DMN2004DWK (Q4): pin e soglie",
+   "metodo": "Simboli e reti; soglie dei datasheet",
    "fonti": [
     "LIB",
     "DEF",
     "JLC_Q1",
-    "JLC_Q4"
+    "LCSC_DMN2004"
    ],
-   "atteso": "Q1 P-MOS: S=VBAT, D=VSYS, G=LATCH_G; Q4 N-MOS: S=GND, D=MOTOR_N, G=MOTOR_G",
-   "trovato": "Q1 G=LATCH_G S=VBAT D=VSYS; Q4 G=MOTOR_G S=GND D=MOTOR_N; soglie AOS compatibili con 3,3 V e con -VBAT",
+   "atteso": "Q1 P-MOS: S=VBAT, D=VSYS, G=LATCH_G; Q4 FET1 S=GND D=MOTOR_N G=MOTOR_G, FET2 S=GND D=BUZ_N G=BUZ_G",
+   "trovato": "Q1 G=LATCH_G S=VBAT D=VSYS; Q4 DMN2004DWK: FET1 S=GND G=MOTOR_G D=MOTOR_N, FET2 S=GND G=BUZ_G D=BUZ_N (0,5 ohm a 2,5 V, 540 mA); soglie compatibili con 3,3 V",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:52"
+   "giro": 3,
+   "ora": "13:18:57",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B11",
@@ -572,8 +608,9 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:53"
+   "giro": 3,
+   "ora": "13:18:58",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B12",
@@ -592,8 +629,9 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:53"
+   "giro": 3,
+   "ora": "13:18:58",
+   "_prec_giro": "PASS"
   },
   {
    "id": "B13",
@@ -612,8 +650,9 @@
    "gravita": "bassa",
    "azione": "Controllare nell'anteprima JLC il segno di polarità; se i colori risultano scambiati si corregge nel firmware (non serve rifare la scheda, purché il pad 1 sia l'anodo)",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:53"
+   "giro": 3,
+   "ora": "13:18:59",
+   "_prec_giro": "WARN"
   },
   {
    "id": "B14",
@@ -624,14 +663,36 @@
     "LIB",
     "DEF"
    ],
-   "atteso": "D4 K=VSYS (ricircolo), D5 K=VBUS_D, D6 K=LATCH_ON",
-   "trovato": "D4 K=VSYS, D5 K=VBUS_D, D6 K=LATCH_ON; pad 1 = segno di catodo nell'impronta",
+   "atteso": "D4 K=VSYS (ricircolo), D5 K=VBUS_D, D6 K=LATCH_ON, D7 K=VSYS (cicalino)",
+   "trovato": "D4 K=VSYS, D5 K=VBUS_D, D6 K=LATCH_ON, D7 K=VSYS (cicalino); pad 1 = segno di catodo nell'impronta",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:54"
+   "giro": 3,
+   "ora": "13:18:59",
+   "_prec_giro": "PASS"
+  },
+  {
+   "titolo": "LIS2DH12: pin e indirizzo I2C",
+   "metodo": "Simbolo LCSC e reti contro la piedinatura",
+   "fonti": [
+    "LCSC_LIS2DH12",
+    "LIB",
+    "DEF",
+    "NET"
+   ],
+   "atteso": "1 SCL, 2 CS=VDD_IO (I2C), 3 SA0=GND (0x18), 4 SDA, 5 RES=GND, 6-8 GND, 9 VDD, 10 VDD_IO, 11/12 INT liberi",
+   "gravita": "alta",
+   "script": "giro2.py",
+   "categoria": "B",
+   "id": "B15",
+   "esito": "PASS",
+   "trovato": "U7 LIS2DH12: SCL/SDA su I2C, CS a 3V3 (modo I2C), SA0 a GND (0x18, diverso dal VM3011 0x61), RES e 6-8 a GND, VDD e VDD_IO 3V3, INT1/INT2 liberi (campionamento a 10 s); C15 100 nF + C5 4,7 uF vicini",
+   "ora": "13:19:00",
+   "azione": "",
+   "giro": 3,
+   "_prec_giro": "PASS"
   },
   {
    "id": "C01",
@@ -645,13 +706,14 @@
     "PCB"
    ],
    "atteso": "nessuna differenza",
-   "trovato": "0 differenze su 53 riferimenti (pin, reti, posizioni, rotazioni, impronte, lato, Value nello schema)",
+   "trovato": "0 differenze su 57 riferimenti (pin, reti, posizioni, rotazioni, impronte, lato, Value nello schema)",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "test_C_simbolo_impronta.py",
-   "giro": 2,
-   "ora": "14:02:54"
+   "giro": 3,
+   "ora": "13:19:01",
+   "_prec_giro": "PASS"
   },
   {
    "id": "C02",
@@ -670,8 +732,9 @@
    "gravita": "media",
    "azione": "Nell'anteprima JLC controllare che i pad coincidano col modello per MK1/MK2, D1-D3 e U1",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:55"
+   "giro": 3,
+   "ora": "13:19:01",
+   "_prec_giro": "NON_VERIFICABILE"
   },
   {
    "id": "C03",
@@ -688,8 +751,9 @@
    "gravita": "bassa",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:04:42"
+   "giro": 3,
+   "ora": "13:19:02",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D01",
@@ -706,8 +770,9 @@
    "gravita": "alta",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:56"
+   "giro": 3,
+   "ora": "13:19:02",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D02",
@@ -726,8 +791,9 @@
    "gravita": "bassa",
    "azione": "Al collaudo misurare la corrente da spento; se Q1 conduce in parte, R2 a 470k",
    "script": "",
-   "giro": 2,
-   "ora": "14:05:19"
+   "giro": 3,
+   "ora": "13:19:03",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D03",
@@ -744,8 +810,9 @@
    "gravita": "media",
    "azione": "Firmware: con VBUS presente e VBAT < 3,1 V entrare in risparmio (radio, mic e LED spenti) finché la cella non risale",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:57"
+   "giro": 3,
+   "ora": "13:19:03",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D04",
@@ -762,8 +829,9 @@
    "gravita": "media",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:57"
+   "giro": 3,
+   "ora": "13:19:04",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D05",
@@ -779,25 +847,27 @@
    "gravita": "media",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:58"
+   "giro": 3,
+   "ora": "13:19:04",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D06",
    "categoria": "D",
-   "titolo": "Partitore VBUS 100k/100k",
-   "metodo": "Livello su P0.28",
+   "titolo": "Rilevamento del 5V",
+   "metodo": "5V dei contatti sul pin VBUS del nRF52840 (dal 24/11, prima partitore su P0.28)",
    "fonti": [
     "DEF"
    ],
-   "atteso": "<= VDD+0,3 V",
-   "trovato": "5,0-5,25 V -> 2,5-2,6 V: ok a nRF acceso. Con cella scarica (3V3 assente) e 5V presente inietta ~40 uA nel pin non alimentato (Thevenin 50k)",
-   "esito": "WARN",
+   "atteso": "nessun livello oltre VDD+0,3 V su un GPIO",
+   "trovato": "5V dei contatti direttamente al pin VBUS del nRF52840 (pad 27, fino a 5,5 V, rilevamento interno USBDETECTED, sveglia da System OFF); partitore R6/R7 tolto: nessuna corrente iniettata in un GPIO a nRF spento",
+   "esito": "PASS",
    "gravita": "bassa",
-   "azione": "Accettabile; eventualmente R7 a 47k nei lotti futuri",
+   "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:58"
+   "giro": 3,
+   "ora": "13:19:05",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D07",
@@ -815,8 +885,9 @@
    "gravita": "bassa",
    "azione": "Nessuna per l'ordine; al collaudo verificare l'assenza di oscillazioni sul 3V3",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:58"
+   "giro": 3,
+   "ora": "13:19:05",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D08",
@@ -833,8 +904,9 @@
    "gravita": "bassa",
    "azione": "Firmware: drive H0S1 sui catodi; aspettarsi verde/blu fiochi sotto ~3,6 V",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:59"
+   "giro": 3,
+   "ora": "13:19:06",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D09",
@@ -846,13 +918,14 @@
     "NET"
    ],
    "atteso": "MOS a basso lato, diodo di ricircolo, gate a massa da spento",
-   "trovato": "Q4 AO3400A tra MOTOR_N e GND, D4 catodo su VSYS anodo su MOTOR_N (ricircolo corretto), R10 100k pull-down, piste 0,2 mm sufficienti per ~80 mA",
+   "trovato": "Q4 DMN2004DWK: FET1 tra MOTOR_N e GND con D4 (K VSYS) e R10 100k; FET2 tra BUZ_N e GND con D7 (K VSYS) e R14 100k; piste 0,2 mm sufficienti per ~80-100 mA",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "",
-   "giro": 2,
-   "ora": "14:02:59"
+   "giro": 3,
+   "ora": "13:19:06",
+   "_prec_giro": "PASS"
   },
   {
    "id": "D10",
@@ -870,8 +943,9 @@
    "gravita": "bassa",
    "azione": "Al collaudo controllare falsi tocchi; nei lotti futuri un 100 nF accanto a U5",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:00"
+   "giro": 3,
+   "ora": "13:19:07",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D11",
@@ -888,8 +962,9 @@
    "gravita": "media",
    "azione": "Firmware: clock PDM 1,280 MHz (rapporto 80 -> 16 kHz) o 1,231/1,333; mai il default 1,032 MHz",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:00"
+   "giro": 3,
+   "ora": "13:19:07",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D12",
@@ -906,8 +981,9 @@
    "gravita": "bassa",
    "azione": "Firmware: CS alto subito al boot; prevedere driver SPI-NAND (QSPI con CINSTR o SPIM)",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:01"
+   "giro": 3,
+   "ora": "13:19:08",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D13",
@@ -924,8 +1000,9 @@
    "gravita": "bassa",
    "azione": "Misurare al collaudo; con la 381620 (110 mAh) l'autonomia sale a ~20 h",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:01"
+   "giro": 3,
+   "ora": "13:19:08",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D14",
@@ -942,8 +1019,9 @@
    "gravita": "bassa",
    "azione": "Firmware: in basetta ridurre i consumi; accettabile per la v0.1",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:01"
+   "giro": 3,
+   "ora": "13:19:09",
+   "_prec_giro": "WARN"
   },
   {
    "id": "D15",
@@ -960,8 +1038,29 @@
    "gravita": "media",
    "azione": "Basetta con polarità meccanica certa (magneti); nei lotti futuri valutare resistenze serie da 100-470 Ohm su SWD",
    "script": "",
-   "giro": 2,
-   "ora": "14:03:02"
+   "giro": 3,
+   "ora": "13:19:09",
+   "_prec_giro": "WARN"
+  },
+  {
+   "titolo": "Standby acustico, I2C e cicalino",
+   "metodo": "Reti e datasheet VM3011 contro i pin del nRF",
+   "fonti": [
+    "DS_VM3011",
+    "DEF",
+    "PINOUT"
+   ],
+   "atteso": "DOUT su un GPIO, I2C con indirizzi distinti, cicalino da VSYS con FET e diodo",
+   "gravita": "media",
+   "script": "giro2.py",
+   "categoria": "D",
+   "id": "D16",
+   "esito": "PASS",
+   "trovato": "MIC_WAKE su P0.03 (pad 3), I2C su P0.07/P0.28 con pull-up interni del nRF (~13 k, 100 kHz, piste corte), VM3011 0x61 e LIS2DH12 0x18; cicalino tra BZ+ (VSYS) e BZ- (BUZ_N), FET2 di Q4 su P1.13. Firmware: niente I2C mentre il PDM registra; ZPL ~10 uA a clock fermo",
+   "ora": "13:19:10",
+   "azione": "",
+   "giro": 3,
+   "_prec_giro": "PASS"
   },
   {
    "id": "E01",
@@ -974,13 +1073,14 @@
     "CPL"
    ],
    "atteso": "43 componenti SMD in entrambi, nessun extra",
-   "trovato": "43 in CPL, 19 righe BOM, jlc/ BOM uguale; esclusi i montati a mano ['BT1N', 'BT1P', 'J1', 'J2', 'J3', 'J4', 'M1N', 'M1P', 'TPA', 'TPB']",
+   "trovato": "45 in CPL, 21 righe BOM, jlc/ BOM uguale; esclusi i montati a mano ['BT1N', 'BT1P', 'BZN', 'BZP', 'J1', 'J2', 'J3', 'J4', 'M1N', 'M1P', 'TPA', 'TPB']",
    "esito": "PASS",
    "gravita": "alta",
    "azione": "",
    "script": "test_E_bom_cpl.py",
-   "giro": 2,
-   "ora": "14:04:51"
+   "giro": 3,
+   "ora": "13:19:11",
+   "_prec_giro": "PASS"
   },
   {
    "id": "E02",
@@ -1003,13 +1103,14 @@
     "BOM"
    ],
    "atteso": "codici e package giusti, 7 Extended",
-   "trovato": "7 Extended: C3010298, C356849, C38066, C404280, C42422127, C48227730, C83571; U3 C38066 coerente in def, BOM fab_out e jlc/, Value pcb e schema; pagina JLC C38066: MCP73832T-2ACI/OT, SOT-23-5, Extended, PCBA Type 'Economic and Standard' (letta alle 22/11 giro 2)",
-   "esito": "PASS",
+   "trovato": "10 Extended: C110926, C156343, C3010298, C356849, C38066, C404280, C42422127, C48227730, C7149370, C83571; U3 C38066 coerente in def, BOM fab_out e jlc/, Value pcb e schema; pagina JLC C38066: ",
+   "esito": "FAIL",
    "gravita": "media",
    "azione": "",
    "script": "test_E_bom_cpl.py",
-   "giro": 2,
-   "ora": "14:04:51"
+   "giro": 3,
+   "ora": "13:19:12",
+   "_prec_giro": "FAIL"
   },
   {
    "id": "E03",
@@ -1021,13 +1122,14 @@
     "LEGGIMI"
    ],
    "atteso": "Economic PCBA",
-   "trovato": "pagina JLC C356849 riletta ora: E73-2G4M08S1C, Extended, PCBA Type 'Standard Only', X-ray Inspection 'Required' (riletta al giro 2). Con Economic PCBA il modulo non risulta accettato: il preventivo da 97 € va riconfermato nel carrello",
-   "esito": "FAIL",
+   "trovato": "pagina JLC: non letta",
+   "esito": "WARN",
    "gravita": "alta",
    "azione": "Prima di pagare: verificare nel carrello JLC che il tipo di PCBA sia accettato con U1; se passa a Standard, rifare il preventivo (e decidere) prima di confermare",
    "script": "",
-   "giro": 2,
-   "ora": "14:04:52"
+   "giro": 3,
+   "ora": "13:19:12",
+   "_prec_giro": "WARN"
   },
   {
    "id": "E04",
@@ -1044,8 +1146,9 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_E_bom_cpl.py",
-   "giro": 2,
-   "ora": "14:04:52"
+   "giro": 3,
+   "ora": "13:19:12",
+   "_prec_giro": "PASS"
   },
   {
    "id": "E05",
@@ -1064,8 +1167,10 @@
    "gravita": "media",
    "azione": "Nell'anteprima JLC controllare il pin 1 di U1 (antenna verso il bordo), U2 (WSON), U3, U4, U5, U6, Q1, Q2 (SOT-363), Q4, D1-D3 (LED), D4-D6 (catodo), MK1/MK2",
    "script": "test_E_bom_cpl.py",
-   "giro": 2,
-   "ora": "14:04:53"
+   "giro": 3,
+   "ora": "13:19:13",
+   "_prec_giro": "FAIL",
+   "esito_prec": "FAIL"
   },
   {
    "id": "E06",
@@ -1083,8 +1188,9 @@
    "gravita": "media",
    "azione": "",
    "script": "test_E_bom_cpl.py",
-   "giro": 2,
-   "ora": "14:04:53"
+   "giro": 3,
+   "ora": "13:19:13",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F01",
@@ -1095,13 +1201,14 @@
     "PCB"
    ],
    "atteso": "nessuna sovrapposizione, dentro la scheda",
-   "trovato": "DRC: 0 sovrapposizioni; rettangoli: ['courtyard sovrapposti (sopra): U6 C7'] (il poligono reale di U6 non tocca C7); U1 a filo del bordo inferiore",
+   "trovato": "DRC: 0 sovrapposizioni; rettangoli: ['courtyard sovrapposti (sopra): C7 U6', 'courtyard sovrapposti (sopra): MK2 C9'] (il poligono reale di U6 non tocca C7); U1 a filo del bordo inferiore",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "test_F_meccanica.py",
    "giro": 3,
-   "ora": "16:22:27"
+   "ora": "13:19:14",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F02",
@@ -1119,8 +1226,9 @@
    "gravita": "media",
    "azione": "Misurare l'E73 all'arrivo (o chiedere a Ebyte): decide lo spessore",
    "script": "",
-   "giro": 2,
-   "ora": "14:04:54"
+   "giro": 3,
+   "ora": "13:19:14",
+   "_prec_giro": "WARN"
   },
   {
    "id": "F03",
@@ -1139,8 +1247,8 @@
    "azione": "",
    "script": "test_F_meccanica.py",
    "giro": 3,
-   "ora": "16:22:27",
-   "esito_prec": "FAIL"
+   "ora": "13:19:15",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F04",
@@ -1158,7 +1266,8 @@
    "azione": "",
    "script": "test_F_meccanica.py",
    "giro": 3,
-   "ora": "16:22:28"
+   "ora": "13:19:15",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F05",
@@ -1174,8 +1283,9 @@
    "gravita": "media",
    "azione": "Saldare i fili prima di posare la cella, lato PCM in alto e fili ripiegati; oppure nei lotti futuri spostare BT+/BT- ai fianchi del motorino",
    "script": "test_F_meccanica.py",
-   "giro": 2,
-   "ora": "14:05:20"
+   "giro": 3,
+   "ora": "13:19:16",
+   "_prec_giro": "WARN"
   },
   {
    "id": "F06",
@@ -1192,8 +1302,9 @@
    "gravita": "media",
    "azione": "",
    "script": "test_F_meccanica.py",
-   "giro": 2,
-   "ora": "14:04:56"
+   "giro": 3,
+   "ora": "13:19:16",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F07",
@@ -1205,13 +1316,14 @@
     "PCB"
    ],
    "atteso": "porte libere verso la faccia giusta",
-   "trovato": "Entrambe le porte sono sul coperchio, rivolte verso il FRONTE. MK1 (14,6; 16,4) ok per il foro frontale. MK2 (8,25; 1,35) guarda il fronte: il canalino verso la faccia superiore deve piegare a 90° nel guscio. Nessun componente sopra",
+   "trovato": "MK1 MSM261 (14,6; 16,4) top-port verso il FRONTE: ok per il foro frontale. MK2 VM3011 (8,25; 1,65) bottom-port: foro metallizzato Ø0,8 a (7,52; 1,65) che esce sul RETRO della scheda, tra i target J2 e J3 e sopra il motorino; da lì un canalino nella resina sale alla faccia superiore",
    "esito": "WARN",
    "gravita": "bassa",
    "azione": "Gusci: canale a L per MK2; sigillare le porte durante la colata (la resina nel foro distrugge il mic)",
    "script": "",
-   "giro": 2,
-   "ora": "14:04:56"
+   "giro": 3,
+   "ora": "13:19:17",
+   "_prec_giro": "WARN"
   },
   {
    "id": "F08",
@@ -1230,8 +1342,8 @@
    "azione": "",
    "script": "test_F_meccanica.py",
    "giro": 3,
-   "ora": "16:22:35",
-   "esito_prec": "WARN"
+   "ora": "13:19:17",
+   "_prec_giro": "PASS"
   },
   {
    "id": "F09",
@@ -1243,13 +1355,14 @@
     "DOC"
    ],
    "atteso": "volume riservato per la boccola",
-   "trovato": "Nessuno spazio riservato sulla scheda: MK2 è al centro del bordo alto (y 0,3-2,4) e J1-J4 occupano il resto; con 41 mm di monolite restano ~1,5 mm di resina sopra la scheda se centrata",
+   "trovato": "Nessuno spazio riservato sulla scheda: MK2 (VM3011, y 0,2-3,1) è al centro del bordo alto e J1-J4 occupano il resto; con 41 mm di monolite restano ~1,5 mm di resina sopra la scheda se centrata",
    "esito": "WARN",
    "gravita": "media",
    "azione": "Gusci: spostare la scheda verso il basso (antenna a ~0,5 mm dal fondo) per avere ~2,5 mm sopra, o boccola laterale; da decidere nel CAD del guscio",
    "script": "",
-   "giro": 2,
-   "ora": "14:04:57"
+   "giro": 3,
+   "ora": "13:19:18",
+   "_prec_giro": "WARN"
   },
   {
    "id": "F11",
@@ -1261,14 +1374,15 @@
     "LIB"
    ],
    "atteso": "nessun corpo sopra pad altrui",
-   "trovato": "le courtyard LCSC racchiudono solo il corpo (14 componenti con pad fuori), quindi il DRC non vede i pad sotto i corpi altrui. Corpo sopra pad: [['U6', 'C7']] (pad di C7 a filo del corpo di U6, ~0,05 mm); corpi a < 0,1 mm: [['U6', 'C7', 0.1]]",
+   "trovato": "le courtyard LCSC racchiudono solo il corpo (15 componenti con pad fuori), quindi il DRC non vede i pad sotto i corpi altrui. Corpo sopra pad: [['Q1', 'C9'], ['U6', 'C7']] (pad di C7 a filo del corpo di U6, ~0,05 mm); corpi a < 0,1 mm: [['C7', 'U6', 0.1], ['MK2', 'C9', 0.1]]",
    "esito": "WARN",
    "gravita": "media",
    "azione": "Nell'anteprima/DFM JLC controllare C7 accanto a U6; nei lotti futuri allontanarlo di 0,2 mm",
    "script": "test_F_ingombri.py",
-   "giro": 2,
-   "ora": "14:04:58",
-   "nuovo_nel_giro": 2
+   "giro": 3,
+   "ora": "13:19:19",
+   "nuovo_nel_giro": 2,
+   "_prec_giro": "WARN"
   },
   {
    "id": "F10",
@@ -1286,8 +1400,9 @@
    "gravita": "alta",
    "azione": "",
    "script": "test_G_gerber.py",
-   "giro": 2,
-   "ora": "14:04:59"
+   "giro": 3,
+   "ora": "13:19:19",
+   "_prec_giro": "PASS"
   },
   {
    "id": "G01",
@@ -1304,7 +1419,8 @@
    "azione": "",
    "script": "test_G_gerber.py",
    "giro": 3,
-   "ora": "16:22:42"
+   "ora": "13:20:18",
+   "_prec_giro": "PASS"
   },
   {
    "id": "G02",
@@ -1316,13 +1432,14 @@
     "PCB"
    ],
    "atteso": "via = pcb",
-   "trovato": "drill: {'0.250': 114, '1.100': 4} PTH, 0 NPTH; pcb 114 via",
+   "trovato": "drill: {'0.250': 130, '0.800': 1, '1.100': 4} PTH, 0 NPTH; pcb 130 via",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "test_G_gerber.py",
    "giro": 3,
-   "ora": "16:22:42"
+   "ora": "13:20:19",
+   "_prec_giro": "PASS"
   },
   {
    "id": "G03",
@@ -1340,7 +1457,8 @@
    "azione": "",
    "script": "",
    "giro": 3,
-   "ora": "16:22:43"
+   "ora": "13:20:19",
+   "_prec_giro": "PASS"
   },
   {
    "id": "G04",
@@ -1358,7 +1476,8 @@
    "azione": "Guardare il B_Silkscreen nel visualizzatore Gerber di JLC",
    "script": "test_G_gerber.py",
    "giro": 3,
-   "ora": "16:22:43"
+   "ora": "13:20:19",
+   "_prec_giro": "WARN"
   },
   {
    "id": "G05",
@@ -1376,7 +1495,8 @@
    "azione": "",
    "script": "test_A_drc_severo.py",
    "giro": 3,
-   "ora": "16:22:44"
+   "ora": "13:20:20",
+   "_prec_giro": "PASS"
   },
   {
    "id": "G06",
@@ -1394,7 +1514,8 @@
    "azione": "",
    "script": "",
    "giro": 3,
-   "ora": "16:22:44"
+   "ora": "13:20:20",
+   "_prec_giro": "PASS"
   },
   {
    "id": "H01",
@@ -1412,7 +1533,8 @@
    "azione": "",
    "script": "test_H_documenti.py",
    "giro": 3,
-   "ora": "16:23:51"
+   "ora": "13:19:55",
+   "_prec_giro": "PASS"
   },
   {
    "id": "H02",
@@ -1430,7 +1552,8 @@
    "azione": "",
    "script": "test_H_documenti.py",
    "giro": 3,
-   "ora": "16:23:52"
+   "ora": "13:19:56",
+   "_prec_giro": "PASS"
   },
   {
    "id": "H03",
@@ -1442,13 +1565,14 @@
     "PCB"
    ],
    "atteso": "coerenti",
-   "trovato": "montaggio/CLAUDE.md: la riga 'Strato sotto la scheda' cita ancora la cella ~3,5 x 16 x 19 (60 mAh), non la 381620",
-   "esito": "WARN",
+   "trovato": "numeri coerenti",
+   "esito": "PASS",
    "gravita": "bassa",
    "azione": "",
    "script": "test_H_documenti.py",
    "giro": 3,
-   "ora": "16:23:52"
+   "ora": "13:19:56",
+   "_prec_giro": "PASS"
   },
   {
    "id": "H04",
@@ -1461,13 +1585,15 @@
     "PCB"
    ],
    "atteso": "aggiornati",
-   "trovato": "kicad/anteprima.json non aggiornato (BT1P y 11.20 vs pcb 13.50); montaggio/CLAUDE.md: la riga 'Strato sotto la scheda' cita ancora la cella ~3,5 x 16 x 19 (60 mAh), non la 381620",
-   "esito": "WARN",
+   "trovato": "file aggiornati",
+   "esito": "PASS",
    "gravita": "bassa",
-   "azione": "Aggiornare o segnare come superati",
+   "azione": "",
    "script": "test_H_documenti.py",
    "giro": 3,
-   "ora": "16:23:53"
+   "ora": "13:19:57",
+   "_prec_giro": "WARN",
+   "esito_prec": "WARN"
   },
   {
    "id": "H05",
@@ -1479,13 +1605,14 @@
     "MCP_STAT"
    ],
    "atteso": "coerente col caricatore",
-   "trovato": "riga STAT di pinout.md: | STAT (MCP73832, open-drain) | P0.07 | 22 | pull-up interno; basso = in carica, alto = carica finita oppure niente 5V (VBUS_SENSE distingue",
+   "trovato": "pinout.md: | ~~VBUS_SENSE~~ / ~~STAT~~ | – | – | tolti il 24/11 per liberare P0.28 e P0.07 (I2C). Il 5V si legge dal pin VBUS; \"in carica\" = 5V presente e batteria < ~4,15",
    "esito": "PASS",
    "gravita": "media",
    "azione": "",
    "script": "test_H_documenti.py",
    "giro": 3,
-   "ora": "16:23:53"
+   "ora": "13:19:57",
+   "_prec_giro": "PASS"
   }
  ],
  "sintesi": "Terzo giro (mirato: A, F01, F03, F04, F08, G, H rieseguiti; gli altri restano al giro 2). La scheda resta elettricamente pulita: ERC/DRC 0, parità 0, DRC severo con le sole note sul testo, Gerber e drill del zip identici al pcb attuale (fori J1–J4 da 1,1 mm, anello 0,25 mm, 114 via). Risolti F03, ora con monolite da 9 mm (0,6 mm di resina per faccia), e F08: target 2,0 × 4,0 con 0,2 mm di gioco della coda, punta che esce di 0,1 mm, spalla a 1,4 mm dal motorino. L'unico FAIL rimasto è E03: JLC indica l'E73 come «Standard Only» con raggi X, quindi il tipo di PCBA e il prezzo vanno confermati nel carrello prima di pagare. Gli altri WARN riguardano firmware, gusci, anteprima JLC e documenti (CLAUDE.md cita ancora la cella da 60 mAh; anteprima.json è superato).",
@@ -1580,6 +1707,14 @@
     "h": 0.59
    },
    {
+    "nome": "C15 100nF 16V X7R",
+    "tipo": "top",
+    "x": 3.56,
+    "y": 18.25,
+    "w": 1.09,
+    "h": 0.59
+   },
+   {
     "nome": "C2 1uF 10V X5R",
     "tipo": "top",
     "x": 4.06,
@@ -1606,8 +1741,8 @@
    {
     "nome": "C5 4.7uF 10V X5R 0402",
     "tipo": "top",
-    "x": 1.36,
-    "y": 19.16,
+    "x": 3.25,
+    "y": 17.31,
     "w": 1.09,
     "h": 0.59
    },
@@ -1630,8 +1765,8 @@
    {
     "nome": "C9 100nF 16V X7R",
     "tipo": "top",
-    "x": 8.06,
-    "y": 2.66,
+    "x": 7.56,
+    "y": 3.11,
     "w": 1.09,
     "h": 0.59
    },
@@ -1684,6 +1819,14 @@
     "h": 1.79
    },
    {
+    "nome": "D7 1N4148WS",
+    "tipo": "top",
+    "x": 10.33,
+    "y": 9.5,
+    "w": 1.79,
+    "h": 1.39
+   },
+   {
     "nome": "MK1 MSM261DGT003 PDM top-p",
     "tipo": "top",
     "x": 13.56,
@@ -1692,12 +1835,12 @@
     "h": 4.09
    },
    {
-    "nome": "MK2 MSM261DGT003 PDM top-p",
+    "nome": "MK2 VM3011 PDM wake-on-sou",
     "tipo": "top",
-    "x": 6.2,
-    "y": 0.31,
-    "w": 4.09,
-    "h": 2.09
+    "x": 6.31,
+    "y": 0.12,
+    "w": 3.89,
+    "h": 3.05
    },
    {
     "nome": "Q1 AO3401A",
@@ -1716,12 +1859,12 @@
     "h": 2.09
    },
    {
-    "nome": "Q4 AO3400A",
+    "nome": "Q4 DMN2004DWK doppio",
     "tipo": "top",
-    "x": 13.75,
-    "y": 4.0,
-    "w": 1.39,
-    "h": 2.99
+    "x": 13.78,
+    "y": 4.45,
+    "w": 1.34,
+    "h": 2.09
    },
    {
     "nome": "R1 20k",
@@ -1764,6 +1907,14 @@
     "h": 1.09
    },
    {
+    "nome": "R14 100k",
+    "tipo": "top",
+    "x": 13.91,
+    "y": 3.75,
+    "w": 1.09,
+    "h": 0.59
+   },
+   {
     "nome": "R2 1M",
     "tipo": "top",
     "x": 4.06,
@@ -1790,22 +1941,6 @@
    {
     "nome": "R5 100k",
     "tipo": "top",
-    "x": 6.06,
-    "y": 2.66,
-    "w": 1.09,
-    "h": 0.59
-   },
-   {
-    "nome": "R6 100k",
-    "tipo": "top",
-    "x": 5.36,
-    "y": 6.45,
-    "w": 1.09,
-    "h": 0.59
-   },
-   {
-    "nome": "R7 100k",
-    "tipo": "top",
     "x": 6.91,
     "y": 6.45,
     "w": 1.09,
@@ -1814,8 +1949,8 @@
    {
     "nome": "R8 1M",
     "tipo": "top",
-    "x": 9.62,
-    "y": 2.66,
+    "x": 5.36,
+    "y": 6.45,
     "w": 1.09,
     "h": 0.59
    },
@@ -1876,6 +2011,14 @@
     "h": 1.69
    },
    {
+    "nome": "U7 LIS2DH12 accelerometro",
+    "tipo": "top",
+    "x": 0.95,
+    "y": 17.56,
+    "w": 2.09,
+    "h": 2.09
+   },
+   {
     "nome": "BT1N piazzola retro",
     "tipo": "bottom",
     "x": 10.75,
@@ -1888,6 +2031,22 @@
     "tipo": "bottom",
     "x": 4.25,
     "y": 12.56,
+    "w": 1.49,
+    "h": 1.89
+   },
+   {
+    "nome": "BZN piazzola retro",
+    "tipo": "bottom",
+    "x": 10.16,
+    "y": 9.16,
+    "w": 1.49,
+    "h": 1.89
+   },
+   {
+    "nome": "BZP piazzola retro",
+    "tipo": "bottom",
+    "x": 4.86,
+    "y": 9.16,
     "w": 1.49,
     "h": 1.89
    },
@@ -1999,7 +2158,7 @@
     "nome": "MK2 porta top (lid, verso il fronte)",
     "tipo": "porta",
     "x": 7.9,
-    "y": 1.0,
+    "y": 1.3,
     "w": 0.7,
     "h": 0.7
    },

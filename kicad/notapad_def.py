@@ -35,8 +35,15 @@ P = {
     "NMOS":  ("2N7002", "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR", "C8545", "2N7002"),
     "NMOS2": ("2N7002DW-7-F", "SOT-363_L2.0-W1.3-P0.65-LS2.1-TL", "C83571", "2N7002DW doppio"),
     "NMOSM": ("AO3400A", "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR", "C20917", "AO3400A"),
+    # 24/11: doppio N-MOSFET per motorino + cicalino (0,5 ohm a 2,5 V, 540 mA), stessa impronta di Q2
+    "NMOSD": ("DMN2004DWK-7", "SOT-363_L2.0-W1.3-P0.65-LS2.1-TL", "C156343", "DMN2004DWK doppio"),
     "DIODE": ("1N4148WST4", "SOD-323_L1.8-W1.3-LS2.5-RD", "C2128", "1N4148WS"),
     "MIC":   ("MSM261DGT003", "MIC-SMD_6P-L4.0-W2.0_LMD4020T261-OC3", "C48227730", "MSM261DGT003 PDM top-port"),
+    # 24/11: microfono superiore con risveglio acustico (ZPL ~10 uA a clock fermo, DOUT alto sul suono), bottom-port:
+    # foro acustico NPTH 0,8 mm nell'impronta, canalino nella resina dal retro alla faccia superiore
+    "MICZ":  ("VM3011-U1", "SENSOR-SMD_VM3011-U1", "C7149370", "VM3011 PDM wake-on-sound bottom-port"),
+    # 24/11: accelerometro per Find Hub / Find My (rilevamento movimento) e gesti a colpetti; I2C 0x18 (SA0 = GND)
+    "ACC":   ("LIS2DH12TR", "LGA-12_L2.0-W2.0-P0.50-BL", "C110926", "LIS2DH12 accelerometro 3 assi"),
     "R20k":  ("0402WGF2002TCE", "R0402", "C25765", "20k"),
     "R1M":   ("0402WGF1004TCE", "R0402", "C26083", "1M"),
     "R100k": ("0402WGF1003TCE", "R0402", "C25741", "100k"),
@@ -52,9 +59,10 @@ P = {
 
 # ref: (famiglia, {pad: rete}, (x, y, rot))
 C = {}
-def add(ref, fam, nets, pos):
+def add(ref, fam, nets, pos, fisso=False):
+    """fisso=True: y già nelle coordinate della scheda lunga H (non passa da s())"""
     x, y, r = pos
-    C[ref] = (fam, nets, (x, y if ref == "U1" else s(y), r))
+    C[ref] = (fam, nets, (x, y if (ref == "U1" or fisso) else s(y), r))
 
 # ---------------- U1 modulo E73 (antenna verso il bordo basso) ----------------
 e73 = {
@@ -64,7 +72,11 @@ e73 = {
     "11": "QSPI_IO0", "13": "QSPI_SCK", "15": "QSPI_IO3", "18": "QSPI_IO1", "17": "QSPI_IO2", "20": "QSPI_CS",
     "12": "PDM_CLK", "14": "PDM_DATA",
     "16": "TOUCH_A", "9": "TOUCH_B",
-    "10": "MOTOR_G", "8": "HOLD", "7": "VBAT_SENSE", "4": "VBUS_SENSE", "22": "STAT",
+    "10": "MOTOR_G", "8": "HOLD", "7": "VBAT_SENSE",
+    # 24/11: il 5V va al pin VBUS del nRF52840 (rilevamento interno, sveglia anche da System OFF): liberi P0.28 e P0.07
+    # (VBUS_SENSE e STAT tolti); I2C su P0.28/P0.07 con pull-up interni del nRF (~13 k, 100 kHz, piste corte)
+    "27": "VBUS", "4": "I2C_SCL", "22": "I2C_SDA",
+    "3": "MIC_WAKE", "6": "BUZ_G",
     "28": "D1_R", "30": "D1_G", "32": "D1_B",
     "33": "D2_R", "34": "D2_G", "35": "D2_B",
     "36": "D3_R", "38": "D3_G", "40": "D3_B",
@@ -77,7 +89,7 @@ add("U2", "NAND", {"1": "QSPI_CS", "2": "QSPI_IO1", "3": "QSPI_IO2", "4": "GND",
 add("C7", "C100n", {"1": "3V3", "2": "GND"}, (13.05, 9.95, 90))
 
 # ---------------- ricarica + latch + reset (zona A) ----------------
-add("U3", "CHG", {"1": "STAT", "2": "GND", "3": "VBAT", "4": "VBUS", "5": "PROG"}, (2.2, 5.35, 90))
+add("U3", "CHG", {"2": "GND", "3": "VBAT", "4": "VBUS", "5": "PROG"}, (2.2, 5.35, 90))
 add("C1", "C1u", {"1": "VBUS", "2": "GND"}, (3.2, 2.5, 90))
 add("C2", "C1u", {"1": "VBAT", "2": "GND"}, (4.35, 4.5, 90))
 add("R1", "R20k", {"1": "PROG", "2": "GND"}, (1, 7.55, 270))
@@ -95,18 +107,22 @@ else:
     add("Q2", "NMOS", {"1": "LATCH_ON", "2": "GND", "3": "LATCH_G"}, (9.87, 4.6, 180))
     add("Q3", "NMOS", {"1": "RST_G", "2": "GND", "3": "NRESET"}, (12.6, 6, 0))
 add("C10", "C100n", {"1": "VBUS", "2": "RST_G"}, (10.6, 1.4, 90))
-add("R5", "R100k", {"1": "RST_G", "2": "GND"}, (6.6, 2.95, 180))
-add("R6", "R100k", {"1": "VBUS", "2": "VBUS_SENSE"}, (5.9, 6.75, 0))
-add("R7", "R100k", {"1": "VBUS_SENSE", "2": "GND"}, (7.45, 6.75, 0))
+# 24/11: R5 al posto di R7 (R6/R7 del partitore VBUS_SENSE tolti), per lasciare spazio al VM3011
+add("R5", "R100k", {"1": "RST_G", "2": "GND"}, (7.45, 6.75, 0))
 
 # ---------------- motore (zona A destra) ----------------
-add("Q4", "NMOSM", {"1": "MOTOR_G", "2": "GND", "3": "MOTOR_N"}, (14.45, 5.5, 0))
+# Q4 = DMN2004DWK (24/11): FET 1 motorino, FET 2 cicalino (prima AO3400A solo per il motorino)
+add("Q4", "NMOSD", {"1": "GND", "2": "MOTOR_G", "6": "MOTOR_N",
+                    "4": "GND", "5": "BUZ_G", "3": "BUZ_N"}, (14.45, 5.5, 0))
 add("R10", "R100k", {"1": "MOTOR_G", "2": "GND"}, (15.25, 7.6, 0))
+add("R14", "R100k", {"1": "BUZ_G", "2": "GND"}, (14.45, 4.05, 0))
 add("D4", "DIODE", {"1": "VSYS", "2": "MOTOR_N"}, (14.45, 8.6, 0))
 
 # ---------------- microfoni ----------------
-add("MK2", "MIC", {"1": "3V3", "2": "GND", "3": "PDM_DATA", "4": "PDM_CLK", "5": "GND", "6": "3V3"}, (8.25, 1.35, 90))
-add("C9", "C100n", {"1": "3V3", "2": "GND"}, (8.6, 2.95, 180))
+# MK2 = VM3011 (24/11): L/R = VDD (canale destro come prima, I2C 0x61); il foro acustico è a -0,73 mm in x dal centro
+add("MK2", "MICZ", {"1": "PDM_DATA", "2": "I2C_SDA", "3": "MIC_WAKE", "4": "I2C_SCL", "5": "PDM_CLK",
+                    "6": "3V3", "7": "3V3", "8": "GND"}, (8.25, 1.65, 0))
+add("C9", "C100n", {"1": "3V3", "2": "GND"}, (8.1, 3.4, 0))
 add("MK1", "MIC", {"1": "3V3", "2": "GND", "3": "PDM_DATA", "4": "PDM_CLK", "5": "GND", "6": "GND"}, (14.6, 14.88, 0))
 add("C8", "C100n", {"1": "3V3", "2": "GND"}, (13.1, 14.5, 90))
 
@@ -125,10 +141,18 @@ add("C13", "C10p", {"1": "TOUCH_B_PAD", "2": "GND"}, (13.6, 7.6, 0))
 add("U4", "LDO", {"1": "GND", "2": "3V3", "3": "VSYS"}, (1.9, 14, 90))
 add("C3", "C1u", {"1": "VSYS", "2": "GND"}, (3.95, 8.4, 0))
 add("C4", "C1u", {"1": "3V3", "2": "GND"}, (1.05, 17.95, 90))
-add("C5", "C4u7", {"1": "3V3", "2": "GND"}, (1.9, 16.45, 180))
-add("R8", "R1M", {"1": "VSYS", "2": "VBAT_SENSE"}, (10.17, 2.95, 0))
+add("C5", "C4u7", {"1": "3V3", "2": "GND"}, (3.8, 17.6, 0), fisso=True)   # 24/11: spostato per U7
+add("R8", "R1M", {"1": "VSYS", "2": "VBAT_SENSE"}, (5.9, 6.75, 0))     # 24/11: al posto di R6
 add("R9", "R1M", {"1": "VBAT_SENSE", "2": "GND"}, (13.3, 2.5, 90))
 add("C11", "C100n", {"1": "VBAT_SENSE", "2": "GND"}, (15.45, 17.95, 90))
+
+# ---------------- accelerometro e cicalino (24/11) ----------------
+# LIS2DH12: CS = VDD_IO (I2C), SA0 = GND (0x18), RES = GND, INT1/INT2 non collegati (il firmware campiona ogni 10 s)
+add("U7", "ACC", {"1": "I2C_SCL", "2": "3V3", "3": "GND", "4": "I2C_SDA", "5": "GND", "6": "GND", "7": "GND",
+                  "8": "GND", "9": "3V3", "10": "3V3"}, (2.0, 18.6, 0), fisso=True)
+add("C15", "C100n", {"1": "3V3", "2": "GND"}, (4.1, 18.55, 0), fisso=True)
+# cicalino magnetico 4x4 mm sul retro (a mano, tra motorino e batteria), pilotato in PWM ~4 kHz da VSYS tramite Q4
+add("D7", "DIODE", {"1": "VSYS", "2": "BUZ_N"}, (11.2, 10.2, 0), fisso=True)
 
 # ---------------- montati a mano ----------------
 add("J1", "PIN", {"1": "VBUS"}, (1.8, 2.5, 0))
@@ -141,15 +165,14 @@ add("M1P", "WPAD", {"1": "VSYS"}, (2.2, 7, 0))        # M+  (retro, accanto al m
 add("M1N", "WPAD", {"1": "MOTOR_N"}, (14.3, 7, 0))    # M-
 add("TPA", "WPAD", {"1": "TOUCH_A_PAD"}, (1, 10.5, 0))   # filo verso listello sinistro
 add("TPB", "WPAD", {"1": "TOUCH_B_PAD"}, (15.5, 10.5, 0))  # filo verso listello destro
+add("BZP", "WPAD", {"1": "VSYS"}, (5.6, 10.1, 0), fisso=True)     # BZ+ (retro, cicalino tra motorino e batteria)
+add("BZN", "WPAD", {"1": "BUZ_N"}, (10.9, 10.1, 0), fisso=True)   # BZ-
 
 HAND = {"PIN", "WPAD"}
 
 # Collegamenti GND brevi tracciati prima dello sbroglio (pad -> pad, lato superiore, 0,2 mm):
 # punti dove il piano non arriva e Freerouting non trova spazio.
 PREROUTE = [
-    ("GND", ("C4", "2"), ("C5", "2")),
-    ("GND", ("C9", "2"), ("MK2", "5")),
-    ("GND", ("R5", "2"), ("J2", "1")),
     ("GND", ("Q2", "1"), ("C14", "2")),
     ("GND", ("MK1", "2"), ("MK1", "5")),
     ("GND", ("R1", "2"), ("U5", "6")),

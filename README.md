@@ -74,9 +74,10 @@ The real app and the MCP server are not started yet; a test app for a developmen
 ## Electronics v0.1
 - **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
 - **Storage:** W25N02KV QSPI NAND, 256 MB (about 10 to 11 h of stereo LC3 audio).
-- **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
-- **Power:** ~110 mAh LiPo (381620 candidate) with protection circuit, MCP73832 charger at 50 mA (open-drain status output), 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
-- **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
+- **Microphones:** the front one is an MSM261DGT003 (top-port PDM). Since 24 Nov the top one is a Vesper VM3011, a PDM microphone with acoustic wake-up: it listens with the clock stopped at about 10 uA (datasheet figure, preliminary) and wakes the processor when sound passes a self-adapting threshold. Stereo on a single data line.
+- **Motion and sound emitter (24 Nov):** a 3-axis accelerometer (LIS2DH12, I2C) and a 4 x 4 mm magnetic buzzer on the back, driven by the second half of a dual MOSFET shared with the vibration motor. The joint Apple/Google specification against unwanted tracking (DULT) asks for a sound emitter (at least 60 phon at 25 cm) and recommends a motion sensor. **This is hardware preparation only, not compatibility:** Google requires registration and certification, and Apple requires its MFi programme, whose specifications are not public.
+- **Power:** ~110 mAh LiPo (381620 candidate) with protection circuit, MCP73832 charger at 50 mA, 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch, goes directly to the nRF52840 VBUS pin (internal detection; the charger status read was dropped to free pins) and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
+- **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, top microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
 - **Battery:** the 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 does not fit the 9 mm monolith.
 - **Estimated consumption:** about 4.6 mA average while recording, so about 20 h on the 110 mAh cell (estimate from datasheets, little margin without the DC-DC converter; to be measured). Memory, not battery, sets the limit for continuous recording: about 11 to 12 h of stereo audio in 256 MB, stretched by recording only when there is sound and by syncing during the day.
 
@@ -91,7 +92,9 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
 ### Update, 24 Nov 2026
-- **Board verified, not frozen:** the v0.1 board will be reviewed over the next weeks (a microphone with acoustic wake-up for a low-power standby; compatibility with item-finding networks, Google Find Hub as the target, Apple's to be evaluated). The final Gerber, bill of materials and placement files come after the review.
+- **Board regenerated, not frozen:** same 16.5 x 38 mm, 4 layers; now with the wake-on-sound microphone, the accelerometer and the buzzer described above (ERC 0, DRC 0, parity 0, 130 vias). Still under review: buzzer volume and sound outlet, the acoustic channel of the VM3011 through the shells, and VM3011 availability (out of stock at one distributor, preliminary datasheet). The final Gerber, bill of materials and placement files come after the review.
+- **Pins freed without losing functions:** 5V straight to VBUS, charger status read removed, I2C on two freed pins. Three RGB LEDs and gestures unchanged.
+- **Verification rerun on the new board:** 71 tests, 45 passed, 23 known warnings, 2 not verifiable, 1 to reconfirm (a component page to read again). It found and got fixed two real errors (placement rotation of the new microphone, a footprint without courtyard); a wrong charger code in the bill of materials for the manufacturers was corrected.
 - **Sponsorship:** an application with a technical article (PDF) was sent to one board manufacturer and is under review; nothing is agreed. The goal is a single production sponsor for the first 5 assembled boards, credited everywhere, including the silkscreen. The manufacturer is not decided.
 - **Figures corrected:** about 20 h on the 110 mAh cell (estimate); the 256 MB memory holds 11 to 12 h of continuous stereo.
 - **Test bench:** firmware 0.2.0 (records only on sound) and app 0.10.0 (full-precision Whisper on the device) published; next are the Android app and the architecture of the open MCP server.
@@ -109,7 +112,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 
 Documents: pinout in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); bill of materials and netlist in [`jlc/`](jlc/); KiCad project and generators in [`kicad/`](kicad/).
 
-![Routing preview, one panel per layer](kicad/sbroglio.png)
+![Routing preview, one panel per layer (130 vias, 24 Nov)](kicad/sbroglio.png)
 
 ## Pre-order verification
 The board is generated by scripts, which makes mistakes repeatable too. On 22 Nov 2026, before paying for assembly, a reviewer agent went through the whole board with **69 automated tests in 8 areas**:
@@ -132,6 +135,8 @@ Every value is cross-checked against at least two independent sources (datasheet
 - **Assembly tier (open, the one failure left).** the assembly service lists the E73 module as standard-tier assembly only, so the 97 EUR economy-tier quote has to be rechecked before paying.
 - **Thickness (fixed).** With the 3 mm module and the 3.8 mm battery, 8 mm left 0.1 mm of resin per face; at 9 mm there is 0.6 mm. Only the shells change.
 - **Contact holes (fixed).** The 2.0 x 4.0 mm target contacts need 1.1 mm holes instead of 1.0 mm; only the drill files changed.
+
+**Fourth run (24 Nov), on the regenerated board:** 71 tests, 45 passed, 23 known warnings, 2 not verifiable, 1 to reconfirm. It found two real errors, both fixed: the placement rotation of the new microphone and a footprint without courtyard.
 
 What came out clean: ERC and DRC at 0, schematic-board parity 0, empty antenna keep-out. The remaining warnings concern shells, firmware and bring-up, not the board. A review like this cannot replace testing the real boards, and it does not guarantee they will work.
 
@@ -170,7 +175,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
-- Board verified but not frozen (24 Nov); sponsorship application sent to one manufacturer and under review; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
+- Board v0.1 regenerated (24 Nov) with wake-on-sound microphone, accelerometer and buzzer, prepared in hardware for item-finding networks (no compatibility claimed); ERC 0, DRC 0, 130 vias; verification suite rerun (71 tests); not frozen. Sponsorship application sent to one manufacturer and under review; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
 - Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
@@ -188,21 +193,22 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 **In progress**
 - Testing the bench with real speech: new transcription quality, the sound threshold of firmware 0.2.0, time per hour of audio, automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
-- Board review before freezing the production files (a few weeks): wake-on-sound microphone, item-finding network compatibility (Google Find Hub target, Apple to be evaluated).
+- Board review before freezing the production files (a few weeks): buzzer volume and outlet, acoustic channel and sourcing of the VM3011, item-finding networks (Google Find Hub target, Apple to be evaluated; nothing registered or certified).
 - Waiting for the sponsor reply; nothing is agreed. If the target of 5 assembled boards is realistic, the bill of materials may be adapted to the sponsor's stock.
 - Parts outside the assembly service: shopping list in `acquisti/` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
 0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
-1. Evaluate the wake-on-sound microphone and item-finding networks; then order once the manufacturer is decided.
+1. Read the buzzer datasheet and place its outlet; check where the VM3011 can be bought (or find an alternative); freeze Gerber, bill of materials and placement; then order once the manufacturer is decided.
 2. Android app and architecture of the open MCP server.
-3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing).
+3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (acoustic channel for the top microphone, buzzer outlet, sealed microphone ports, ring bushing).
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 5. Build the charging base.
 
 **On hold by choice (restart after the board)**
 - Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
 - Order of the E73 module: nothing confirmed; depends on the manufacturer.
+- Registration for Google Find Hub and Apple Find My (needs MFi): the board is only prepared in hardware.
 - Native phone app (Capacitor is a proposal for Android; Flutter postponed: the test app stays a PWA) and the production MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
@@ -218,7 +224,7 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 24 Nov: [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsorship application under review (single production sponsor sought, nothing agreed); board verified but not frozen; consumption figures corrected.
+1. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsorship application under review, nothing agreed.
 2. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
 3. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
 4. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.

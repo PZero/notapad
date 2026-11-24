@@ -59,7 +59,7 @@ for ref in smt:
         continue
     if abs(float(pos[ref]["PosX"]) - float(cref[ref]["Mid X"][:-2])) > 0.001 or abs(float(pos[ref]["PosY"]) - float(cref[ref]["Mid Y"][:-2])) > 0.001:
         P.append(f"{ref}: pos kicad-cli diverso dal CPL")
-ext_fam = {"E73", "NAND", "CHG", "TTP", "LED", "NMOS2", "MIC"}  # Extended verificati sulle pagine JLC
+ext_fam = {"E73", "NAND", "CHG", "TTP", "LED", "NMOS2", "MIC", "MICZ", "ACC", "NMOSD"}  # 24/11: + VM3011, LIS2DH12, DMN2004DWK (da riconfermare sulle pagine)  # Extended verificati sulle pagine JLC
 ext = sorted({D.P[D.C[r][0]][2] for r in smt if D.C[r][0] in ext_fam})
 res = {"problemi": P, "righe": righe, "extended_codici": ext, "n_extended": len(ext),
        "n_righe_bom": len(bom), "n_cpl": len(cpl), "montati_a_mano": sorted(hand)}

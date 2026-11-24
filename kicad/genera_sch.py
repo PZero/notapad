@@ -94,7 +94,11 @@ groups = [
     ("nRF52840 e memoria", ["U1", "J3", "J4", "U2", "C7"]),
     ("Audio, tocco, LED, motore", ["MK1", "C8", "MK2", "C9", "U5", "C12", "TPA", "U6", "C13", "TPB",
                                    "D1", "R11", "D2", "R12", "D3", "R13", "Q4", "R10", "D4", "M1P", "M1N"]),
+    ("Movimento e cicalino (24/11)", ["U7", "C15", "R14", "D7", "BZP", "BZN"]),
 ]
+# ogni componente di notapad_def deve stare in un gruppo, altrimenti manca dallo schema (parità scheda/schema)
+_mancanti = sorted(set(D.C) - {r for _, rs in groups for r in rs})
+assert not _mancanti, f"componenti senza gruppo nello schema: {_mancanti}"
 
 items, labels, ncs, texts = [], [], [], []
 ncnets = {}

@@ -3,3 +3,4 @@ J1..J4,"Target dorati 2,0 x 4,0 mm (coda 0,9 nei fori da 1,1) 5V/GND/SWDIO/SWCLK
 BT1,"LiPo 381620 3,8x16x20 mm ~110 mAh con PCM","a mano, piazzole BT+ BT- sul retro"
 M1,Motorino a moneta 0820 (8x2 mm),"nello strato batteria sotto la zona A, fili a piazzole M+ M- sul retro"
 "TP_A, TP_B",Fili verso i listelli tattili,a mano
+BZ1,"Cicalino magnetico SMD 4x4 mm, 3 V, ~4 kHz (es. KLJ-4020 C556936 o FST-4020 C391027, volume da verificare)","sul retro tra motorino e batteria, fili alle piazzole BZ+ (VSYS) e BZ- sul retro; foro di uscita del suono nel guscio"

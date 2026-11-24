@@ -96,8 +96,9 @@ def A03():
     c = J("test_A_severo.json")["conteggio"]
     if not c:
         return "PASS", "nessuna violazione con le regole ignorate riattivate"
-    if set(c) <= {"text_height", "text_thickness"}:
-        return "WARN", f"solo testo sotto il minimo JLC: {c} (scritta «notªpad v0.1» 0,8 mm / 0,12 mm su B.Silkscreen)"
+    if set(c) <= {"text_height", "text_thickness", "footprint_type_mismatch"}:
+        return "WARN", (f"solo avvisi noti: {c} (scritta «notªpad v0.1» 0,8 mm / 0,12 mm su B.Silkscreen; MK2 VM3011 è SMD con il foro acustico "
+                        "metallizzato nel pad GND, quindi KiCad lo vede come 'tipo misto')")
     return "FAIL", f"violazioni: {c}"
 
 
@@ -216,7 +217,8 @@ def pins(ref):
 E73_LCSC = {"4": "AI4", "7": "AI0", "8": "AI5", "9": "AI7", "10": "AI6", "11": "XL1", "12": "P0.26", "13": "XL2", "14": "P0.06", "15": "AI3",
             "16": "P0.08", "17": "P1.09", "18": "AI2", "19": "VCC", "20": "P12", "21": "GND", "22": "P0.07", "23": "VDH", "24": "GND", "5": "GND",
             "26": "RST", "28": "P15", "30": "P17", "32": "P0.20", "33": "P0.13", "34": "P0.22", "35": "P0.24", "36": "P1.00", "37": "SWD",
-            "38": "P1.02", "39": "SWC", "40": "P1.04"}   # simbolo LCSC/EasyEDA (fonte E73_EASYEDA)
+            "38": "P1.02", "39": "SWC", "40": "P1.04",
+            "3": "P0.03", "6": "P1.13", "27": "VBS"}   # simbolo LCSC/EasyEDA (fonte E73_EASYEDA); 3, 6, 27 dal 24/11
 
 
 def B01():
@@ -232,7 +234,7 @@ def B01():
 NON_ESPOSTI = {"P0.11", "P0.14", "P0.16", "P0.19", "P0.21", "P0.23", "P0.25", "P0.27", "P1.01"}
 LOWF = {"P0.31", "P0.29", "P0.02", "P1.15", "P1.13", "P1.10", "P0.30", "P0.28", "P0.03", "P1.14", "P1.12", "P1.11", "P0.10", "P0.09", "P1.07", "P1.06", "P1.05", "P1.04", "P1.03", "P1.02", "P1.01"}
 AI = {"AI0": "P0.02", "AI2": "P0.04", "AI3": "P0.05", "AI4": "P0.28", "AI5": "P0.29", "AI6": "P0.30", "AI7": "P0.31", "XL1": "P0.00", "XL2": "P0.01", "P12": "P0.12", "P15": "P0.15", "P17": "P0.17"}
-LENTI = {"TOUCH_A", "TOUCH_B", "HOLD", "VBAT_SENSE", "MOTOR_G", "VBUS_SENSE", "STAT", "D1_R", "D1_G", "D1_B", "D2_R", "D2_G", "D2_B", "D3_R", "D3_G", "D3_B", "NRESET"}
+LENTI = {"TOUCH_A", "TOUCH_B", "HOLD", "VBAT_SENSE", "MOTOR_G", "MIC_WAKE", "BUZ_G", "I2C_SDA", "I2C_SCL", "D1_R", "D1_G", "D1_B", "D2_R", "D2_G", "D2_B", "D3_R", "D3_G", "D3_B", "NRESET"}
 
 
 def B02():
@@ -248,8 +250,9 @@ def B02():
 
 def B03():
     e = D().C["U1"][1]
-    ok = e.get("19") == e.get("23") == "3V3" and "25" not in e and "27" not in e and all(e.get(x) == "GND" for x in ("5", "21", "24"))
-    return ("PASS" if ok else "FAIL"), f"19={e.get('19')}, 23={e.get('23')}, 25={e.get('25', 'libero')}, 27={e.get('27', 'libero')}, 5/21/24={[e.get(x) for x in ('5','21','24')]}"
+    ok = e.get("19") == e.get("23") == "3V3" and "25" not in e and e.get("27") == "VBUS" and all(e.get(x) == "GND" for x in ("5", "21", "24"))
+    return ("PASS" if ok else "FAIL"), (f"19={e.get('19')}, 23={e.get('23')}, 25 (DCC)={e.get('25', 'libero')}, 27 (VBUS del nRF)={e.get('27', 'libero')} "
+                                        f"(5V dei contatti, max 5,5 V), 5/21/24={[e.get(x) for x in ('5','21','24')]}")
 
 
 def B04():
@@ -270,11 +273,14 @@ def B05():
 
 def B06():
     r = {}
-    for ref, lr in (("MK1", "GND"), ("MK2", "3V3")):
-        bad, _ = _pinchk(ref, {"1": ("VDD", "3V3"), "2": ("GND", "GND"), "3": ("DATA", "PDM_DATA"), "4": ("CLK", "PDM_CLK"), "5": ("GND", "GND"), "6": ("L/R", lr)})
-        r[ref] = bad
+    r["MK1"], _ = _pinchk("MK1", {"1": ("VDD", "3V3"), "2": ("GND", "GND"), "3": ("DATA", "PDM_DATA"), "4": ("CLK", "PDM_CLK"), "5": ("GND", "GND"), "6": ("L/R", "GND")})
+    # 24/11: MK2 = VM3011 (datasheet U0.0.8: 1 DATA, 2 SDA, 3 DOUT, 4 SCL, 5 CLK, 6 VDD, 7 L/R, 8 GND; VDD 1,6-3,6 V)
+    r["MK2"], _ = _pinchk("MK2", {"1": ("DATA", "PDM_DATA"), "2": ("SDA", "I2C_SDA"), "3": ("DOUT", "MIC_WAKE"), "4": ("SCL", "I2C_SCL"),
+                                  "5": ("CLK", "PDM_CLK"), "6": ("VDD", "3V3"), "7": ("L/R_SELECT", "3V3"), "8": ("GND", "GND")})
     ok = not any(r.values())
-    return ("PASS" if ok else "FAIL"), ("MK1 e MK2: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R (MK1 GND, MK2 3V3) come il datasheet; top-ported 4 x 2 x 1,1 mm" if ok else f"differenze {r}")
+    return ("PASS" if ok else "FAIL"), ("MK1 MSM261: 1 VDD, 2/5 GND, 3 DATA, 4 CLK, 6 L/R=GND, top-port; MK2 VM3011: 1 DATA, 2 SDA, 3 DOUT=MIC_WAKE, 4 SCL, 5 CLK, "
+                                        "6 VDD, 7 L/R=3V3 (destro, I2C 0x61), 8 GND; bottom-port con foro acustico metallizzato Ø0,8 nel pad 8"
+                                        if ok else f"differenze {r}")
 
 
 WEB = {}
@@ -282,12 +288,12 @@ GIRO = 2
 
 
 def B07():
-    bad, p = _pinchk("U3", {"1": ("STAT", "STAT"), "2": ("VSS", "GND"), "3": ("VBAT", "VBAT"), "4": ("VDD", "VBUS"), "5": ("PROG", "PROG")})
+    bad, p = _pinchk("U3", {"2": ("VSS", "GND"), "3": ("VBAT", "VBAT"), "4": ("VDD", "VBUS"), "5": ("PROG", "PROG")})
     d = D(); lcsc, v = d.P["CHG"][2], d.P["CHG"][3]
     r1 = d.P[d.C["R1"][0]][3]
     iprog = 1000 / 20 if r1 == "20k" else None
     ok = not bad and r1 == "20k" and lcsc == "C38066" and "MCP73832" in v
-    t = (f"U3 = {v} ({lcsc}); 1 STAT, 2 VSS, 3 VBAT, 4 VDD=VBUS, 5 PROG: coincide (MCP73832 stessa piedinatura SOT-23-5 dell'MCP73831); "
+    t = (f"U3 = {v} ({lcsc}); 1 STAT non collegato (24/11), 2 VSS, 3 VBAT, 4 VDD=VBUS, 5 PROG: coincide (MCP73832 stessa piedinatura SOT-23-5 dell'MCP73831); "
          f"R1 {r1} -> {iprog:.0f} mA; '-2' = 4,20 V. Pagina JLC C38066: {WEB.get('C38066', 'non letta')}")
     return ("PASS" if ok else "FAIL"), t
 
@@ -297,9 +303,9 @@ def B08():
     stat = sorted(f"{r}.{p}" for r, (f, pads, _) in d.C.items() for p, n in pads.items() if n == "STAT")
     if lcsc == "C424093":
         return "FAIL", "U3 è ancora MCP73831 (STAT tri-state a 5 V su P0.07)"
-    if lcsc == "C38066" and stat == ["U1.22", "U3.1"]:
-        return "PASS", ("U3 ora MCP73832T-2ACI/OT (C38066): STAT open-drain (stati L e Hi-Z, fonte MCP_STAT), rete STAT solo U3.1-U1.22 senza "
-                        "pull-up esterni verso il 5V: P0.07 vede al massimo il suo pull-up interno a 3,3 V")
+    if lcsc == "C38066" and not stat and "1" not in d.C["U3"][1]:
+        return "PASS", ("U3 MCP73832T-2ACI/OT (C38066), STAT non collegato dal 24/11 (P0.07 ora I2C_SDA): nessun percorso dal 5V a un GPIO; "
+                        "lo stato di carica si ricava da VBUS e dalla tensione della batteria")
     return "FAIL", f"configurazione inattesa: {lcsc}, rete STAT {stat}"
 
 
@@ -310,9 +316,10 @@ def B09():
 
 def B10():
     b1, _ = _pinchk("Q1", {"1": ("G", "LATCH_G"), "2": ("S", "VBAT"), "3": ("D", "VSYS")})
-    b4, _ = _pinchk("Q4", {"1": ("G", "MOTOR_G"), "2": ("S", "GND"), "3": ("D", "MOTOR_N")})
+    b4, _ = _pinchk("Q4", {"1": ("S1", "GND"), "2": ("G1", "MOTOR_G"), "6": ("D1", "MOTOR_N"), "4": ("S2", "GND"), "5": ("G2", "BUZ_G"), "3": ("D2", "BUZ_N")})
     ok = not b1 and not b4
-    return ("PASS" if ok else "FAIL"), ("Q1 G=LATCH_G S=VBAT D=VSYS; Q4 G=MOTOR_G S=GND D=MOTOR_N; soglie AOS compatibili con 3,3 V e con -VBAT" if ok else f"{b1} {b4}")
+    return ("PASS" if ok else "FAIL"), ("Q1 G=LATCH_G S=VBAT D=VSYS; Q4 DMN2004DWK: FET1 S=GND G=MOTOR_G D=MOTOR_N, FET2 S=GND G=BUZ_G D=BUZ_N "
+                                        "(0,5 ohm a 2,5 V, 540 mA); soglie compatibili con 3,3 V" if ok else f"{b1} {b4}")
 
 
 def B11():
@@ -341,11 +348,18 @@ def B13():
 
 def B14():
     r = {}
-    for ref, k, a in (("D4", "VSYS", "MOTOR_N"), ("D5", "VBUS_D", "VBUS"), ("D6", "LATCH_ON", "HOLD")):
+    for ref, k, a in (("D4", "VSYS", "MOTOR_N"), ("D5", "VBUS_D", "VBUS"), ("D6", "LATCH_ON", "HOLD"), ("D7", "VSYS", "BUZ_N")):
         r[ref], _ = _pinchk(ref, {"1": ("K", k), "2": ("A", a)})
     ok = not any(r.values())
-    return ("PASS" if ok else "FAIL"), ("D4 K=VSYS, D5 K=VBUS_D, D6 K=LATCH_ON; pad 1 = segno di catodo nell'impronta" if ok else f"{r}")
+    return ("PASS" if ok else "FAIL"), ("D4 K=VSYS, D5 K=VBUS_D, D6 K=LATCH_ON, D7 K=VSYS (cicalino); pad 1 = segno di catodo nell'impronta" if ok else f"{r}")
 
+
+
+def B15():
+    bad, _ = _pinchk("U7", {"1": ("SCL/SPC", "I2C_SCL"), "2": ("CS", "3V3"), "3": ("SDO/SA0", "GND"), "4": ("SDA/SDI/SDO", "I2C_SDA"), "5": ("RES", "GND"),
+                            "6": ("GND", "GND"), "7": ("GND", "GND"), "8": ("GND", "GND"), "9": ("VDD", "3V3"), "10": ("VDD_IO", "3V3")})
+    return ("PASS" if not bad else "FAIL"), ("U7 LIS2DH12: SCL/SDA su I2C, CS a 3V3 (modo I2C), SA0 a GND (0x18, diverso dal VM3011 0x61), RES e 6-8 a GND, "
+                                             "VDD e VDD_IO 3V3, INT1/INT2 liberi (campionamento a 10 s); C15 100 nF + C5 4,7 uF vicini" if not bad else f"{bad}")
 
 def C01():
     _testC.fatto = False
@@ -419,7 +433,10 @@ def D05():
 
 
 def D06():
-    return _pre([("R6/R7 100k", DC("R6")[0] == DC("R7")[0] == "100k")], *_el("D06"))
+    d = D()
+    ok = "R6" not in d.C and "R7" not in d.C and d.C["U1"][1].get("27") == "VBUS"
+    return ("PASS" if ok else "FAIL"), ("5V dei contatti direttamente al pin VBUS del nRF52840 (pad 27, fino a 5,5 V, rilevamento interno USBDETECTED, "
+                                        "sveglia da System OFF); partitore R6/R7 tolto: nessuna corrente iniettata in un GPIO a nRF spento" if ok else "configurazione inattesa")
 
 
 def D07():
@@ -431,7 +448,8 @@ def D08():
 
 
 def D09():
-    return _pre([("Q4 AO3400A", val("Q4") == "AO3400A"), ("D4 K VSYS A MOTOR_N", DC("D4")[1] == {"1": "VSYS", "2": "MOTOR_N"}), ("R10 100k", DC("R10")[0] == "100k")], *_el("D09"))
+    return _pre([("Q4 DMN2004DWK", "DMN2004" in val("Q4")), ("D4 K VSYS A MOTOR_N", DC("D4")[1] == {"1": "VSYS", "2": "MOTOR_N"}), ("R10 100k", DC("R10")[0] == "100k"),
+                 ("D7 K VSYS A BUZ_N", DC("D7")[1] == {"1": "VSYS", "2": "BUZ_N"}), ("R14 100k BUZ_G-GND", DC("R14") == ("100k", {"1": "BUZ_G", "2": "GND"}))], *_el("D09"))
 
 
 def D10():
@@ -458,6 +476,17 @@ def D15():
     return _pre([("J3/J4 SWD diretti", net("J3", "1") == "SWDIO" and net("J4", "1") == "SWCLK")], *_el("D15"))
 
 
+
+def D16():
+    d = D(); e = d.C["U1"][1]
+    pin = {n: k for k, n in e.items()}
+    ok = (pin.get("MIC_WAKE") == "3" and pin.get("I2C_SDA") == "22" and pin.get("I2C_SCL") == "4" and pin.get("BUZ_G") == "6"
+          and not any(f.startswith("R") and n in ("I2C_SDA", "I2C_SCL") for r, (f, p, _) in d.C.items() for n in p.values())
+          and d.C["BZP"][1]["1"] == "VSYS" and d.C["BZN"][1]["1"] == "BUZ_N")
+    return ("PASS" if ok else "FAIL"), ("MIC_WAKE su P0.03 (pad 3), I2C su P0.07/P0.28 con pull-up interni del nRF (~13 k, 100 kHz, piste corte), "
+                                        "VM3011 0x61 e LIS2DH12 0x18; cicalino tra BZ+ (VSYS) e BZ- (BUZ_N), FET2 di Q4 su P1.13. "
+                                        "Firmware: niente I2C mentre il PDM registra; ZPL ~10 uA a clock fermo" if ok else f"pin {pin}")
+
 def _testE():
     run(sys.executable, os.path.join(QUI, "test_E_bom_cpl.py"), PRJ, OUT)
     return J("test_E.json")
@@ -473,7 +502,7 @@ def E02():
     e = J("test_E.json")
     P = [p for p in e["problemi"] if "LCSC" in p or "footprint" in p or "Value" in p or "Comment" in p]
     w = WEB.get("C38066", "")
-    ok = not P and e["n_extended"] == 7 and "C38066" in e["extended_codici"] and "Extended" in w and "Economic" in w
+    ok = not P and e["n_extended"] == 10 and "C38066" in e["extended_codici"] and "Extended" in w and "Economic" in w
     return ("PASS" if ok else "FAIL"), (f"{e['n_extended']} Extended: {', '.join(e['extended_codici'])}; U3 C38066 coerente in def, BOM fab_out e jlc/, Value pcb e schema; "
                                         f"pagina JLC C38066: {w}" + (f"; problemi {P}" if P else ""))
 
@@ -501,7 +530,7 @@ def E05():
 def E06():
     d = J("pcb.json"); fp = {f["ref"]: f for f in d["footprints"]}
     cpl = list(csv.DictReader(open(os.path.join(K, "fab_out", "jlcpcb", "notapad_v0.1_CPL_JLC.csv"), encoding="utf-8")))
-    hand = ["J1", "J2", "J3", "J4", "BT1P", "BT1N", "M1P", "M1N", "TPA", "TPB"]
+    hand = ["J1", "J2", "J3", "J4", "BT1P", "BT1N", "M1P", "M1N", "TPA", "TPB", "BZP", "BZN"]
     ok = all(r["Layer"] == "Top" for r in cpl) and all(fp[h]["excl_bom"] for h in hand) and not any(r["Designator"] in hand for r in cpl)
     return ("PASS" if ok else "FAIL"), "tutti Top; J1-J4 e piazzole del retro fuori da BOM e CPL"
 
@@ -649,10 +678,11 @@ def H04():
 
 
 def H05():
-    P = [p for p in J("test_H.json")["problemi"] if p.startswith("pinout.md") and "STAT" in p or "C424093" in p]
     md = open(os.path.join(PRJ, "docs", "pinout_v0.1.md"), encoding="utf-8").read()
-    riga = next((l for l in md.splitlines() if l.startswith("| STAT")), "")
-    return ("PASS" if not P else "WARN"), (f"riga STAT di pinout.md: {riga[:140]}" if not P else "; ".join(P))
+    riga = next((l for l in md.splitlines() if "~~VBUS_SENSE~~" in l and "~~STAT~~" in l), "")
+    d = D(); vivi = [n for r, (f, p, _) in d.C.items() for n in p.values() if n in ("STAT", "VBUS_SENSE")]
+    ok = riga and not vivi
+    return ("PASS" if ok else "WARN"), (f"pinout.md: {riga[:160]}" if ok else f"riga mancante o reti ancora presenti {vivi}")
 
 
 ORDINE = [t["id"] for t in EL.TEST]
