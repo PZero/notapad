@@ -27,7 +27,7 @@ Questo file riassume una lunga conversazione su claude.ai (21 novembre 2026). Le
 - Regole (verificate su jlcpcb.com/capabilities, multistrato): pista/spazio 0,10/0,10 mm (min 0,09), via 0,25/0,45 mm (senza sovrapprezzo), rame-bordo 0,25 mm (JLC min 0,2), alimentazioni 0,2 mm, 3V3 0,15 mm (bastano per i consumi).
 - Gestione batteria (lezione da altri progetti): firmware avvisa a 3,65 V e spegne a 3,50 V rilasciando HOLD → un latch a P-MOSFET stacca tutto (restano < ~5 µA). Il 5V dei contatti riaccende il latch (diodo) e dà un impulso di reset al nRF52840 (100 nF + 2N7002 su P0.18): "reset mettendolo in carica". Watchdog sempre attivo. PCM della cella come ultima protezione.
 - Pin nRF52840: vedi `docs/pinout_v0.1.md` (fonte unica). L'E73 NON porta fuori P0.11/14/16/19/21/23/25/27 e P1.01: il pinout originale è stato rifatto (QSPI su P0.00/P0.01/P0.05/P0.04/P1.09/P0.12, PDM P0.26/P0.06, niente quarzo 32 kHz → LFRC).
-- Stime: ~4,6 mA medi → ~11,5 h con 60 mAh; audio LC3 2×24 kbit/s → 216 MB per 10 h.
+- Stime: ~4,6 mA medi → ~20 h con la 381620 da 110 mAh (poco margine senza DCDC; da misurare); audio LC3 2×24 kbit/s → 216 MB per 10 h.
 
 ## Stato della scheda
 Al 21/11: scheda chiusa, ERC 0, DRC 0 violazioni, 0 scollegati, parità 0 (114 via; fori J1–J4 da 1,1 mm dal 22/11). Export pronti in `kicad/fab_out/`, non più bozza. Evitare il montaggio su due lati (Standard PCBA, +~70 $ di spese fisse) e i LED indirizzabili WS2812.

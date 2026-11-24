@@ -19,6 +19,7 @@ Leggi `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md`, `docs/pino
 - Niente promesse non vere: distingui fatto / in corso / prossimo / in pausa. Cifre come autonomia e capacità sono stime, dillo.
 - Niente dati personali: nessun percorso locale (`C:\Users\...`), email, nome utente, token, nomi di persone terze. Niente nomi né città degli autori: nel README restano «Two friends, as a hobby project».
 - Licenza (scelta il 22/11): hardware CERN-OHL-S-2.0 (`LICENSE-HARDWARE`), software e documenti MIT (`LICENSE`). Non cambiarla senza l'utente.
+- **Nessun nome di produttore di PCB/PCBA o di fornitore** (JLCPCB, JLC3DP, LCSC, PCBWay, Seeed Fusion, ALLPCB, NextPCB, Elecrow…) in README e pagina, né come fornitore previsto né come scartato: stiamo cercando uno sponsor e i nomi dei concorrenti lo danneggiano. Usa formule neutre («the assembly service», «the PCB fab», «SLA print service»). Fanno eccezione solo i nomi di prodotto (es. Ebyte E73, Seeed XIAO nRF52840 Sense come scheda di prova), la nota di licenza su `kicad/lib/` e il futuro credito «Sponsored by» dello sponsor scelto. I nomi delle cartelle (`jlc/`, `kicad/fab_out/jlcpcb/`) restano: descrivile in modo neutro. Non riscrivere `CHANGELOG.md`, `docs/` né lo storico git.
 - Controlla che ogni file e link citato esista.
 - Non toccare `kicad/`, `jlc/`, `docs/pinout_v0.1.md` e le sezioni tecniche di `CLAUDE.md`: se cambiano, leggili soltanto.
 - Aggiungi solo i file che hai modificato (mai `git add -A`); il commit e il push li fa `git-readme`, salvo diversa richiesta.

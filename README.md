@@ -40,7 +40,7 @@ notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. It rec
 Design goals:
 - **Own your data.** Audio and notes stay with the user; the AI is a replaceable component.
 - **No screen, no app to open.** Interaction is a squeeze gesture, three LEDs and a vibration motor.
-- **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 4-layer board assembled by JLCPCB, a resin shell cast in a silicone mould.
+- **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 4-layer board assembled by a PCBA service, a resin shell cast in a silicone mould.
 
 > Honest status: this is a design in progress. Nothing has been manufactured yet; the first firmware and app tests (on a development board) have run on a development board (connection, recording, download and transcription work; deeper tests are pending). Figures such as runtime and capacity are estimates.
 
@@ -75,20 +75,27 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
 - **Storage:** W25N02KV QSPI NAND, 256 MB (about 10 to 11 h of stereo LC3 audio).
 - **Microphones:** 2x MSM261DGT003 (top-port PDM), stereo on a single data line (L/R pin tied low on one, high on the other).
-- **Power:** ~60 mAh LiPo with protection circuit, MCP73832 charger at 50 mA (open-drain status output), 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
+- **Power:** ~110 mAh LiPo (381620 candidate) with protection circuit, MCP73832 charger at 50 mA (open-drain status output), 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
 - **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
-- **Battery:** the 60 mAh figure is for the cell planned so far. The 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 does not fit the 9 mm monolith.
-- **Estimated consumption:** about 4.6 mA average, about 11.5 h on 60 mAh.
+- **Battery:** the 502025, 602030, 401020, 401230 and 402020 cells were ruled out (too wide, too long or too small). The candidate is the 381620 (3.8 x 16 x 20 mm, about 110 mAh, estimate from listings), with protection still to be confirmed; the 501520 does not fit the 9 mm monolith.
+- **Estimated consumption:** about 4.6 mA average while recording, so about 20 h on the 110 mAh cell (estimate from datasheets, little margin without the DC-DC converter; to be measured). Memory, not battery, sets the limit for continuous recording: about 11 to 12 h of stereo audio in 256 MB, stretched by recording only when there is sound and by syncing during the day.
 
 ### What changed during design review (21 Nov 2026)
 - **Pinout redone.** The E73 does not expose P0.11, P0.14, P0.16, P0.19, P0.21, P0.23, P0.25, P0.27 and P1.01, which the first pinout used. The new assignment is in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); the 32 kHz crystal is dropped (firmware uses the internal LFRC).
-- **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock at JLCPCB.
+- **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock.
 - **Space savings.** One resistor per LED on the common anode instead of one per colour (LEDs multiplexed, one colour at a time); an extra 1 uF capacitor on the latch so a reset at low battery does not power the device off.
-- **Board closed on 4 layers.** With 2 layers 7 connections stayed open; JLCPCB Economic assembly does not accept 4 layers at 0.8 mm, so the board is 1.0 mm. Length fixed at 38 mm (at 35 mm 4 connections stayed open). Checks: ERC 0, DRC 0 violations, 0 unconnected, schematic-board parity 0.
+- **Board closed on 4 layers.** With 2 layers 7 connections stayed open; the economy assembly tier does not accept 4 layers at 0.8 mm, so the board is 1.0 mm. Length fixed at 38 mm (at 35 mm 4 connections stayed open). Checks: ERC 0, DRC 0 violations, 0 unconnected, schematic-board parity 0.
 - **Charger changed to MCP73831** (50 mA), chosen at the time to keep the number of extra-fee components down. *Superseded on 22 Nov by the MCP73832, see the pre-order verification below.*
-- **Manufacturing route fixed (late 21 Nov).** JLCPCB only. The XIAO carrier variant costs more than the E73 module, is 17.5 mm wide (as wide as the monolith) and has 13 GPIOs against about 20 needed; home assembly dropped (no hot plate or paste), so JLCPCB assembles every board. No distributor beats LCSC/JLCPCB for the key chips, and a Basic-parts-only board is impossible (no BLE, NAND, PDM microphones, RGB LEDs or touch ICs in that library); 7 extra-fee parts stay. Q2 stays a dual 2N7002DW; NAND and charger stay extra-fee parts.
-- **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the JLCPCB placement file (checked in their preview). A NextPCB variant was prepared and dropped for v0 (no microphone stock, higher quote).
+- **Manufacturing route first fixed (late 21 Nov).** The XIAO carrier variant costs more than the E73 module, is 17.5 mm wide (as wide as the monolith) and has 13 GPIOs against about 20 needed; home assembly dropped (no hot plate or paste), so a PCBA service assembles every board. No distributor beats the one we use for the key chips, and a Basic-parts-only board is impossible (no BLE, NAND, PDM microphones, RGB LEDs or touch ICs in that library); 7 extra-fee parts stay. Q2 stays a dual 2N7002DW; NAND and charger stay extra-fee parts.
+- **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the placement file (checked in the assembler's preview). An alternative manufacturing variant was prepared and dropped for v0 (no microphone stock, higher quote).
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
+
+### Update, 24 Nov 2026
+- **Board verified, not frozen:** the v0.1 board will be reviewed over the next weeks (a microphone with acoustic wake-up for a low-power standby; compatibility with item-finding networks, Google Find Hub as the target, Apple's to be evaluated). The final Gerber, bill of materials and placement files come after the review.
+- **Sponsorship:** an application with a technical article (PDF) was sent to one board manufacturer and is under review; nothing is agreed. The goal is a single production sponsor for the first 5 assembled boards, credited everywhere, including the silkscreen. The manufacturer is not decided.
+- **Figures corrected:** about 20 h on the 110 mAh cell (estimate); the 256 MB memory holds 11 to 12 h of continuous stereo.
+- **Test bench:** firmware 0.2.0 (records only on sound) and app 0.10.0 (full-precision Whisper on the device) published; next are the Android app and the architecture of the open MCP server.
+- **Non-commercial for now;** licences confirmed.
 
 ### Update, 22 Nov 2026
 - **Test bench defined (evening), now one animated scene on the presentation page ([#bench](https://pzero.github.io/notapad/#bench)):** Whisper with word timing and speech detection, speaker recognition (WeSpeaker), tap gestures and first voice-command tests; see [Test bench](#test-bench-exploration-now-mcp-server-later). Exploration only; the features are meant to move into the MCP server later.
@@ -113,7 +120,7 @@ The board is generated by scripts, which makes mistakes repeatable too. On 22 No
 | B | Pinout of every component against its datasheet |
 | C | Schematic symbol against footprint |
 | D | Circuit analysis with numbers: latch, reset, dividers, LEDs, LDO, microphones, consumption |
-| E | Bill of materials and placement file for JLCPCB: codes, extra-fee parts, rotations |
+| E | Bill of materials and placement file for the assembler: codes, extra-fee parts, rotations |
 | F | Mechanics: courtyards, stack-up in the thickness, battery, motor, LEDs in the slit, microphone ports, contacts, antenna keep-out |
 | G | Gerber files |
 | H | Consistency between documents |
@@ -122,7 +129,7 @@ Every value is cross-checked against at least two independent sources (datasheet
 
 **First run:** 37 passed, 26 warnings, 3 failures, 2 not verifiable. **Second run, after the charger fix:** 39 / 26 / 2 / 2. **Third run, after the 9 mm and 1.1 mm hole changes:** 41 passed, 25 warnings, 1 failure, 2 not verifiable. The real problems it found:
 - **Charger.** The MCP73831 status output is tri-state and powered from the 5V rail, so it would have pulled an nRF52840 pin to about 5 V, above its maximum. Fixed by switching to the MCP73832: same footprint and pinout, open-drain output, Gerber files unchanged.
-- **Assembly tier (open, the one failure left).** JLCPCB lists the E73 module as assemblable only with Standard PCBA, so the 97 EUR Economic quote has to be rechecked before paying.
+- **Assembly tier (open, the one failure left).** the assembly service lists the E73 module as standard-tier assembly only, so the 97 EUR economy-tier quote has to be rechecked before paying.
 - **Thickness (fixed).** With the 3 mm module and the 3.8 mm battery, 8 mm left 0.1 mm of resin per face; at 9 mm there is 0.6 mm. Only the shells change.
 - **Contact holes (fixed).** The 2.0 x 4.0 mm target contacts need 1.1 mm holes instead of 1.0 mm; only the drill files changed.
 
@@ -155,14 +162,15 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 
 ## Manufacturing
-- **PCB and assembly (v0):** JLCPCB only. Economic PCBA, 4 layers, 1.0 mm, 5 bare boards, 2 assembled; quote 97 EUR for the 2 assembled boards, shipped (estimate until the order is placed). The E73 module was out of stock, so 2 units are pre-ordered into the JLCPCB warehouse; the board order follows their arrival. Production files are generated by script in [`kicad/fab_out/`](kicad/fab_out/).
-- **Later batches:** also assembled by JLCPCB (home assembly dropped: no hot plate or paste). Component cost is estimated at about 19 USD per monolith, mostly NAND and module.
+- **PCB and assembly (v0):** economy-tier PCBA, 4 layers, 1.0 mm, 5 bare boards, 2 assembled; a first quote of about 97 EUR for the 2 assembled boards, shipped (estimate until the order is placed). The manufacturer is not final: we are looking for a sponsor. The E73 module is out of stock: availability was checked in the cart, nothing is ordered yet. Production files are generated by script in [`kicad/fab_out/`](kicad/fab_out/).
+- **Later batches:** also assembled by a PCBA service (home assembly dropped: no hot plate or paste). Component cost is estimated at about 19 USD per monolith, mostly NAND and module.
 - **First programming:** SWD from a Raspberry Pi with OpenOCD (or a Pico debugprobe); the nRF52840 has no ROM bootloader, so the first bootloader goes in over SWD, then updates are OTA over BLE.
-- **Shell v0.1:** two SLA half-shells (JLC3DP) filled with low-exotherm epoxy, since JLC does not cast around electronics.
+- **Shell v0.1:** two SLA half-shells (from an SLA print service) filled with low-exotherm epoxy, since print services do not cast around electronics.
 - **Final shell:** SLA master, silicone mould, fully cast pigmented resin.
 
 ## Status and roadmap
 **Done**
+- Board verified but not frozen (24 Nov); sponsorship application sent to one manufacturer and under review; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
 - Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
@@ -172,30 +180,29 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Concept, finish renders, animated presentation, BOM and netlist for v0.1.
 - Datasheet checks (E73 pinout, microphone port) and the resulting corrections above.
 - v0.1 board closed in KiCad: 4 layers, 1.0 mm, 16.5 x 38 mm; ERC 0, DRC 0, no unconnected nets.
-- Production files for JLCPCB, PCBWay and ALLPCB in `kicad/fab_out/`.
+- Production files (Gerber, BOM, placement) for several fab houses in `kicad/fab_out/`.
 - Charger first changed to MCP73831, then to MCP73832 after the pre-order review; E73 socket-only variant rejected; NAND confirmed; purchase plan drafted.
-- Manufacturing route fixed: JLCPCB only, quote 97 EUR for 2 fully assembled and shipped boards (Economic PCBA, 5 bare boards, 2 assembled). Alternatives dropped: PCBWay, ALLPCB, NextPCB, a Seeed XIAO carrier variant and home assembly.
+- First quote of about 97 EUR for 2 fully assembled and shipped boards (economy-tier PCBA, 5 bare boards, 2 assembled; estimate). The manufacturer is not final: we are looking for a sponsor. Other manufacturing routes were considered; a Seeed XIAO carrier variant and home assembly were dropped.
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
 - Testing the bench with real speech: new transcription quality, the sound threshold of firmware 0.2.0, time per hour of audio, automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
-- Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
-- Waiting for sponsor replies; requests are open and nothing is agreed.
-- Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
-- Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
+- Board review before freezing the production files (a few weeks): wake-on-sound microphone, item-finding network compatibility (Google Find Hub target, Apple to be evaluated).
+- Waiting for the sponsor reply; nothing is agreed. If the target of 5 assembled boards is realistic, the bill of materials may be adapted to the sponsor's stock.
+- Parts outside the assembly service: shopping list in `acquisti/` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
 0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
-1. Settle the assembly quote in the JLCPCB cart and pay once the E73 arrives.
-2. Buy the parts outside JLCPCB: 381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin.
-3. Design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing); fill in online sponsor forms and prepare a grant application.
+1. Evaluate the wake-on-sound microphone and item-finding networks; then order once the manufacturer is decided.
+2. Android app and architecture of the open MCP server.
+3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing).
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 5. Build the charging base.
 
 **On hold by choice (restart after the board)**
 - Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
-- A microphone with acoustic wake-up for a true low-power standby: an idea for board v0.2, not for the current order.
+- Order of the E73 module: nothing confirmed; depends on the manufacturer.
 - Native phone app (Capacitor is a proposal for Android; Flutter postponed: the test app stays a PWA) and the production MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
@@ -211,11 +218,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
-2. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
-3. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
-4. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
-5. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
+1. 24 Nov: [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsorship application under review (single production sponsor sought, nothing agreed); board verified but not frozen; consumption figures corrected.
+2. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
+3. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
+4. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
+5. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
 
 ## Repository layout
 | Path | Contents |
@@ -223,7 +230,7 @@ Latest milestones (full timeline on the [presentation page](https://pzero.github
 | `docs/` | project state, decisions, open questions, pinout (working documents, in Italian) |
 | `verifica/` | pre-order verification: test scripts and results |
 | `jlc/` | bill of materials, netlist, board outline DXF, generator script |
-| `kicad/` | KiCad project, LCSC-derived library, generation and routing scripts |
+| `kicad/` | KiCad project, component library, generation and routing scripts |
 | `render/` | monolith renders and the script that makes them |
 | `pagina/` | animated presentation (three.js), published on GitHub Pages, with reduced wallpaper previews |
 | `sfondi/` | phone wallpapers: SVG sources, PNG for iPhone and Android, generator scripts |

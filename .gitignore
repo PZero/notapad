@@ -47,3 +47,7 @@ kicad/routing/
 kicad/en/
 kicad/jlc_out/gerber/
 kicad/pannello/
+
+# Bozze private delle email agli sponsor
+docs/pcbway_risposta_it.md
+docs/pcbway_reply_en.md

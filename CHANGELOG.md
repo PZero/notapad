@@ -1,5 +1,13 @@
 # Changelog
 
+## 24/11/2026
+- docs: README and project page no longer name suppliers; rule added to `.claude/agents/comunicazione.md`; battery life corrected to about 20 h with the 110 mAh cell and about 11–12 h of memory.
+- docs: technical article for a sponsorship request in Italian and English (`docs/pcbway_articolo_it.md`, `docs/pcbway_article_en.md`), with a PDF bundle in `docs/pcbway_pdf/` (HTML, PDF, images, form field text in `campi_modulo.md`). Sponsor application under review.
+- docs: `docs/STATO.md`, `docs/DECISIONI.md` and `docs/DOMANDE-APERTE.md` updated; the board is not frozen and will be revised in the coming weeks (microphone with acoustic wake-up, Google Find Hub).
+- repo: new `/fine-sessione-fast` command (local documents only, no page, README, commit or push); `CLAUDE.md` battery estimate updated; `.gitignore` excludes the private email drafts `docs/pcbway_risposta_it.md` and `docs/pcbway_reply_en.md`.
+- electronics: no changes to board, BOM, pinout or JLC export files.
+- firmware and app: no changes in this entry.
+
 ## 23/11/2026
 - app: test app `app/` v0.10.0: Whisper decoder at full precision (fp16/fp32 instead of q4); large-v3-turbo chosen automatically on PCs with WebGPU fp16; audio sent to Whisper in 10–25 s windows cut at pauses (`app/vad.js`), with filters for hallucinations and repetitions and a limited VAD threshold.
 - app: voice commands use the same transcriber as the recordings; the separate whisper-base CPU transcriber is removed.

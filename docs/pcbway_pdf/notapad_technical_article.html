@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>notªpad – Technical article</title>
+<style>
+@page { size: A4; margin: 20mm 18mm 20mm 18mm;
+  @bottom-left { content: "notªpad · Technical article · November 2026"; font: 7.5pt "Segoe UI", sans-serif; color: #8a8076; }
+  @bottom-right { content: counter(page); font: 7.5pt "Segoe UI", sans-serif; color: #8a8076; }
+}
+@page :first { margin: 0; @bottom-left { content: none } @bottom-right { content: none } }
+:root { --ink:#1d1915; --mute:#6b6258; --bronze:#a8743a; --line:#e4ddd3; --soft:#f6f2ec; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; font: 9.6pt/1.5 "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+
+/* cover */
+.cover { width:210mm; height:297mm; background:#16120f; color:#f3ede4; position:relative; overflow:hidden; page-break-after:always; }
+.cover img { position:absolute; right:0; top:0; height:297mm; width:120mm; object-fit:cover; object-position:50% 30%; }
+.cover .fade { position:absolute; right:0; top:0; height:297mm; width:120mm; background:linear-gradient(90deg,#16120f 0%,rgba(22,18,15,0) 35%); }
+.cover .txt { position:absolute; left:18mm; top:62mm; width:100mm; }
+.cover .kicker { font-size:8.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze); margin-bottom:10mm; }
+.cover h1 { font: 600 44pt/1 "Segoe UI", sans-serif; letter-spacing:-.02em; margin:0 0 6mm; }
+.cover .sub { font: 300 15pt/1.35 "Segoe UI Light","Segoe UI", sans-serif; color:#d9cfc2; margin:0 0 14mm; }
+.cover .rule { width:22mm; height:2px; background:var(--bronze); margin-bottom:8mm; }
+.cover .meta { font-size:9pt; line-height:1.8; color:#b9ad9f; }
+.cover .meta b { color:#f3ede4; font-weight:600; }
+.cover .foot { position:absolute; left:18mm; bottom:16mm; font-size:8pt; color:#8a7e70; width:95mm; }
+
+/* content */
+h2 { font: 600 15pt/1.2 "Segoe UI", sans-serif; margin: 9mm 0 3mm; padding-top:2mm; border-top:1px solid var(--line); break-after: avoid; }
+h2 .n { color: var(--bronze); margin-right: 3mm; }
+h3 { font: 600 10.5pt/1.3 "Segoe UI", sans-serif; margin: 5mm 0 1.5mm; color:#3a332c; break-after: avoid; }
+h2.first { margin-top:0; border-top:none; padding-top:0; }
+p { margin: 0 0 2.4mm; }
+ul, ol { margin: 0 0 2.6mm; padding-left: 5mm; }
+li { margin-bottom: 1.1mm; }
+li::marker { color: var(--bronze); }
+a { color: var(--bronze); text-decoration: none; }
+b, strong { font-weight: 600; }
+.lead { font-size: 11pt; line-height:1.5; color:#3a332c; }
+.figs { display:grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 5mm 0 2mm; break-inside: avoid; }
+.figs div { background: var(--soft); border-radius: 2.5mm; padding: 3.5mm 3.5mm 3mm; }
+.figs b { display:block; font: 600 14pt/1.1 "Segoe UI", sans-serif; color: var(--ink); }
+.figs span { font-size: 7.8pt; color: var(--mute); line-height:1.3; display:block; margin-top:1mm; }
+figure { margin: 4mm 0 4mm; break-inside: avoid; }
+figure img { width: 100%; display:block; border-radius: 2mm; }
+figcaption { font-size: 7.8pt; color: var(--mute); margin-top: 1.6mm; }
+table { width:100%; border-collapse: collapse; margin: 2mm 0 3mm; font-size: 9pt; break-inside: avoid; }
+th { text-align:left; font-weight:600; font-size:8pt; letter-spacing:.06em; text-transform:uppercase; color: var(--mute); border-bottom: 1.5px solid var(--ink); padding: 1.6mm 2mm; }
+td { border-bottom: 1px solid var(--line); padding: 1.6mm 2mm; vertical-align: top; }
+td:first-child { color:#3a332c; width: 34%; }
+.note { background: var(--soft); border-left: 2.5px solid var(--bronze); padding: 3mm 4mm; margin: 3mm 0 4mm; border-radius: 0 2mm 2mm 0; break-inside: avoid; }
+.note p:last-child, .note ul:last-child { margin-bottom: 0; }
+.cols { display:grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+.status { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 3mm; margin: 3mm 0; }
+.status > div { border:1px solid var(--line); border-radius: 2.5mm; padding: 3mm; break-inside: avoid; }
+.status em { font-style:normal; font-size:7.5pt; letter-spacing:.14em; text-transform:uppercase; color: var(--bronze); font-weight:600; display:block; margin-bottom:1.5mm; }
+.status ul, .status ol { padding-left: 4mm; margin:0; font-size: 8.8pt; }
+.offer li { margin-bottom: 1.6mm; }
+.end { margin-top: 8mm; padding-top: 4mm; border-top: 1px solid var(--line); font-size: 8.5pt; color: var(--mute); }
+.avoid { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <img src="img/cover.jpg" alt="">
+  <div class="fade"></div>
+  <div class="txt">
+    <div class="kicker">Technical article · Sponsorship programme</div>
+    <h1>notªpad</h1>
+    <p class="sub">An open, user-owned wearable AI voice recorder</p>
+    <div class="rule"></div>
+    <div class="meta">
+      <b>Hardware v0.1</b> · nRF52840 · 4-layer PCB · top-side assembly<br>
+      Open source · CERN-OHL-S-2.0 hardware · MIT software<br>
+      November 2026<br><br>
+      <a href="https://github.com/PZero/notapad">github.com/PZero/notapad</a><br>
+      <a href="https://pzero.github.io/notapad/">pzero.github.io/notapad</a>
+    </div>
+  </div>
+  <div class="foot">Prepared by the notªpad team for the PCBWay sponsorship programme for non-profit engineering projects.</div>
+</section>
+
+<h2 class="first"><span class="n">1</span>Background</h2>
+<p class="lead">Wearable AI voice recorders are a new kind of device: they record your day and give back transcripts, summaries and notes. Almost all of them, however, tie the user to a cloud service, a subscription and a single AI chosen by the maker.</p>
+<p>notªpad is an open, non-commercial alternative. It is a small resin monolith worn around the neck that:</p>
+<ul>
+  <li>records audio all day with two microphones;</li>
+  <li>syncs with the phone over Bluetooth Low Energy;</li>
+  <li>leaves transcription and note organisation to an AI <b>chosen by the user</b>, through an open <b>MCP (Model Context Protocol)</b> server;</li>
+  <li>keeps the data under the user's control: transcription can run entirely on the user's own device, with no cloud.</li>
+</ul>
+<p>The project is built by a small group of friends in their spare time. Everything is public: hardware under <b>CERN-OHL-S-2.0</b>, software and documentation under <b>MIT</b>.</p>
+
+<div class="figs">
+  <div><b>41 × 17.5 × 9</b><span>mm, resin monolith</span></div>
+  <div><b>16.5 × 38</b><span>mm, 4-layer 1.0 mm PCB, top side only</span></div>
+  <div><b>~20 h</b><span>estimated battery life on a 110 mAh cell</span></div>
+  <div><b>256 MB</b><span>NAND, 11–12 h of continuous stereo audio</span></div>
+</div>
+
+<h2><span class="n">2</span>The object</h2>
+<figure>
+  <img src="img/finishes.jpg" alt="Six finishes of the monolith">
+  <figcaption>Renders of the six finishes under evaluation: forged carbon, soft-touch matt black, gloss black, metallic anthracite, midnight blue, ivory.</figcaption>
+</figure>
+<ul>
+  <li>A resin monolith of about <b>41 × 17.5 × 9 mm</b>, with a steel ring embedded at the top for the lanyard.</li>
+  <li><b>"Squeeze" gesture</b>: two capacitive electrodes, one on each side. A command counts only when both are touched, so contact with the chest never triggers anything by mistake.</li>
+  <li><b>3 RGB LEDs</b> behind a 10 mm front slit, and a <b>vibration motor</b> for notifications.</li>
+  <li><b>2 PDM microphones</b>: one on the front and one on top (with a small channel to the top face), for stereo recording and, later on, for telling speakers apart.</li>
+  <li><b>4 exposed gold contacts on the back</b>: 5 V and GND for charging, SWDIO and SWCLK for the firmware. The pogo springs sit in the dock, not in the monolith. Later the firmware will also update over Bluetooth (OTA).</li>
+  <li><b>Enclosure</b>: for v0.1, two SLA-printed half-shells filled with low-exotherm epoxy. For the final version: SLA master → silicone mould → solid pigmented cast.</li>
+</ul>
+
+<h2><span class="n">3</span>Electronic design (v0.1)</h2>
+<h3>Board</h3>
+<ul>
+  <li><b>16.5 × 38 mm, 4 layers, 1.0 mm thick</b>, components on the <b>top side only</b>.</li>
+  <li>Stack-up: F.Cu signals · In1 continuous ground plane · In2 signals and power · B.Cu signals and ground. Antenna keep-out on every layer.</li>
+  <li>Rules: 0.10 / 0.10 mm track and gap, 0.25 / 0.45 mm vias, 0.25 mm copper-to-edge clearance.</li>
+  <li>Three zones: <b>A</b> (contacts, top microphone, charger, power latch) · <b>B</b> (LEDs, NAND memory, front microphone, regulator, touch sensors) · <b>C</b> (radio module, antenna flush with the board edge, no copper or battery underneath).</li>
+  <li>Under the board: a Ø 8 × 2 mm motor and a <b>381620</b> LiPo cell with protection circuit (about 110 mAh).</li>
+</ul>
+<figure>
+  <img src="img/layers.png" alt="The four copper layers">
+  <figcaption>The four copper layers of the v0.1 board as routed (F.Cu, In1.Cu ground plane, In2.Cu, B.Cu; axes in mm, 114 vias). The empty band at the bottom is the antenna keep-out.</figcaption>
+</figure>
+
+<h3>Main components</h3>
+<table>
+  <tr><th>Function</th><th>Part</th></tr>
+  <tr><td>MCU + Bluetooth LE</td><td>Ebyte E73-2G4M08S1C (nRF52840)</td></tr>
+  <tr><td>Audio storage</td><td>W25N02KV, 256 MB SPI NAND (footprint-compatible with the 512 MB part)</td></tr>
+  <tr><td>Microphones</td><td>2 × MSM261DGT003, PDM, top-port</td></tr>
+  <tr><td>Charging</td><td>MCP73832 (open-drain STAT), 50 mA</td></tr>
+  <tr><td>Regulator</td><td>XC6206 3.3 V</td></tr>
+  <tr><td>Touch</td><td>2 × TTP223</td></tr>
+  <tr><td>LEDs</td><td>3 × common-anode RGB</td></tr>
+  <tr><td>Latch and reset</td><td>AO3401A, 2N7002DW, 1N4148WS</td></tr>
+</table>
+
+<div class="avoid">
+<h3>Power management</h3>
+<ul>
+  <li>The firmware warns at 3.65 V and shuts down at 3.50 V by releasing a HOLD signal: a <b>P-MOSFET latch</b> cuts everything off and the residual draw falls below ~5 µA, protecting the cell.</li>
+  <li>When the monolith is placed on its dock, the 5 V on the contacts turns the latch back on through a diode and sends a reset pulse to the nRF52840: <b>"reset by charging"</b>, with no buttons.</li>
+  <li>The watchdog is always on. The cell's protection circuit stays as the last line of defence.</li>
+</ul>
+</div>
+
+<h3>Design method</h3>
+<p>The whole KiCad 10 project is <b>generated by scripts</b> from a single definition of parts, nets and placement: schematic, board, rules, automatic routing and manufacturing files (Gerber, bill of materials, placement). A set of 69 automated checks verifies design rules, pinout against datasheets, symbols against footprints, circuit calculations, mechanics and consistency across documents.</p>
+<p>Board status: <b>ERC 0, DRC 0 violations, 0 unconnected nets</b>, schematic and board in sync.</p>
+
+<div class="note">
+<p><b>Estimates (to be confirmed on real hardware)</b></p>
+<ul>
+  <li>Average draw ~4.6 mA while recording (sum of datasheet figures) → about <b>20 hours</b> of battery on the 110 mAh cell, with little margin until the DC-DC converter is confirmed.</li>
+  <li>Stereo LC3 audio at 2 × 24 kbit/s → about 216 MB per 10 hours: the 256 MB NAND holds <b>11–12 hours of continuous recording</b>. Memory, not battery, is therefore the limit; recording only when there is sound and automatic syncing during the day stretch it.</li>
+</ul>
+</div>
+
+<h2><span class="n">4</span>Progress</h2>
+<div class="avoid">
+<h3>Done</h3>
+<ul>
+  <li>Concept, renders and choice of finishes for the monolith.</li>
+  <li>v0.1 board complete and verified, with manufacturing files exported.</li>
+  <li><b>Software test bench</b>: while waiting for the final board, we moved the whole chain onto a <b>Seeed XIAO nRF52840 Sense</b> development board with a battery (same nRF52840 chip, PDM microphone, flash memory).
+    <ul>
+      <li><b>Test firmware</b>: records at 16 kHz, compresses to ADPCM, writes into a ring buffer in memory and downloads the data over BLE with acknowledgement and CRC checks. It syncs on its own when memory is 80% full. Touch gestures start and stop recording. <b>It only records when there is sound</b>: an adaptive threshold over the background noise, plus half a second of pre-roll kept in RAM.</li>
+      <li><b>Test app</b> (progressive web app, Web Bluetooth): download, local storage and <b>Whisper transcription running entirely on the user's device</b> (WebGPU/WASM, no cloud), speaker separation and voice commands.</li>
+      <li>The board → app chain has been tested on real hardware.</li>
+    </ul>
+  </li>
+</ul>
+</div>
+<div class="status">
+  <div><em>In progress</em><ul>
+    <li>Field testing of firmware and app: transcription quality, sound threshold, power draw.</li>
+    <li>Revising the board based on what the tests have shown (see §5).</li></ul></div>
+  <div style="grid-column: span 2"><em>Next steps</em><ol>
+    <li>A native <b>Android app</b> (today the app is a local web app).</li>
+    <li><b>MCP server architecture</b>: transcription, speaker recognition and commands moved into an open service, to which users connect the AI they prefer.</li>
+    <li>Final firmware for the board (Zephyr / nRF Connect SDK, LC3 codec, OTA updates).</li>
+    <li>9 mm SLA half-shells and the first complete assembly.</li></ol></div>
+</div>
+
+<h2><span class="n">5</span>Improvements found during testing</h2>
+<p>Bench testing has already changed some choices, and we expect more to come in the next few weeks. That is why we prefer to <b>freeze the board only after this phase</b>.</p>
+<div class="cols">
+  <div class="avoid">
+    <h3>Standby with acoustic wake-up</h3>
+    <p>Recording only when there is sound works, but with the current PDM microphones the nRF52840 has to keep them powered all the time to "listen", which costs a few mA. We are evaluating a microphone with <b>built-in acoustic activity detection</b>, which wakes the processor with an interrupt and draws a few tens of µA (for example the TDK T5838). The alternative is an analogue microphone feeding the nRF52840's internal low-power comparator. The goal is a much longer battery life without losing the start of sentences.</p>
+  </div>
+  <div class="avoid">
+    <h3>Finding the device</h3>
+    <p>We are evaluating compatibility with smartphone finder networks. The nRF52840 and Nordic's stack already support <b>Google Find Hub</b>, which is our target. <b>Apple Find My</b> requires Apple's certification programme and is still to be evaluated. Any solution will follow the protections against unwanted tracking (the DULT specification): a device that records must be more respectful of privacy than ever.</p>
+  </div>
+</div>
+
+<h2><span class="n">6</span>Manufacturing needs</h2>
+<ul>
+  <li><b>First batch: 5 assembled boards.</b>
+    <ul>
+      <li>4-layer PCB, 1.0 mm, 16.5 × 38 mm, top-side assembly only.</li>
+      <li>Fine-pitch parts: radio module, 0402 passives, PDM microphones, 1010 LEDs.</li>
+      <li>The 5 units are for: 2 prototypes for firmware development, 1 for power and battery-life tests, 2 for casting and enclosure tests.</li>
+    </ul>
+  </li>
+  <li><b>Possible enclosure support</b>: SLA (resin) printed half-shells for v0.1 and the master for the silicone mould.</li>
+  <li><b>Timing</b>: the final files (Gerber, bill of materials, placement) will be ready in a few weeks, after the revision in §5. Before freezing them we will adapt the bill of materials to the parts available from the sponsor, for 100% compatibility.</li>
+</ul>
+
+<div class="avoid">
+<h2><span class="n">7</span>What we offer the sponsor</h2>
+<ul class="offer">
+  <li>Logo and "Sponsored by" credit on the README, on the project page and <b>on the board's silkscreen</b>.</li>
+  <li>Publication of the project on the sponsor's platform, with the build log, photos of the assembled boards and the manufacturing files.</li>
+  <li>Credit in every post and video about the project.</li>
+  <li>A single manufacturing sponsor: no other manufacturer named as a supplier.</li>
+  <li>Openness to any specific requests from the sponsor (content, formats, visibility, project details): we will look at them together and, where feasible, we will be glad to implement them.</li>
+</ul>
+</div>
+
+<div class="end">
+  The notªpad team · <a href="https://github.com/PZero/notapad">github.com/PZero/notapad</a> · <a href="https://pzero.github.io/notapad/">pzero.github.io/notapad</a><br>
+  Figures marked as estimates are calculations from datasheets, to be confirmed on the first assembled boards.
+</div>
+
+</body>
+</html>
