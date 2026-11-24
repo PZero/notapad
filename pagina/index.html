@@ -388,7 +388,8 @@ swWrap.innerHTML = finishes.map((f,i)=>`<button type="button" aria-pressed="${i=
 /* ---------------- parts ("inside" panel) ---------------- */
 const parts = [
   ['Solid resin shell','41 × 17.5 × 9 mm'],
-  ['3 RGB LEDs + 2 PDM microphones','front and top'],
+  ['3 RGB LEDs + 2 PDM microphones','front and top, top one wakes on sound'],
+  ['Accelerometer + buzzer','motion and "play sound" for finding'],
   ['4-layer board, 16.5 × 38 mm','1.0 mm, top-side assembly'],
   ['Modulo nRF52840 (Ebyte E73)','Bluetooth LE'],
   ['NAND memory W25N02','256 MB'],
@@ -479,13 +480,16 @@ if (THREE_OK) {
   for(let i=0;i<26;i++){const x=-7+((i*37)%140)/10, y=-.5+((i*53)%150)/10; if(Math.abs(x)<7.8 && y<16.2) box(1,.5,.5,std(i%3?0x8c6a3f:0xb9b2a5,.5,.3),x,y,1.25,pcbG);}
   const bat = box(15,19,3.2,std(0xaab3bd,.35,.85),0,-3,-2.2); /* stays inside the shell: a shared back face flickered (z-fighting) */
   const motor = cyl(4,2,std(0xb0b4ba,.3,.9),0,10.5,-2,Math.PI/2);
+  /* 24/11: 4 x 4 mm buzzer on the back, beside the motor; 2 x 2 mm accelerometer on the board, above the module */
+  const buzz = box(4,4,2,std(0x1b1b1d,.45,.1),6.2,9.5,-2);
+  const acc = box(2,2,1,std(0x151516,.4,0),-7,1.6,1.45,pcbG);
   const backG = new THREE.Group(); obj.add(backG);
   const pins = [-7,-4.2,4.2,7].map(x=>cyl(.8,4.2,gold,x,16,-2.5,Math.PI/2,backG));
 
   /* rest and exploded positions */
   const ex = [
     {o:body, z:26}, {o:slit, z:26}, {o:micF, z:26}, {o:pcbG, z:6},
-    {o:bat, z:-12}, {o:motor, z:-19, y:4}, {o:backG, z:-28}, {o:ring, y:12}, {o:bush, y:8},
+    {o:bat, z:-12}, {o:motor, z:-19, y:4}, {o:buzz, z:-19, y:-2, x:3}, {o:backG, z:-28}, {o:ring, y:12}, {o:bush, y:8},
     {o:micT, z:26}, {o:inlays[0], z:26}, {o:inlays[1], z:26}
   ].map(e=>({...e, p:e.o.position.clone()}));
 
@@ -508,6 +512,8 @@ if (THREE_OK) {
     {t:'nRF52840', o:pcbG, p:[6.5,-12,3]},
     {t:'Battery ~110 mAh', o:bat, p:[8,-10,0]},
     {t:'Motor', o:motor, p:[4,0,0]},
+    {t:'Buzzer', o:buzz, p:[2,0,0]},
+    {t:'Accelerometer', o:acc, p:[-1,0,.5]},
     {t:'Gold contacts', o:backG, p:[7,16,-4]},
     {t:'Ring', o:ring, p:[0,0,3]}
   ];
