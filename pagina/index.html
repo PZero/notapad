@@ -1022,19 +1022,13 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
     s.setAttribute('viewBox',`0 0 ${W} ${H}`);
     const mx = 14, my = 14, mw = W-28, mh = m ? 350 : 280;
     const P = (fx,fy) => [mx+mw*fx, my+mh*fy];
-    const clip = svgEl('clipPath',{id:'findclip'},svgEl('defs',{},s)); svgEl('rect',{x:mx,y:my,width:mw,height:mh,rx:12},clip);
-    svgEl('rect',{x:mx,y:my,width:mw,height:mh,rx:12,fill:'#101013',stroke:'var(--line)'},s);
-    const map = svgEl('g',{'clip-path':'url(#findclip)'},s);
-    /* abstract blocks and streets */
-    const cols = m ? 4 : 8, rows = m ? 5 : 4, gap = 10;
-    const cw = mw/cols, rh = mh/rows;
-    for (let i=0;i<cols;i++) for (let j=0;j<rows;j++){
-      const k = (i*7+j*5)%4;
-      svgEl('rect',{x:mx+i*cw+gap/2,y:my+j*rh+gap/2,width:cw-gap,height:rh-gap,rx:5,fill:k===0?'#17171b':'#141418'},map);
-      if (k===1) svgEl('rect',{x:mx+i*cw+gap/2+6,y:my+j*rh+gap/2+6,width:(cw-gap)*.4,height:(rh-gap)*.4,rx:3,fill:'#1b1b20'},map);
-    }
-    svgEl('path',{d:`M${mx} ${my+mh*.55} C ${mx+mw*.3} ${my+mh*.4}, ${mx+mw*.6} ${my+mh*.75}, ${mx+mw} ${my+mh*.5}`,fill:'none',stroke:'#1d1d23','stroke-width':8},map);
-    T(s,mx+10,my+mh-10,'Abstract map, not a real place',10,'var(--mute)','start');
+    /* very light abstract street pattern as a backdrop: thin low-contrast strokes, no frame */
+    const map = svgEl('g',{fill:'none',stroke:'var(--mute)','stroke-opacity':.13,'stroke-width':1,'stroke-linecap':'round'},s);
+    const vx = m ? [.12,.34,.58,.86] : [.08,.2,.37,.52,.66,.83,.94], hy = m ? [.1,.3,.5,.7,.9] : [.14,.38,.6,.88];
+    vx.forEach((f,i)=>{const x = W*f, w = (i%2?6:-5); svgEl('path',{d:`M${x} 0 C ${x+w} ${H*.3}, ${x-w} ${H*.6}, ${x+w/2} ${H}`},map);});
+    hy.forEach((f,i)=>{const y = H*f, w = (i%2?7:-6); svgEl('path',{d:`M0 ${y} C ${W*.3} ${y+w}, ${W*.6} ${y-w}, ${W} ${y+w/2}`},map);});
+    svgEl('path',{d:`M0 ${H*.72} C ${W*.3} ${H*.5}, ${W*.55} ${H*.85}, ${W} ${H*.45}`,'stroke-opacity':.2,'stroke-width':2},map);
+    const fz = T(s,W-12,my+mh-6,'Abstract backdrop, not a real place',9,'var(--mute)','end'); fz.setAttribute('opacity',.5);
     const phone = (c,color,label) => {
       const gg = svgEl('g',{},s);
       svgEl('rect',{x:c[0]-9,y:c[1]-15,width:18,height:30,rx:4,fill:'#1b1b20',stroke:color,'stroke-width':1.6},gg);
