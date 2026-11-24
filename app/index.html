@@ -32,6 +32,9 @@ button.pri{background:var(--acc);color:#071513;border-color:var(--acc);font-weig
 .chip.w{border-color:var(--warn);color:var(--warn)}.chip.e{border-color:var(--err);color:var(--err)}.chip.a{border-color:var(--acc);color:var(--acc)}
 table{width:100%;border-collapse:collapse}td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:500;font-size:13px}
 td.n{text-align:right;font-variant-numeric:tabular-nums}
+table.reg{table-layout:fixed}table.reg th:nth-child(2){width:80px}table.reg th:nth-child(3){width:250px}
+table.reg td.pul{text-align:right;white-space:nowrap}
+#lista audio{display:block;margin:4px 0 8px;max-width:100%}
 audio{height:34px;width:100%;max-width:340px}
 #log{font:12px Consolas,monospace;color:var(--mut);max-height:220px;overflow:auto;white-space:pre-wrap;margin:0}
 label.cb{display:inline-flex;gap:8px;align-items:center;color:var(--mut)}
@@ -51,13 +54,13 @@ tr.tr td{padding-top:0}
 .chi.c3{color:#9ccf6a;border-color:#45602e}.chi.c4{color:#7fb7f5;border-color:#33506f}.chi.c5{color:#e8d36a;border-color:#655a2a}
 button.chi{cursor:pointer}
 .leggi{display:none;margin-top:12px}.leggi blockquote{margin:8px 0 12px;padding:10px 14px;border-left:3px solid var(--acc);background:#1d1d21;color:#d6d2ca}
-@media(max-width:640px){td:nth-child(3),th:nth-child(3){display:none}tr.tr td:nth-child(1){display:table-cell}}
+@media(max-width:640px){table.reg th:nth-child(3){width:auto}table.reg td.pul{white-space:normal}}
 </style>
 </head>
 <body>
 <main>
 <header>
-  <h1>notªpad <small>app di prova · solo locale</small></h1>
+  <h1>notªpad <small>app di prova · solo locale · <span id="vApp">v?</span></small></h1>
   <div class="riga">
     <span class="stato"><span id="pall" class="pall"></span><span id="statoTxt">non collegato</span></span>
     <button id="bCollega" class="pri">Collega il dispositivo</button>
@@ -86,22 +89,21 @@ button.chi{cursor:pointer}
 
 <h2>Trascrizione</h2>
 <div class="pan">
-  <div class="riga">
-    <label class="cb"><input type="checkbox" id="cTrascrivi" checked> Trascrivi da sola dopo la sincronizzazione</label>
-  </div>
+  <p class="nota" style="margin-top:0">In automatico si trascrivono solo i comandi (tocco singolo). Le altre registrazioni si trascrivono col pulsante «Trascrivi» della registrazione o con «Trascrivi le nuove».</p>
   <div class="riga" style="margin-top:10px">
     <label class="cb">Modello <select id="sModello">
-      <option value="auto">automatico (small sul PC, base sul telefono)</option>
+      <option value="auto">automatico (turbo sul PC con WebGPU, altrimenti small; base sul telefono)</option>
       <option value="tiny">tiny · ~40 MB, veloce, impreciso</option>
       <option value="base">base · ~80 MB</option>
-      <option value="small">small · ~250 MB, buono in italiano</option>
-      <option value="turbo">large-v3-turbo · ~560 MB, il più preciso ma lento</option>
+      <option value="small">small · ~250 MB (CPU) / ~490 MB (GPU), buono in italiano</option>
+      <option value="turbo">large-v3-turbo · ~1,6 GB, il più preciso (solo WebGPU fp16)</option>
     </select></label>
     <label class="cb">Lingua <select id="sLingua">
       <option value="italian">italiano</option><option value="english">inglese</option><option value="">automatica</option>
     </select></label>
     <label class="cb">Motore <select id="sMotore"><option value="auto">WebGPU se c'è</option><option value="wasm">solo WASM (CPU)</option></select></label>
     <button id="bModello">Scarica il modello ora</button>
+    <button id="bSalvaModelli" title="Copia i modelli già scaricati nella cartella app/modelli: poi funzionano anche senza rete">Salva i modelli in una cartella</button>
   </div>
   <div class="griglia">
     <div class="kpi"><b id="kTr">—</b><span>trascrizione</span></div>
@@ -149,7 +151,8 @@ button.chi{cursor:pointer}
 
 <h2>Registrazioni sul PC</h2>
 <div class="pan">
-  <table><thead><tr><th>Inizio</th><th class="n">Durata</th><th>Settori</th><th>Ascolta</th><th></th></tr></thead>
+  <div class="riga" style="margin-bottom:8px"><button id="bTrascriviNuove">Trascrivi le nuove</button></div>
+  <table class="reg"><thead><tr><th>Inizio</th><th class="n">Durata</th><th></th></tr></thead>
   <tbody id="lista"></tbody></table>
   <div id="vuota" class="vuoto">Ancora nessuna registrazione scaricata.</div>
 </div>

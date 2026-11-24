@@ -135,11 +135,12 @@ Started on 22 Nov 2026, before the v0.1 boards arrive. They run on a **Seeed XIA
 - **Honest status:** the firmware was flashed on a real XIAO nRF52840 Sense and tested with the app on 22 Nov: Bluetooth connection, recording and audio download work. **Not tested in depth yet:** automatic sync at 80%, audio quality, download speed, the small Whisper model, Edge as an installed app and an Android phone. The final firmware for the v0.1 board (Zephyr is the option) is separate and still on hold; the phone app stays a PWA for now (Flutter postponed).
 
 ## Test bench: exploration now, MCP server later
-This is an **exploration phase, not the product**. The XIAO nRF52840 Sense firmware plus the local app (Web Bluetooth, data kept only in the browser) are a test bench to learn which software features work and how well, before the real board exists. Everything below was added on 22 Nov 2026; speed and error rates are not measured yet.
-- **Whisper in the browser** (transformers.js, models that return the time of every word): the audio never leaves the device. A speech detector sends only the stretches with a voice to the model; the default on a PC is the small model.
+This is an **exploration phase, not the product**. The XIAO nRF52840 Sense firmware plus the local app (Web Bluetooth, data kept only in the browser) are a test bench to learn which software features work and how well, before the real board exists. Most of it was added on 22 Nov 2026 and improved on 23 Nov; speed and error rates are not measured yet.
+- **Whisper in the browser** (transformers.js, models that return the time of every word): the audio never leaves the device. **Updated 23 Nov (app 0.10.0):** the decoder had been running compressed to 4 bits on WebGPU, the main cause of errors in Italian; it now runs at full precision, and on a PC with WebGPU the automatic model is large-v3-turbo (a download of about 1.6 GB, once). Audio goes to the model in windows of 10 to 25 s cut at pauses, with levelled volume and a filter for invented or repeated phrases. Transcription starts on request (automatically only for quick commands); models can be loaded from a local folder to work offline. Quality is better by observation, not measured.
 - **Who is speaking:** voice prints with WeSpeaker ResNet34. The transcript shows "Me" (the owner, whose profile comes from the microphone or from confirming "that's me" on a transcript) and "Speaker 1, 2, 3...". Text is always in chronological order.
 - **Gestures** on the device (motion sensor): double tap starts or stops recording; single tap is a command (5 yellow flashes, the next 6 seconds become a separate piece downloaded with priority, then recording continues).
-- **First voice-command tests:** a spoken "Command, ..." is recognised and acted on. Recognition uses tolerant rules instead of an AI, so it copes with Whisper's mistakes, and a second small transcriber is dedicated to commands. First tests only.
+- **First voice-command tests:** a spoken "Command, ..." is recognised and acted on. Recognition uses tolerant rules instead of an AI, so it copes with Whisper's mistakes. Since 23 Nov commands use the same model as the long recordings (the separate small transcriber is gone). First tests only.
+- **Record only on sound (test firmware 0.2.0, 23 Nov):** adaptive threshold on the background noise, a 0.5 s pre-listen buffer in RAM, 3 s of tail, and a command to switch it on, off or tune it; the app fills the silences back in. It compiles and uploads, but has not been tried with real sounds yet.
 - **Later:** transcription, speaker recognition and commands are meant to move into the MCP server, so the AI the user picks can use them as tools.
 
 ## Wallpapers
@@ -162,6 +163,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
+- Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
 - Automatic on-device-browser transcription in the test app (22 Nov): Whisper via transformers.js, Italian; 17 s transcribed in 4.8 s (base model, WebGPU). Audio does not leave the device.
@@ -176,15 +178,15 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
 
 **In progress**
-- Testing the bench with real speech: automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
+- Testing the bench with real speech: new transcription quality, the sound threshold of firmware 0.2.0, time per hour of audio, automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Rechecking the JLCPCB quote: the E73 is listed as Standard PCBA only, while the 97 EUR quote assumed Economic. If Economic does not accept it, the quote is redone and may be higher.
-- Waiting for sponsor replies; nothing is agreed.
+- Waiting for sponsor replies; requests are open and nothing is agreed.
 - Waiting for the E73 module: it was out of stock at JLCPCB, so 2 units were pre-ordered through its parts manager to sit in the JLCPCB warehouse. The board order is placed once they arrive (a Black Friday coupon runs until 2 December; timing is not a promise).
 - Parts outside JLCPCB: shopping list in `acquisti/spesa_amazon.md` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
-0. Measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
+0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
 1. Settle the assembly quote in the JLCPCB cart and pay once the E73 arrives.
 2. Buy the parts outside JLCPCB: 381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin.
 3. Design the two SLA half-shells at 9 mm (channel for the top microphone, sealed microphone ports, ring bushing); fill in online sponsor forms and prepare a grant application.
@@ -193,6 +195,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 **On hold by choice (restart after the board)**
 - Final firmware for the v0.1 board (Zephyr is the option): LC3, NAND, BLE sync. The test firmware on the XIAO is separate.
+- A microphone with acoustic wake-up for a true low-power standby: an idea for board v0.2, not for the current order.
 - Native phone app (Capacitor is a proposal for Android; Flutter postponed: the test app stays a PWA) and the production MCP server.
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
@@ -208,11 +211,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
-2. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
-3. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
-4. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
-5. 22 Nov: [open licences chosen and sponsor search started](https://github.com/PZero/notapad/commit/a103695).
+1. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
+2. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
+3. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
+4. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
+5. 22 Nov: [group, gesture and MCP scenes redone](https://github.com/PZero/notapad/commit/0ca6206); [page layout reworked for phones](https://github.com/PZero/notapad/commit/7171ea3); [animation flicker fixed](https://github.com/PZero/notapad/commit/09df9c1).
 
 ## Repository layout
 | Path | Contents |

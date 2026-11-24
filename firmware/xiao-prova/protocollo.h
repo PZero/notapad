@@ -19,12 +19,14 @@
 //   GAIN <0..80>       guadagno PDM (0x28 = 0 dB, passi da 0,5 dB)
 //   WIPE               cancella tutta la memoria
 //   INFO               riga di diagnostica
+//   VAD 0 | VAD 1      registra sempre / solo quando c'è suono (predefinito, con 0,5 s di pre-ascolto)
+//   VAD <2..5000>      livello minimo considerato suono (media del valore assoluto su 20 ms, predefinito 120)
 
 // Stato (caratteristica 2, lettura + notifica, 20 byte)
 struct __attribute__((packed)) NpStato {
   uint8_t proto;        // NP_PROTO
   uint8_t flag;         // bit0 registra, bit1 piena, bit2 da sincronizzare (>= 80%), bit3 USB, bit4 scarico attivo,
-                        // bit5 ora nota, bit6 batteria bassa
+                        // bit5 ora nota, bit6 batteria bassa, bit7 in ascolto (silenzio: microfono acceso, niente scritto)
   uint16_t usati;       // settori con dati non ancora scaricati
   uint16_t totali;      // settori dell'anello
   uint16_t batteriaMv;
@@ -40,6 +42,7 @@ struct __attribute__((packed)) NpStato {
 #define NP_FLAG_SCARICO 0x10
 #define NP_FLAG_ORA 0x20
 #define NP_FLAG_BATT_BASSA 0x40
+#define NP_FLAG_ASCOLTO 0x80
 
 // Dati (caratteristica 3, notifica): uint16 settore + uint16 offset + al massimo 240 byte del settore.
 // Un settore (4096 byte) arriva in 18 pezzi; l'app lo ricompone, controlla magic e CRC, poi manda ACK.

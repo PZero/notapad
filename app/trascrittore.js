@@ -5,16 +5,25 @@
 // Voci: per ogni frase calcola anche un'"impronta vocale" (embedding da 256 numeri) con WeSpeaker ResNet34
 // (lo stesso modello della pipeline pyannote 3.1, 26 MB). Chi parla lo decide app.js confrontando le impronte.
 import { pipeline, env, AutoModel, AutoFeatureExtractor } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
+import { finestre, allucinazione, senzaRipetizioni } from './vad.js';
 
-env.allowLocalModels = false;           // niente richieste a /models/ sul nostro server
+const VERSIONE = '0.10.0';              // la stessa di app.js: l'app la mostra quando il modello è pronto
+
+// Dove cerca i modelli, in ordine: cache del browser → cartella app/modelli/ sul nostro server (copia fatta
+// con «Salva i modelli in una cartella», per lavorare senza rete) → Hugging Face.
+// Il percorso deve essere relativo al sito, non un URL completo (transformers.js salta i percorsi http://).
+env.allowLocalModels = true;
+env.localModelPath = new URL('modelli/', self.location.href).pathname;
 env.useBrowserCache = true;
 if (env.backends?.onnx?.wasm) {
   env.backends.onnx.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
 }
 
-// file per motore (dimensioni del 22/11/2026, encoder + decoder):
-//   wasm   q8:            tiny 41 MB · base 77 MB · small 249 MB
-//   webgpu fp32/fp16 + q4: tiny 42/26 MB · base 106/65 MB · small 586/410 MB · turbo (q4f16) 564 MB
+// file per motore (encoder + decoder):
+//   wasm   q8:          tiny 41 MB · base 77 MB · small 249 MB
+//   webgpu fp16 (fp32):  small 485 MB (970 MB) · turbo 1,6 GB (solo fp16)
+// 23/11: niente più decoder a 4 bit su WebGPU: in italiano sbagliava molte parole ed era la causa principale
+// delle trascrizioni scadenti rispetto a Whisper a precisione piena. Il download è più grande, una volta sola.
 const MODELLI = {
   // varianti "_timestamped": danno l'ora di ogni parola (serve per dividere il testo tra chi parla)
   tiny:  'onnx-community/whisper-tiny_timestamped',
@@ -35,8 +44,8 @@ async function capacitaGpu() {
 
 function dtypePer(nome, dev, f16) {
   if (dev === 'wasm') return { encoder_model: 'q8', decoder_model_merged: 'q8' };
-  if (nome === 'turbo') return { encoder_model: 'q4f16', decoder_model_merged: 'q4f16' };
-  return { encoder_model: f16 ? 'fp16' : 'fp32', decoder_model_merged: 'q4' };
+  const p = f16 ? 'fp16' : 'fp32';
+  return { encoder_model: p, decoder_model_merged: p };
 }
 
 // avanzamento del download aggregato su tutti i file
@@ -76,7 +85,7 @@ async function carica(nome, preferito) {
   }
   chiave = `${nome}|${dev}`;
   motore = dev === 'webgpu' ? 'WebGPU' : `WASM ${self.crossOriginIsolated ? env.backends.onnx.wasm.numThreads + ' thread' : '1 thread'}`;
-  postMessage({ tipo: 'pronto', modello: `whisper-${nome}`, motore });
+  postMessage({ tipo: 'pronto', modello: `whisper-${nome}`, motore, versione: VERSIONE });
 }
 
 // ---------- impronte vocali ----------
@@ -132,25 +141,45 @@ async function finestreDi(audio, parole) {
   return out;
 }
 
-async function trascrivi({ id, audio, lingua, voci = true }) {
+// volume di una finestra: parlato a un livello costante (RMS ~0,08), senza mai saturare; mai abbassato
+function livella(x) {
+  let e2 = 0, picco = 0;
+  for (const v of x) { e2 += v * v; const a = Math.abs(v); if (a > picco) picco = a; }
+  const rms = Math.sqrt(e2 / Math.max(1, x.length));
+  const k = Math.min(0.08 / Math.max(rms, 1e-6), 0.95 / Math.max(picco, 1e-6), 30);
+  if (k > 1) for (let i = 0; i < x.length; i++) x[i] *= k;
+  return x;
+}
+
+// mappa: tratti di parlato (vad.js) nell'audio ricevuto; senza mappa l'audio è un tratto solo.
+// Ogni finestra (≤ 25 s, tagliata nelle pause) va a Whisper da sola: niente tagli a metà parola.
+async function trascrivi({ id, audio, mappa, lingua, voci = true }) {
   const t0 = performance.now();
-  let picco = 0; for (const x of audio) { const a = Math.abs(x); if (a > picco) picco = a; }
-  if (picco > 0 && picco < 0.5) { const k = 0.7 / picco; for (let i = 0; i < audio.length; i++) audio[i] *= k; }   // voci lontane: più volume
-  const out = await asr(audio, {
-    language: lingua || null,          // null = rilevamento automatico
-    task: 'transcribe',
-    chunk_length_s: 30,
-    stride_length_s: 5,
-    return_timestamps: 'word',
-  });
-  const parole = (out.chunks || []).map(c => ({ t0: c.timestamp[0] ?? 0, t1: c.timestamp[1] ?? c.timestamp[0] ?? 0, testo: c.text }))
-    .filter(w => w.testo.trim());
+  const FIN_W = finestre(audio, mappa || [{ d0: 0, s0: 0, n: audio.length / FREQ }]);
+  let parole = [];
+  const testi = [];
+  for (const [a, b] of FIN_W) {
+    if (b - a < 0.3 * FREQ) continue;
+    const out = await asr(livella(audio.slice(a, b)), {
+      language: lingua || null,        // null = rilevamento automatico
+      task: 'transcribe',
+      return_timestamps: 'word',
+    });
+    const testo = (out.text || '').trim();
+    if (!testo || allucinazione(testo)) continue;
+    const off = a / FREQ;
+    const pw = (out.chunks || []).map(c => ({ t0: off + (c.timestamp[0] ?? 0), t1: off + (c.timestamp[1] ?? c.timestamp[0] ?? 0), testo: c.text }))
+      .filter(w => w.testo.trim());
+    const pulite = senzaRipetizioni(pw);
+    parole = parole.concat(pulite);
+    testi.push(pulite.length < pw.length ? pulite.map(w => w.testo).join('').trim() : testo);
+  }
   const secondi = (performance.now() - t0) / 1000;
-  let finestre = null;
-  try { if (voci) finestre = await finestreDi(audio, parole); }
+  let impronte = null;
+  try { if (voci) impronte = await finestreDi(audio, parole); }
   catch (e) { postMessage({ tipo: 'stato', testo: `voci non riconosciute (${e.message})` }); }
   postMessage({
-    tipo: 'risultato', id, testo: (out.text || '').trim(), parole, finestre,
+    tipo: 'risultato', id, testo: testi.join(' '), parole, finestre: impronte,
     secondi, secondiVoci: (performance.now() - t0) / 1000 - secondi, modello: chiave.split('|')[0], motore,
   });
 }

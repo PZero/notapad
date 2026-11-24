@@ -21,6 +21,9 @@ _autosave-*
 *.bak
 freerouting*.log
 
+# Modelli AI copiati in locale dall'app (centinaia di MB, si riscaricano da Hugging Face)
+app/modelli/
+
 # Build e dipendenze
 build/
 node_modules/

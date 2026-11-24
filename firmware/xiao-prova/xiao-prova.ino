@@ -12,7 +12,7 @@
 #include "protocollo.h"
 
 #define FW_MAJ 0
-#define FW_MIN 1
+#define FW_MIN 2
 #define FW_PAT 0
 
 #define FREQ_HZ 16000
@@ -55,6 +55,27 @@ static uint32_t ultimoPdmMs = 0, ripartenzePdm = 0, campioniPersi = 0;
 static int64_t epocaOffset = 0;         // ora UTC - millis(), valida se oraNota
 static bool oraNota = false;
 static int32_t hpX = 0, hpY = 0;        // filtro passa-alto (toglie la componente continua del PDM)
+
+// ---------- ascolto: si scrive in memoria solo quando c'è suono (23/11) ----------
+// Il microfono resta acceso; ogni 20 ms si misura il livello (media del valore assoluto). Nel silenzio i campioni
+// vanno solo in un anello di pre-ascolto in RAM (0,5 s): al primo suono si apre un settore datato 0,5 s prima e
+// si scrive anche il pre-ascolto, così l'inizio della prima parola non si perde. Dopo VAD_CODA_MS senza suono il
+// settore si chiude e si torna ad ascoltare. Durante la finestra di un comando si scrive sempre.
+// Suono = livello sopra max(vadMin, fondo × vadFattore), per 2 blocchi di fila (40 ms: non bastano i clic).
+#define VAD_BLOCCO 320                  // 20 ms
+#define VAD_PRE 8000                    // 0,5 s di pre-ascolto (16 KB di RAM)
+#define VAD_CODA_MS 3000
+static bool vadOn = true;               // comando VAD 0/1
+static uint16_t vadMin = 120;           // comando VAD <n>: livello minimo considerato suono
+static const uint8_t vadFattore = 3;
+static bool vadAttivo = false;          // suono sentito negli ultimi VAD_CODA_MS: si scrive
+static uint32_t vadUltimoMs = 0;
+static int16_t pre[VAD_PRE];
+static uint16_t preTesta = 0, preN = 0;
+static uint32_t bloccoSomma = 0, fondo16 = 0;   // fondo in sedicesimi
+static uint16_t bloccoN = 0, livello = 0;
+static uint8_t sopra = 0;
+static uint32_t campAscoltati = 0, campScritti = 0;
 
 struct BufSett {
   alignas(4) uint8_t b[NP_SETT_BYTE];
@@ -193,7 +214,7 @@ static void chiudiBuffer() {
   bufCorr = -1;
 }
 
-static void apriBuffer() {
+static void apriBuffer(uint32_t msInizio) {
   int i = prendiBuffer();
   if (i < 0) return;                                // niente posto: i campioni vanno persi finché la flash non libera
   BufSett &B = bufs[i];
@@ -202,7 +223,7 @@ static void apriBuffer() {
   t->magic = NP_MAGIC;
   t->seq = prossimoSeq++;
   t->avvio = idAvvio;
-  t->ms = millis();
+  t->ms = msInizio;
   t->epocaMs = oraNota ? (uint64_t)((int64_t)t->ms + epocaOffset) : 0;
   t->pred = (int16_t)adpcm.pred;
   t->indice = (uint8_t)adpcm.indice;
@@ -214,6 +235,50 @@ static void apriBuffer() {
   bufCorr = i;
 }
 
+// scrive un campione (già filtrato) nel settore corrente, aprendone uno nuovo se serve
+static void scrivi(int16_t y, uint32_t msInizio) {
+  if (bufCorr < 0) apriBuffer(msInizio);
+  if (bufCorr < 0) { adpcmCodifica(adpcm, y); campioniPersi++; return; }
+  BufSett &B = bufs[bufCorr];
+  uint8_t c = adpcmCodifica(adpcm, y);
+  uint8_t *d = B.b + sizeof(NpTesta) + (B.campioni >> 1);
+  if ((B.campioni & 1) == 0) *d = (*d & 0xF0) | c;   // primo campione nel nibble basso
+  else *d = (*d & 0x0F) | (c << 4);
+  B.campioni++;
+  campScritti++;
+  if (B.campioni >= NP_DATI_BYTE * 2) chiudiBuffer();
+}
+
+static void vadAzzera() { vadAttivo = false; preN = 0; preTesta = 0; bloccoSomma = 0; bloccoN = 0; sopra = 0; }
+
+// fine di un blocco da 20 ms: aggiorna fondo e livello, decide se c'è suono
+static void vadBlocco() {
+  livello = bloccoSomma / VAD_BLOCCO;
+  bloccoSomma = 0; bloccoN = 0;
+  uint32_t l16 = (uint32_t)livello * 16;
+  if (!fondo16) fondo16 = l16 ? l16 : 16;
+  else if (l16 < fondo16) fondo16 = (fondo16 * 7 + l16) / 8;           // scende in fretta
+  else fondo16 += (l16 - fondo16) >> 9;                                 // sale piano (~10 s)
+  uint32_t soglia = max<uint32_t>(vadMin, fondo16 * vadFattore / 16);
+  sopra = livello > soglia ? (sopra < 255 ? sopra + 1 : 255) : 0;
+  uint32_t ora = millis();
+  if (sopra >= 2) {
+    vadUltimoMs = ora;
+    if (!vadAttivo) {
+      // primo suono: settore datato all'inizio del pre-ascolto, poi il pre-ascolto stesso
+      vadAttivo = true;
+      chiudiBuffer();
+      uint32_t ms0 = ora - (uint32_t)preN * 1000 / FREQ_HZ;
+      uint16_t i = (preTesta + VAD_PRE - preN) % VAD_PRE;
+      for (uint16_t k = 0; k < preN; k++) { scrivi(pre[i], ms0); i = (i + 1) % VAD_PRE; }
+      preN = 0;
+    }
+  } else if (vadAttivo && !cmdFineMs && ora - vadUltimoMs > VAD_CODA_MS) {
+    vadAttivo = false;                                                  // silenzio: si chiude il settore
+    chiudiBuffer();
+  }
+}
+
 static void campione(int16_t x) {
   // passa-alto a una via: y = x - x[-1] + 0,995 * y[-1]
   int32_t y = (int32_t)x - hpX + ((hpY * 32604) >> 15);
@@ -221,15 +286,18 @@ static void campione(int16_t x) {
   hpY = y;
   if (y > 32767) y = 32767;
   if (y < -32768) y = -32768;
-  if (bufCorr < 0) apriBuffer();
-  if (bufCorr < 0) { adpcmCodifica(adpcm, (int16_t)y); campioniPersi++; return; }
-  BufSett &B = bufs[bufCorr];
-  uint8_t c = adpcmCodifica(adpcm, (int16_t)y);
-  uint8_t *d = B.b + sizeof(NpTesta) + (B.campioni >> 1);
-  if ((B.campioni & 1) == 0) *d = (*d & 0xF0) | c;   // primo campione nel nibble basso
-  else *d = (*d & 0x0F) | (c << 4);
-  B.campioni++;
-  if (B.campioni >= NP_DATI_BYTE * 2) chiudiBuffer();
+  campAscoltati++;
+  bool scrive = !vadOn || vadAttivo || cmdFineMs;
+  if (scrive) scrivi((int16_t)y, millis());
+  else {
+    pre[preTesta] = (int16_t)y;
+    preTesta = (preTesta + 1) % VAD_PRE;
+    if (preN < VAD_PRE) preN++;
+  }
+  if (vadOn) {
+    bloccoSomma += (uint32_t)(y < 0 ? -y : y);
+    if (++bloccoN >= VAD_BLOCCO) vadBlocco();
+  }
 }
 
 static void servizioPdm() {
@@ -253,7 +321,7 @@ static void servizioPdm() {
 static void aggiornaRegistrazione() {
   bool vuole = registra && !fermaPerPiena && flashOk;
   if (vuole && !pdmAttivo) pdmAvvia();
-  if (!vuole && pdmAttivo) { pdmFerma(); chiudiBuffer(); }
+  if (!vuole && pdmAttivo) { pdmFerma(); chiudiBuffer(); vadAzzera(); }
 }
 
 // ---------- scrittore della flash ----------
@@ -398,7 +466,8 @@ static void inviaStato() {
   s.flag = (pdmAttivo ? NP_FLAG_REC : 0) | (fermaPerPiena ? NP_FLAG_PIENA : 0) |
            (percento() >= SOGLIA_SYNC_PCT ? NP_FLAG_SYNC_NEC : 0) | (usb() ? NP_FLAG_USB : 0) |
            (scarico ? NP_FLAG_SCARICO : 0) | (oraNota ? NP_FLAG_ORA : 0) |
-           (batteriaMv && batteriaMv < BATT_AVVISO_MV && !usb() ? NP_FLAG_BATT_BASSA : 0);
+           (batteriaMv && batteriaMv < BATT_AVVISO_MV && !usb() ? NP_FLAG_BATT_BASSA : 0) |
+           (pdmAttivo && vadOn && !vadAttivo && !cmdFineMs ? NP_FLAG_ASCOLTO : 0);
   s.usati = usati;
   s.totali = NP_SETT_N;
   s.batteriaMv = batteriaMv;
@@ -456,6 +525,17 @@ static void esegui(char *c) {
     risp("K gain %d", g);
     return;
   }
+  if (!strncmp(c, "VAD ", 4)) {                    // VAD 0 / VAD 1 / VAD <livello minimo>
+    int v = atoi(c + 4);
+    if (v == 0 || v == 1) {
+      vadOn = v == 1;
+      if (!vadOn) { vadAttivo = false; preN = 0; }
+      else { chiudiBuffer(); vadAzzera(); }
+    } else if (v >= 2 && v <= 5000) vadMin = (uint16_t)v;
+    else { risp("X vad 0|1|2..5000"); return; }
+    risp("K vad %d min %u", vadOn, vadMin);
+    return;
+  }
   if (!strcmp(c, "WIPE")) {
     fermaScarico("wipe");
     for (uint16_t i = 0; i < NP_SETT_N; i++)
@@ -469,6 +549,8 @@ static void esegui(char *c) {
   if (!strcmp(c, "INFO")) {
     risp("K fw %d.%d.%d flash %d usati %u scr %u seq %lu persi %lu pdm-rip %lu batt %u",
          FW_MAJ, FW_MIN, FW_PAT, flashOk, usati, idxScrittura, prossimoSeq, campioniPersi, ripartenzePdm, batteriaMv);
+    risp("K vad %d min %u livello %u fondo %lu scritto %lu%%", vadOn, vadMin, livello, fondo16 / 16,
+         campAscoltati ? (unsigned long)((uint64_t)campScritti * 100 / campAscoltati) : 0UL);
     return;
   }
   risp("X comando sconosciuto: %s", c);

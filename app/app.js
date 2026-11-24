@@ -1,12 +1,15 @@
 // notªpad – app di prova (PWA locale): collega il dispositivo via Web Bluetooth, scarica i settori audio,
 // li salva in IndexedDB e li fa ascoltare/scaricare in WAV. Protocollo in firmware/xiao-prova/protocollo.h.
-import { SETT_BYTE, FREQ, verificaSettore, decodifica, wav, sessioni } from './adpcm.js';
-import { soloParlato, tempoVero } from './vad.js';
+import { SETT_BYTE, FREQ, verificaSettore, decodifica, wav, sessioni, BUCO_MAX } from './adpcm.js';
+import { soloParlato, tempoVero, allucinazione } from './vad.js';
 import { trovaComandi, leggiStanze, chiamaHA, provaHA, statoHA } from './comandi.js';
 import { assegna, turni, etichetta, media, aggiungiCampioni } from './voci.js';
 
 const U = x => `a7d1000${x}-6e70-4b8f-9c4a-5f3e2b1d0c01`;
 const $ = id => document.getElementById(id);
+// versione dell'app: cambiarla insieme a VERSIONE in trascrittore.js e sw.js, così sulla pagina si vede se è arrivata
+const VERSIONE = '0.10.0';
+$('vApp').textContent = 'v' + VERSIONE;
 const enc = new TextEncoder(), dec = new TextDecoder();
 
 // ---------- registro ----------
@@ -154,7 +157,7 @@ function suStato(v) {
   $('kBatt').textContent = stato.mv ? `${(stato.mv / 1000).toFixed(2)} V` : '—';
   $('kFw').textContent = `${stato.fw} · ${durata(stato.acceso)}`;
   const c = [];
-  if (f & 1) c.push('<span class="chip e">registra</span>');
+  if (f & 1) c.push(f & 128 ? '<span class="chip" title="microfono acceso: registra appena sente un suono">in ascolto</span>' : '<span class="chip e">registra</span>');
   if (f & 2) c.push('<span class="chip e">memoria piena</span>');
   if (f & 4) c.push('<span class="chip w">da sincronizzare</span>');
   if (f & 8) c.push('<span class="chip">USB</span>');
@@ -195,7 +198,7 @@ function fineScarico() {
   if (settoriOk) log(`scarico finito: ${settoriOk} settori, ${(byteScaricati / 1024).toFixed(0)} KB in ${s.toFixed(1)} s`);
   aggiornaPulsanti();
   cmdAttesi.clear();
-  aggiornaLista().then(async () => { await trascriviComando(); trascriviNuove(); });
+  aggiornaLista().then(() => trascriviComando());     // in automatico solo i comandi; il resto col pulsante
 }
 // il pezzo del comando va in testa alla coda delle trascrizioni
 async function trascriviComando() {
@@ -206,37 +209,21 @@ async function trascriviComando() {
   presenti.forEach(q => { comandoSeq.add(q); inCodaSeq.add(q); });
   log(`comando arrivato (${presenti.length} settori): lo trascrivo subito`);
   await aggiornaLista();
-  // secondo trascrittore, solo per i comandi: whisper-base su CPU, in parallelo a quello lungo (che resta sulla GPU)
+  // 23/11: stesso trascrittore (e stesso modello) delle trascrizioni lunghe. Prima era un secondo whisper-base
+  // compresso su CPU: più veloce, ma su frasi brevi sbagliava quasi tutto (un «accendi la luce» chiarissimo
+  // diventava parole senza senso). L'app manda al trascrittore un pezzo alla volta, quindi il comando aspetta al massimo il pezzo in corso.
   try {
     const primo = await dbPrendi(presenti[0]);
     const pcm = await pcmDi(presenti);
     const audio = Float32Array.from(pcm, x => x / 32768);
     const t0 = performance.now();
-    const r = await chiediComando({ tipo: 'trascrivi', audio, lingua: $('sLingua').value, voci: false }, [audio.buffer]);
+    const r = await chiedi({ tipo: 'trascrivi', audio, lingua: $('sLingua').value, voci: false }, [audio.buffer]);
     const base = { da: presenti[0], a: presenti[presenti.length - 1], ms: primo.ms, avvio: primo.avvio, durata: pcm.length / FREQ, data: Date.now(), lingua: $('sLingua').value };
     await dbMettiTr({ ...base, testo: r.testo, segmenti: [], parole: r.parole, finestre: [], voci: true, comando: true, modello: r.modello, motore: r.motore, secondi: r.secondi });
     log(`comando trascritto in ${((performance.now() - t0) / 1000).toFixed(1)} s: «${r.testo}»`);
     await eseguiComandi(base, r.parole, [], true);
   } catch (e) { log('X comando: ' + e.message); }
   finally { presenti.forEach(q => inCodaSeq.delete(q)); aggiornaTesti(); }
-}
-let workerCmd = null; const atteseCmd = new Map();
-function chiediComando(msg, trasferibili = []) {
-  if (!workerCmd) {
-    workerCmd = new Worker('trascrittore.js', { type: 'module' });
-    workerCmd.onmessage = e => {
-      const m = e.data, p = atteseCmd.get(m.id);
-      if (m.tipo === 'pronto') log(`comandi: pronto ${m.modello} (${m.motore})`);
-      if (!p || !['risultato', 'fatto', 'errore'].includes(m.tipo)) return;
-      atteseCmd.delete(m.id);
-      m.tipo === 'errore' ? p.ko(new Error(m.testo)) : p.ok(m);
-    };
-  }
-  return new Promise((ok, ko) => {
-    const id = ++nId;
-    atteseCmd.set(id, { ok, ko });
-    workerCmd.postMessage({ ...msg, id, modello: 'base', motore: 'wasm' }, trasferibili);
-  });
 }
 const comandoSeq = new Set();
 
@@ -287,12 +274,12 @@ async function aggiornaLista() {
   const g = gruppi = sessioni(meta).reverse();
   urlAudio.forEach(u => URL.revokeObjectURL(u)); urlAudio = [];
   $('vuota').style.display = g.length ? 'none' : 'block';
+  // una riga per registrazione (inizio, durata, pulsanti) e sotto, a tutta larghezza, il lettore e il testo
   $('lista').innerHTML = g.map((s, i) => `<tr>
     <td>${s.inizio ? new Date(s.inizio).toLocaleString('it-IT') : `avvio ${s.avvio}, +${durata(s.msInizio / 1000)}`}</td>
-    <td class="n">${durata(s.campioni / FREQ)}</td><td>${s.seqs.length}</td>
-    <td><button data-a="ascolta" data-i="${i}">Ascolta</button> <span id="pl${i}"></span></td>
-    <td><button data-a="wav" data-i="${i}">WAV</button> <button data-a="del" data-i="${i}">Elimina</button></td></tr>
-    <tr class="tr"><td colspan="5" id="tx${i}"></td></tr>`).join('');
+    <td class="n" title="${s.seqs.length} settori${s.durataVera > s.campioni / FREQ + 1 ? `, ${durata(s.durataVera)} dall'inizio alla fine (i silenzi non sono registrati)` : ''}">${durata(s.campioni / FREQ)}</td>
+    <td class="pul"><button data-a="ascolta" data-i="${i}">Ascolta</button> <button data-a="wav" data-i="${i}">WAV</button> <button data-a="del" data-i="${i}">Elimina</button></td></tr>
+    <tr class="tr"><td colspan="3"><div id="pl${i}"></div><div id="tx${i}"></div></td></tr>`).join('');
   $('lista').onclick = async e => {
     const b = e.target.closest('button'); if (!b) return;
     const i = +b.dataset.i, s = g[i];
@@ -312,13 +299,19 @@ async function aggiornaLista() {
   };
   await aggiornaTesti();
 }
+// PCM di una serie di settori. Dal firmware 0.2 il dispositivo non scrive i silenzi: tra due settori della
+// stessa registrazione può mancare del tempo. Lo si rimette come silenzio (al massimo BUCO_MAX s, come in
+// sessioni()), così ascolto, ore delle frasi e trascrizione restano allineati col tempo vero.
 async function pcmDi(seqs) {
   const parti = [];
-  let n = 0;
+  let n = 0, fine = null;
   for (const q of seqs) {
     const r = await dbPrendi(q);
+    const buco = fine == null ? 0 : (r.ms - fine) / 1000;
+    if (buco > 0.3 && buco <= BUCO_MAX) { const z = new Int16Array(Math.round(buco * FREQ)); parti.push(z); n += z.length; }
     const pcm = decodifica(new Uint8Array(r.dati), r.campioni, r.pred, r.indice);
     parti.push(pcm); n += pcm.length;
+    fine = r.ms + r.campioni * 1000 / FREQ;
   }
   const tutto = new Int16Array(n);
   let o = 0; for (const p of parti) { tutto.set(p, o); o += p.length; }
@@ -329,15 +322,12 @@ async function pcmDi(seqs) {
 // Ogni sincronizzazione porta settori nuovi: si trascrivono a pezzi (al massimo PEZZO_MAX settori, ~5 min)
 // i settori di ogni registrazione non ancora coperti da un pezzo. Tutto resta sul dispositivo.
 const PEZZO_MAX = 120;                 // ~1 min: pezzi corti, così niente resta in coda a lungo
+const PEZZO_MAX_MS = 5 * 60000;        // e al massimo 5 min di tempo vero (con i silenzi rimessi)
 const telefono = /Android|Mobi/i.test(navigator.userAgent);
 // sul PC con WebGPU fp16 il modello automatico è large-v3-turbo: molto meglio in italiano con voci lontane
 let gpuF16 = false;
 if (navigator.gpu) navigator.gpu.requestAdapter().then(a => { gpuF16 = !!(a && a.features.has('shader-f16')); }).catch(() => {});
 const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-// frasi che Whisper "inventa" sul silenzio o sul rumore (soprattutto in italiano)
-const ALLUCINAZIONI = [/sottotitoli (creati|a cura|e revisione)/i, /amara\.org/i, /grazie (a tutti )?per (la visione|l'ascolto|aver guardato)/i,
-  /^(\W*|grazie\.?|\.\.\.|musica)$/i, /iscriviti al canale/i];
-const allucinazione = t => ALLUCINAZIONI.some(r => r.test(t.trim()));
 
 let worker = null, nId = 0, trInCorso = null;
 const attese = new Map(), inCodaSeq = new Set();
@@ -350,7 +340,9 @@ function trWorker() {
     const m = e.data;
     if (m.tipo === 'download') $('kTr').textContent = `modello ${(m.caricati / 1e6).toFixed(0)}/${(m.totali / 1e6).toFixed(0)} MB`;
     else if (m.tipo === 'stato') { log(m.testo); $('kTr').textContent = m.testo; }
-    else if (m.tipo === 'pronto') { log(`pronto ${m.modello} (${m.motore})`); $('kMotore').textContent = `${m.modello} · ${m.motore}`; $('kTr').textContent = 'pronta'; }
+    else if (m.tipo === 'pronto') {
+      $('vApp').textContent = `v${VERSIONE} · trascrittore v${m.versione || '?'}`;
+      log(`pronto ${m.modello} (${m.motore}), trascrittore v${m.versione || '?'}`); $('kMotore').textContent = `${m.modello} · ${m.motore}`; $('kTr').textContent = 'pronta'; }
     else {
       const p = attese.get(m.id); attese.delete(m.id);
       if (p) m.tipo === 'errore' ? p.ko(new Error(m.testo)) : p.ok(m);
@@ -365,7 +357,7 @@ function trWorker() {
 }
 function modelloScelto() {
   const v = $('sModello').value;
-  return v === 'auto' ? (telefono ? 'base' : 'small') : v;   // small: ~3× più veloce di turbo, turbo si sceglie a mano
+  return v === 'auto' ? (telefono ? 'base' : gpuF16 ? 'turbo' : 'small') : v;   // turbo: il più preciso in italiano
 }
 function chiedi(msg, trasferibili = []) {
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();   // il modello non va buttato via
@@ -376,19 +368,21 @@ function chiedi(msg, trasferibili = []) {
   });
 }
 
-async function trascriviNuove(forza = false) {
-  if (!forza && !$('cTrascrivi').checked) return;
+// registrazioni non ancora trascritte: partono solo col pulsante «Trascrivi le nuove» (scelta del 23/11)
+async function trascriviNuove() {
   pezzi = await dbTrascrizioni();
   const coperti = new Set();
   for (const p of pezzi) for (let q = p.da; q <= p.a; q++) coperti.add(q);
   for (const s of [...gruppi].reverse()) {             // dalla più vecchia
     let run = [];
     const chiudi = () => { if (run.length) accoda(run); run = []; };
-    for (const q of s.seqs) {
-      if (coperti.has(q) || inCodaSeq.has(q)) { chiudi(); continue; }
+    let t0 = 0;
+    s.seqs.forEach((q, k) => {
+      if (coperti.has(q) || inCodaSeq.has(q)) { chiudi(); return; }
+      if (!run.length) t0 = s.ms[k];
       run.push(q);
-      if (run.length >= PEZZO_MAX) chiudi();
-    }
+      if (run.length >= PEZZO_MAX || s.ms[k] - t0 > PEZZO_MAX_MS) chiudi();   // anche per durata vera, silenzi compresi
+    });
     chiudi();
   }
 }
@@ -396,7 +390,9 @@ async function ritrascrivi(s) {
   if (s.seqs.some(q => inCodaSeq.has(q))) return;
   await dbCancellaTr(pezziDi(s).map(p => p.da));
   pezzi = await dbTrascrizioni();
-  for (let i = 0; i < s.seqs.length; i += PEZZO_MAX) accoda(s.seqs.slice(i, i + PEZZO_MAX));
+  let da = 0;
+  for (let k = 1; k <= s.seqs.length; k++)
+    if (k === s.seqs.length || k - da >= PEZZO_MAX || s.ms[k] - s.ms[da] > PEZZO_MAX_MS) { accoda(s.seqs.slice(da, k)); da = k; }
 }
 function accoda(seqs) {
   seqs.forEach(q => inCodaSeq.add(q));
@@ -424,7 +420,7 @@ async function trascriviPezzo(seqs) {
   // solo i tratti con voce a Whisper (molto più veloce), poi i tempi tornano quelli veri
   const v = soloParlato(audio);
   trInCorso = { t0: Date.now(), durata: v.audio.length / FREQ };
-  const r = await chiedi({ tipo: 'trascrivi', audio: v.audio, lingua }, [v.audio.buffer]);
+  const r = await chiedi({ tipo: 'trascrivi', audio: v.audio, mappa: v.mappa, lingua }, [v.audio.buffer]);
   const vero = t => +tempoVero(t, v.mappa).toFixed(2);
   r.parole = (r.parole || []).map(w => ({ ...w, t0: vero(w.t0), t1: vero(w.t1) }));
   if (r.finestre) r.finestre = r.finestre.map(f => ({ ...f, t0: vero(f.t0), t1: vero(f.t0) + (f.t1 - f.t0) }));
@@ -641,16 +637,46 @@ $('bWipe').onclick = () => confirm('Cancellare tutta la memoria del dispositivo?
 $('cAuto').checked = localStorage.getItem('np-auto') !== '0';
 $('cAuto').onchange = e => localStorage.setItem('np-auto', e.target.checked ? '1' : '0');
 // impostazioni della trascrizione, ricordate nel browser
-for (const [id, k, pred] of [['cTrascrivi', 'np-tr', '1'], ['sModello', 'np-modello', 'auto'], ['sLingua', 'np-lingua', 'italian'], ['sMotore', 'np-motore', 'auto']]) {
+for (const [id, k, pred] of [['sModello', 'np-modello', 'auto'], ['sLingua', 'np-lingua', 'italian'], ['sMotore', 'np-motore', 'auto']]) {
   const el = $(id), v = localStorage.getItem(k) ?? pred;
   if (el.type === 'checkbox') el.checked = v === '1'; else el.value = v;
   el.onchange = () => localStorage.setItem(k, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value);
 }
-$('cTrascrivi').addEventListener('change', e => e.target.checked && trascriviNuove());
+$('bTrascriviNuove').onclick = () => trascriviNuove();
 $('bModello').onclick = async () => {
   $('bModello').disabled = true;
   try { await chiedi({ tipo: 'carica' }); } catch (e) { log('X modello: ' + e.message); $('kTr').textContent = 'errore'; }
   $('bModello').disabled = false;
+};
+// Copia dei modelli già scaricati (cache del browser) in una cartella, senza riscaricarli: scegliere la
+// cartella app/modelli del progetto. Da lì il trascrittore li carica anche senza rete o con la cache svuotata.
+$('bSalvaModelli').onclick = async () => {
+  if (!window.showDirectoryPicker) { avviso('Questo browser non sa scrivere in una cartella: usa Edge o Chrome sul PC.'); return; }
+  let dir;
+  try { dir = await window.showDirectoryPicker({ id: 'modelli', mode: 'readwrite' }); } catch { return; }   // annullato
+  $('bSalvaModelli').disabled = true;
+  let n = 0, byte = 0;
+  try {
+    for (const nome of (await caches.keys()).filter(k => k.includes('transformers'))) {
+      const c = await caches.open(nome);
+      for (const req of await c.keys()) {
+        const m = new URL(req.url).pathname.match(/^\/([^/]+\/[^/]+)\/resolve\/[^/]+\/(.+)$/);   // org/modello/resolve/main/file
+        if (!m) continue;
+        const parti = [...m[1].split('/'), ...decodeURIComponent(m[2]).split('/')];
+        let d = dir;
+        for (const p of parti.slice(0, -1)) d = await d.getDirectoryHandle(p, { create: true });
+        const r = await c.match(req);
+        $('kTr').textContent = `salvo ${parti.slice(1).join('/')}…`;
+        const w = await (await d.getFileHandle(parti[parti.length - 1], { create: true })).createWritable();
+        await r.body.pipeTo(w);                          // a flusso: anche i file da 1 GB non passano dalla RAM
+        n++; byte += +(r.headers.get('content-length') || 0);
+      }
+    }
+    log(`modelli salvati nella cartella «${dir.name}»: ${n} file, ${(byte / 1e6).toFixed(0)} MB`);
+    $('kTr').textContent = n ? 'modelli salvati' : 'nessun modello in cache';
+    if (dir.name !== 'modelli') avviso(`Salvati in «${dir.name}»: perché l'app li trovi, la cartella deve essere app/modelli del progetto.`);
+  } catch (e) { log('X salvataggio modelli: ' + e.message); $('kTr').textContent = 'errore'; }
+  $('bSalvaModelli').disabled = false;
 };
 $('kMotore').textContent = `${navigator.gpu ? 'WebGPU' : 'WASM'}${navigator.gpu ? '' : crossOriginIsolated ? ' multithread' : ' 1 thread'} · ${modelloScelto()}`;
 
@@ -685,7 +711,7 @@ async function pulsantiHA() {
 for (const id of ['hUrl', 'hToken', 'hStanze']) $(id).addEventListener('change', pulsantiHA);
 pulsantiHA();
 // con i comandi attivi il trascrittore dei comandi si prepara subito (il primo comando non aspetta il download)
-const preparaComandi = () => $('cComandi').checked && chiediComando({ tipo: 'carica' }).catch(e => log('X comandi: ' + e.message));
+const preparaComandi = () => $('cComandi').checked && chiedi({ tipo: 'carica' }).catch(e => log('X comandi: ' + e.message));
 $('cComandi').addEventListener('change', preparaComandi);
 preparaComandi();
 $('bHa').onclick = async () => {
@@ -697,6 +723,6 @@ if ($('rSep')) { try { $('rSep').value = localStorage.getItem('np-sep') ?? 0; } 
   $('rSep').oninput = () => { try { localStorage.setItem('np-sep', $('rSep').value); } catch {} aggiornaTesti(); }; }
 if ($('bVoceVia')) $('bVoceVia').onclick = () => confirm('Cancellare il profilo della tua voce da questo dispositivo?') && salvaProfilo(null);
 salvaProfilo(profilo);
-aggiornaLista().then(() => { trascriviNuove(); vociMancanti(); });
+aggiornaLista().then(() => vociMancanti());
 aggiornaPulsanti();
 ricollegaNoto();

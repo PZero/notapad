@@ -4,7 +4,7 @@
 //    Whisper; né il server di Python né GitHub Pages permettono di impostare queste intestazioni;
 // 3. tiene in cache la libreria transformers.js e i file di ONNX Runtime (cdn.jsdelivr.net, versione fissa).
 // I modelli Whisper (Hugging Face) non passano di qui: transformers.js li tiene nella sua cache.
-const VERSIONE = 'np-0.8.1', LIB = 'np-lib-4.3.2';
+const VERSIONE = 'np-0.10.0', LIB = 'np-lib-4.3.2';
 const FILE = ['./', 'index.html', 'app.js', 'adpcm.js', 'trascrittore.js', 'voci.js', 'comandi.js', 'vad.js', 'manifest.webmanifest', 'icone/icona-192.png', 'icone/icona-512.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSIONE).then(c => c.addAll(FILE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(

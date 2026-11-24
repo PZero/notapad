@@ -109,19 +109,24 @@ export function wav(pcm, freq = FREQ) {
   return new Blob([b], { type: 'audio/wav' });
 }
 
-// Raggruppa i settori (ordinati per seq) in registrazioni continue
+// Raggruppa i settori (ordinati per seq) in registrazioni. Dal firmware 0.2 i silenzi non si registrano:
+// un buco fino a BUCO_MAX secondi tra due settori consecutivi resta nella stessa registrazione.
+export const BUCO_MAX = 60;
 export function sessioni(settori) {
   const ord = [...settori].sort((a, b) => a.seq - b.seq);
   const out = [];
   let cur = null;
   for (const s of ord) {
     const fineAtt = cur ? cur.ultimo.ms + Math.round(cur.ultimo.campioni * 1000 / FREQ) : 0;
-    const continuo = cur && s.avvio === cur.avvio && s.seq === cur.ultimo.seq + 1 && Math.abs(s.ms - fineAtt) < 1500;
+    const buco = cur ? s.ms - fineAtt : 0;
+    const continuo = cur && s.avvio === cur.avvio && s.seq === cur.ultimo.seq + 1 && buco > -1500 && buco < BUCO_MAX * 1000;
     if (!continuo) {
-      cur = { seqs: [], campioni: 0, inizio: s.epocaMs || null, avvio: s.avvio, msInizio: s.ms, ultimo: s };
+      cur = { seqs: [], ms: [], campioni: 0, inizio: s.epocaMs || null, avvio: s.avvio, msInizio: s.ms, ultimo: s };
       out.push(cur);
     }
     cur.seqs.push(s.seq);
+    cur.ms.push(s.ms);
+    cur.durataVera = (s.ms + s.campioni * 1000 / FREQ - cur.msInizio) / 1000;
     cur.campioni += s.campioni;
     cur.ultimo = s;
   }

@@ -1,5 +1,16 @@
 # Changelog
 
+## 23/11/2026
+- app: test app `app/` v0.10.0: Whisper decoder at full precision (fp16/fp32 instead of q4); large-v3-turbo chosen automatically on PCs with WebGPU fp16; audio sent to Whisper in 10–25 s windows cut at pauses (`app/vad.js`), with filters for hallucinations and repetitions and a limited VAD threshold.
+- app: voice commands use the same transcriber as the recordings; the separate whisper-base CPU transcriber is removed.
+- app: transcription on request: only commands are transcribed automatically; the rest starts with the "Transcribe" and "Transcribe new" buttons.
+- app: models can be loaded from `app/modelli/` (git-ignored) or copied from the browser cache with a button; app version shown next to the title; recordings table fixed; silences not recorded by the firmware are restored (up to 60 s per gap).
+- app: new unit test `app/test/vad.test.mjs`; adpcm, voices and vad tests pass.
+- firmware: XIAO test firmware 0.2.0 (`firmware/xiao-prova/`) writes to memory only when it hears sound (adaptive threshold, 0.5 s pre-roll, 3 s tail); new `VAD 0|1|<n>` command; status flag bit 7 "listening" in `protocollo.h`. Compiled and flashed; not yet tested with real sounds.
+- docs: `docs/STATO.md` rewritten, eight new rows in `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md` updated; README and project page updated by the comunicazione agent.
+- repo: `.claude/launch.json` added (local dev server for the app preview); `app/modelli/` added to `.gitignore`.
+- electronics: no changes to board, BOM, pinout or JLC export files.
+
 ## 22/11/2026 (test bench page)
 - docs: project page gets a "test bench" section (`#bench`) with an animated four-step scene: the test board records, syncs over Bluetooth to the local web app, the app runs voice detection, Whisper with a timestamp per word, speaker separation and a voice command, and the next step moves the same blocks into the open MCP server. It replaces six test-bench cards in the progress section; the 15 "Done" cards are now a single compact card.
 - docs: README updated (update of 22 Nov, status and roadmap, project history); home-automation references removed from the README and the project page.

@@ -43,5 +43,14 @@ Compilazione del 22/11/2026: sketch 137 808 byte (16 %), RAM globale 31 300 byte
 ## Doppio tocco (22/11/2026)
 Doppio tocco sul dispositivo = avvia/ferma la registrazione (IMU LSM6DS3TR-C, rilevamento hardware, interruzione su INT1). Conferma: 3 lampi verdi (avvia) o rossi (ferma); nel registro dell'app compare `K tap rec 1/0`, oppure `X IMU ...` se l'IMU non risponde. Compilato e caricato, non ancora provato a mano.
 
+## Registra solo quando c'è suono (0.2.0, 23/11/2026)
+- Il microfono resta acceso, ma nel silenzio non si scrive niente in memoria. Ogni 20 ms il firmware misura il livello, cioè la media del valore assoluto dei campioni. È suono se supera sia 3 volte il rumore di fondo (che si adatta da solo) sia un minimo fisso (120), per almeno 40 ms di fila.
+- **Pre-ascolto:** l'ultimo mezzo secondo resta sempre in RAM. Al primo suono il settore nuovo parte da 0,5 s prima, così l'inizio della prima parola c'è.
+- Dopo 3 s senza suono il settore si chiude e si torna ad ascoltare. Durante la finestra di un comando (tocco singolo) si scrive sempre.
+- Nello stato il bit 7 vale «in ascolto»: nell'app compare il chip «in ascolto» al posto di «registra».
+- Comandi: `VAD 0` registra sempre (come la 0.1), `VAD 1` solo col suono (predefinito), `VAD <n>` cambia il minimo (2–5000). `INFO` aggiunge una riga con il livello attuale, il fondo e la percentuale di audio scritta.
+- L'app rimette i silenzi, al massimo 60 s per buco, quando ricompone una registrazione. Così ascolto, ore e trascrizione restano allineati col tempo vero, e una pausa resta dentro la stessa registrazione.
+- Compilato (142 204 byte, RAM globale 47 772 byte) e caricato il 23/11. Da provare a mano: la soglia 120 è una stima e va tarata con `INFO`.
+
 ## Tocco singolo = comando (22/11/2026)
 Tocco singolo (se entro 600 ms non arriva il secondo): 5 lampi gialli, taglio dell'audio, i 6 s seguenti diventano un pezzo a sé, poi secondo taglio e la registrazione continua (se era ferma, si ferma di nuovo). Appena i settori sono in flash il firmware manda `K cmd <primo seq> <ultimo seq>` e, se collegato, scarica **solo** quei settori; l'app li trascrive per primi ed esegue il comando senza bisogno della parola «Comando». Compilato e caricato, non provato a mano.
