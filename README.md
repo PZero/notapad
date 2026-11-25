@@ -7,12 +7,15 @@
 [![Status: v0.1 design](https://img.shields.io/badge/status-v0.1%20in%20design-orange)](#status-and-roadmap)
 [![Hardware: nRF52840](https://img.shields.io/badge/MCU-nRF52840-blue)](#electronics-v01)
 [![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-blue)](LICENSE-HARDWARE) [![Software: MIT](https://img.shields.io/badge/software-MIT-green)](LICENSE)
-[![Sponsors wanted](https://img.shields.io/badge/sponsors-wanted-d4a017)](https://github.com/PZero/notapad/issues/1)
+[![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-support%20the%20build-d4a017)](https://ko-fi.com/notapad)
+[![Instagram](https://img.shields.io/badge/Instagram-@notapadlabs-E4405F)](https://www.instagram.com/notapadlabs/) [![YouTube](https://img.shields.io/badge/YouTube-@notapadlabs-FF0000)](https://www.youtube.com/@notapadlabs) [![TikTok](https://img.shields.io/badge/TikTok-@notapadlabs-000000)](https://www.tiktok.com/@notapadlabs)
 [![Live presentation](https://img.shields.io/badge/presentation-GitHub%20Pages-2ea44f)](https://pzero.github.io/notapad/)
 
 [![The notªpad monolith](render/monolite_hero.png)](https://pzero.github.io/notapad/)
 
 ### [▶ Live animated presentation](https://pzero.github.io/notapad/)
+
+**Follow the build:** [Instagram](https://www.instagram.com/notapadlabs/) · [YouTube](https://www.youtube.com/@notapadlabs) · [TikTok](https://www.tiktok.com/@notapadlabs) · **Support it:** [Ko-fi](https://ko-fi.com/notapad)
 
 </div>
 
@@ -28,7 +31,7 @@
 - [Wallpapers](#wallpapers)
 - [Manufacturing](#manufacturing)
 - [Status and roadmap](#status-and-roadmap)
-- [Looking for sponsors](#looking-for-sponsors)
+- [Support the project](#support-the-project)
 - [Project history](#project-history)
 - [Repository layout](#repository-layout)
 - [Contributing](#contributing)
@@ -111,7 +114,9 @@ flowchart LR
 
 ### Update, 25 Nov 2026
 - **Software architecture defined** (server, MCP server, preset agent template, desktop and mobile app): see [How it works (planned)](#how-it-works-planned). A plan, not built.
-- **Front microphone:** MK1 changes from the MSM261DGT003 to the MSM261DGT006, the updated version indicated by its manufacturer. Footprint and pinout to be confirmed before the production files are frozen.
+- **Front microphone:** MK1 changes from the MSM261DGT003 to the MSM261DGT006, the updated version indicated by its manufacturer, who confirmed the same footprint, pinout and sound hole (the board does not change) and recommends a 0.8 to 1.0 mm hole in the resin plus a gasket. The bill of materials and KiCad files are not updated to the DGT006 yet.
+- **Project identity:** public contact notapad.team@gmail.com, the name @notapadlabs on Instagram, YouTube and TikTok, NªP monogram as logo. First carousel ("Meet notªpad") scheduled for 25 Nov and a 21 s video for 1 Dec; plan: one video and one carousel a week. Nordic Semiconductor registered the project with its technical support.
+- **One fundraising goal:** 3 to 5 prototypes (about €300), individuals and companies adding up; see [Support the project](#support-the-project).
 - **Board still unfrozen.** The v0.1 board of 24 Nov stays unfrozen. The VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.
 - **Support:** donations are open on [Ko-fi](https://ko-fi.com/notapad) and through the repository's Sponsor button; GitHub Sponsors is awaiting approval.
 - **Sponsor search ongoing; nothing agreed,** and no production exclusivity for now.
@@ -200,7 +205,8 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
-- Software architecture defined (25 Nov): app (desktop and mobile), notªpad server with MCP server, the user's own AI with a preset agent template, interactive artifact; a plan, not built. Front microphone moved to the MSM261DGT006 (footprint and pinout to be confirmed).
+- Software architecture defined (25 Nov): app (desktop and mobile), notªpad server with MCP server, the user's own AI with a preset agent template, interactive artifact; a plan, not built. Front microphone moved to the MSM261DGT006 (its manufacturer confirmed the same footprint, pinout and hole; BOM and KiCad files not updated yet).
+- Project identity and social channels (25 Nov): public contact, @notapadlabs on Instagram, YouTube and TikTok, logo; first posts scheduled; single fundraising goal of 3 to 5 prototypes.
 - Board v0.1 regenerated (24 Nov) with wake-on-sound microphone, accelerometer and buzzer, prepared in hardware for item-finding networks (no compatibility claimed); ERC 0, DRC 0, 130 vias; verification suite rerun (71 tests); not frozen. Sponsor search ongoing, nothing agreed; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
 - Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
@@ -220,14 +226,15 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Testing the bench with real speech: new transcription quality, the sound threshold of firmware 0.2.0, time per hour of audio, automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Board review before freezing the production files (a few weeks): buzzer volume and outlet, acoustic channel and sourcing of the VM3011, item-finding networks (Google Find Hub target, Apple to be evaluated; nothing registered or certified).
-- Sponsor search ongoing; nothing is agreed.; the bill of materials may be adapted to the sponsor's stock.
+- Sponsor search ongoing; nothing is agreed; the bill of materials may be adapted to the sponsor's stock.
+- Social posts: the first carousel and a 21 s video are scheduled (25 Nov and 1 Dec); posts 3 to 6 are being prepared.
 - Demo video of the test bench: it will follow later, no date promised.
 - Parts outside the assembly service: shopping list in `acquisti/` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
 0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
 1. Read the buzzer datasheet and place its outlet; check where the VM3011 can be bought (or evaluate an alternative wake-on-sound microphone); freeze Gerber, bill of materials and placement; then order once the manufacturer is decided.
-2. Confirm the footprint and pinout of the MSM261DGT006; build the notªpad server with its MCP tools and the agent template; then the app for desktop and mobile (Android first as a PWA).
+2. Update the BOM and KiCad files to the MSM261DGT006 (same footprint, confirmed) and size the resin hole; publish social posts 3 to 6; build the notªpad server with its MCP tools and the agent template; then the app for desktop and mobile (Android first as a PWA).
 3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (acoustic channel for the top microphone, buzzer outlet, sealed microphone ports, ring bushing).
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 5. Build the charging base.
@@ -240,20 +247,18 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 Working notes (in Italian): [`docs/STATO.md`](docs/STATO.md), [`docs/DECISIONI.md`](docs/DECISIONI.md), [`docs/DOMANDE-APERTE.md`](docs/DOMANDE-APERTE.md).
 
-## Looking for sponsors
-We are looking for a sponsor to build the **first 2 to 5 working units**: fabrication and assembly of the boards (top side only), components (nRF52840 modules, SPI NAND, PDM microphones) and the SLA resin shells. This is the step needed before the software phase (firmware, Android app and the open MCP server).
+## Support the project
+**One goal: the first 3 to 5 working prototypes** (about €300: 4-layer boards assembled by a PCBA service, hand-soldered parts such as the wake-on-sound microphone, the LiPo cell and the buzzer, and the SLA resin shells). It is the step needed before the software phase (firmware, app and the open MCP server). Every euro is reported in this repository.
 
-**What sponsors get:** logo and "Sponsored by" credit on this README and on the presentation page, a public build diary with photos, and credit in every post and video.
+There are two ways to reach it, and they add up:
+- **Individuals:** a coffee or more on [Ko-fi](https://ko-fi.com/notapad), or the repository's Sponsor button (GitHub Sponsors is awaiting approval).
+- **Companies** (PCB makers, component vendors): sponsoring boards, assembly or parts. Sponsors get logo and "Sponsored by" credit on this README and on the presentation page, a public build diary with photos, and credit in our posts and videos. Status: search ongoing, nothing agreed. Contact: [issue #1](https://github.com/PZero/notapad/issues/1) or notapad.team@gmail.com.
 
-**Status:** sponsor search ongoing; nothing is agreed.
-
-**Contact:** [issue #1, "Looking for sponsors: first 2–5 notªpad units"](https://github.com/PZero/notapad/issues/1).
-
-**Individual support:** anyone can help with the first prototype boards on [Ko-fi](https://ko-fi.com/notapad). GitHub Sponsors is awaiting approval.
+**Follow the build:** [Instagram @notapadlabs](https://www.instagram.com/notapadlabs/) · [YouTube @notapadlabs](https://www.youtube.com/@notapadlabs) · [TikTok @notapadlabs](https://www.tiktok.com/@notapadlabs). Every milestone (boards ordered, first power-on, first casting, first transcribed recording) goes there first.
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 25 Nov: software architecture defined (server, MCP server, agent template, desktop and mobile app; planned) with two new animated scenes on the page; front microphone changed to the MSM261DGT006; Ko-fi donations and the Sponsor button opened; sponsor search ongoing, nothing agreed; no hardware change (an alternative to the VM3011 microphone will be evaluated).
+1. 25 Nov: project identity (public contact, @notapadlabs on Instagram, YouTube and TikTok, logo) and first posts scheduled; support simplified to one goal (3 to 5 prototypes, about €300); front microphone changed to the MSM261DGT006, same footprint confirmed by its manufacturer; software architecture defined (planned) with two new animated scenes on the page; Ko-fi donations opened; sponsor search ongoing, nothing agreed.
 2. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsor search ongoing, nothing agreed.
 3. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
 4. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.

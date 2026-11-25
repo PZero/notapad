@@ -64,3 +64,12 @@
 - Template agentico del server MCP: flusso, schema dei dati, uso del «sampling» solo dove il client lo supporta.
 - Integrazioni: oggi il comando vocale chiama Home Assistant direttamente dall'app di prova; portarlo dietro il server MCP.
 - MSM261DGT006: impronta e piedinatura uguali al DGT003? Foro acustico consigliato per un guscio in resina.
+
+## Microfono MK1 (DGT006)
+- Codice LCSC del MSM261DGT006 per aggiornare BOM e `kicad/` (impronta e piedinatura confermate identiche al DGT003 da MEMSensing il 25/11).
+- Mandare a MEMSensing la sezione 3D del percorso acustico (offrono una revisione gratuita)? Foro 0,8–1,0 mm e guarnizione in gomma: come realizzarli nella colata.
+
+## Social
+- Gli account social li gestiamo in due? (accesso condiviso: Centro gestione account Meta, canale YouTube come account brand)
+- Pubblicazione Instagram automatica: oggi un'attività programmata via Chrome; più avanti Meta Business Suite (serve una pagina Facebook) o Buffer.
+

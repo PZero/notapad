@@ -1,5 +1,13 @@
 # Changelog
 
+## 25/11/2026 (project identity and social channels)
+- repo: project identity: public contact `notapad.team@gmail.com`; Ko-fi page moved to this address; social accounts with the same name `@notapadlabs` on Instagram, YouTube and TikTok; NªP monogram as logo.
+- repo: new `social/` folder: image generators (`genera_immagini.py`, `genera_monogramma.py`), logo, YouTube banner, monogram variants, social profile texts, editorial plan, and the first post drafts in `social/post/` (carousel "Meet notªpad" with slides and texts, reel ideas with script). Generated reel videos are git-ignored.
+- docs: README and project page get social and Ko-fi badges and links, a "Support the project" section with a single goal (3 to 5 prototypes, about €300, individuals and companies), and updated progress, history and roadmap.
+- electronics: the manufacturer confirms that the front microphone MSM261DGT006 has the same footprint and pinout as the MSM261DGT003; `kicad/` and the JLC BOM are not yet updated.
+- docs: `docs/STATO.md` rewritten, six new decisions in `docs/DECISIONI.md`, new open questions in `docs/DOMANDE-APERTE.md`.
+- repo: `.gitignore` excludes `social/post/**/*.mp4`.
+
 ## 25/11/2026
 - docs: software architecture defined (planned): notªpad server with an open MCP server as a bridge, temporary transcripts handed to the user's own AI, ready-made agentic template, artifact back in the desktop and mobile app; integrations through MCP (voice command to home automation already working in the test app). New animated scenes `#how` and `#integrations` on the project page; README "How it works (planned)".
 - electronics: front microphone MK1 to move from MSM261DGT003 to MSM261DGT006 (updated part); footprint and pinout to be confirmed.

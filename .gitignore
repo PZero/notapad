@@ -59,3 +59,6 @@ docs/finanziamenti/produttori_bozze.md
 docs/finanziamenti/piano.md
 video/
 docs/finanziamenti/
+
+# Video dei post social (pesanti, si rigenerano con gli script in social/post/)
+social/post/**/*.mp4

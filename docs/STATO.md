@@ -1,40 +1,43 @@
 # Stato del progetto
 
-**Ultimo aggiornamento:** 25/11/2026 (sera), Fase 1: scheda v0.1 progettata (ERC 0, DRC 0, parità 0, 130 via) ma **non congelata**. Ricerca di sponsor e finanziamenti in corso: dettagli solo nei file privati, esclusi da git. In parallelo il banco di prova XIAO nRF52840 Sense + app locale.
+**Ultimo aggiornamento:** 25/11/2026 (notte), Fase 1: scheda v0.1 progettata (ERC 0, DRC 0, parità 0, 130 via) ma **non congelata**. Ricerca sponsor in corso (dettagli solo nei file privati). Da oggi il progetto ha mail, social e un piano di pubblicazione propri.
 
 ## Fatto
 - Concept, render, pagina (`pagina/`), scheda 4 strati 1,0 mm 16,5 × 38 mm generata da script; export in `kicad/fab_out/` (24/11).
-- Scheda 24/11: MK2 = Vesper VM3011 (risveglio acustico), accelerometro LIS2DH12 (I2C), Q4 DMN2004DWK per motorino + cicalino, 5V sul VBUS del nRF. Dettagli in `docs/pinout_v0.1.md`.
-- Suite `verifica/` (71 test) rilanciata sulla scheda del 24/11.
-- Firmware di prova XIAO 0.2.0 (`firmware/xiao-prova/`) e app di prova 0.10.0 (`app/`): compilano, non ancora collaudati con parlato vero.
-- **25/11 – finanziamenti:**
-  - Ricerca sponsor in corso; nessun accordo.
-  - Donazioni: Ko-fi attivo (ko-fi.com/notapad) con il pulsante «Sponsor» del repository; GitHub Sponsors in attesa di approvazione.
-  - Le mail agli sponsor non sono più tracciate da git (`.gitignore`).
-- **25/11 – architettura software definita (piano, non costruita):** app desktop e mobile → server notªpad con server MCP → AI scelta dall'utente con template agentico → artefatto → app. Trascrizioni temporanee sul server, cancellate dopo il ritiro. Integrazioni via MCP (comando vocale → Home Assistant funziona già nell'app di prova). Pagina con le scene `#how` e `#integrations`, README «How it works (planned)».
-- **25/11 – microfono MK1:** da MSM261DGT003 a **DGT006** (versione aggiornata). Impronta e piedinatura da confermare; BOM e `kicad/` **non ancora aggiornati** (restano col DGT003).
-- Video demo: bozza con musica e segnaposto in `video/` (privato, fuori da git); le riprese arrivano dopo il 28/11.
-- Pubblicazione Pages: il workflow ora ha due passaggi (build e deploy) dopo un errore ricorrente.
+- Scheda 24/11: MK2 = Vesper VM3011, accelerometro LIS2DH12, Q4 DMN2004DWK per motorino + cicalino, 5V sul VBUS. Dettagli in `docs/pinout_v0.1.md`.
+- Firmware di prova XIAO 0.2.0 e app di prova 0.10.0: compilano, non collaudati con parlato vero.
+- 25/11: architettura software definita (piano); MK1 passa a MSM261DGT006. **MEMSensing conferma: stessa impronta, piedinatura e foro (0,65 mm) del DGT003**; foro nella resina consigliato 0,8–1,0 mm, guarnizione in gomma contro le perdite; offrono una revisione acustica gratuita su una sezione 3D.
+- **25/11 – identità e social del progetto:**
+  - Mail del progetto `notapad.team@gmail.com`; Ko-fi spostato su questa mail.
+  - Instagram, YouTube e TikTok **@notapadlabs** (nome uguale ovunque; TikTok mostra «notApad» fino al 2/12). Logo: monogramma NªP (Georgia), banner YouTube.
+  - Piano editoriale in `social/piano_editoriale.md`: 1 Reel/Short + 1 carosello a settimana, 5 temi, primi 8 post. Post in `social/post/`.
+  - Post 1 (carosello «Meet notªpad»): TikTok programmato 25/11 18:30; Instagram via attività programmata alle 18:30.
+  - Post 2 (Reel 21 s): YouTube Short e TikTok programmati per l'1/12 18:30; Instagram via attività programmata.
+  - README e pagina: sezione unica «Support the project» (obiettivo 3–5 prototipi, ~300 €, individui + aziende) e link a tutti i social.
+- Controllo posta: ogni ora 8–20, diario con bozze da confermare (sessione «Diario della posta»); legge anche Ko-fi su notapad.team.
+- Nordic: progetto registrato, offerto un contatto diretto con il referente locale (modulo da compilare).
 
 ## In corso
-- Ricerca sponsor in corso (dettagli nei file privati).
-- **VM3011:** reperibilità incerta; valutare un'alternativa per MK2 prima di congelare la scheda.
-- Revisione della scheda: volume del cicalino 4×4, canalino acustico del VM3011 nei gusci.
-- Collaudo sul campo di firmware 0.2.0 e app 0.10.0.
+- Ricerca sponsor (dettagli nei file privati).
+- VM3011: reperibilità incerta, valutare un'alternativa per MK2.
+- Revisione della scheda: cicalino 4×4, canalino acustico del VM3011.
+- Verificare l'uscita dei post 1 e 2 (Instagram dipende da app Claude + Chrome profilo «notepad» aperti).
 
 ## Prossimi passi
-1. Video demo e foto del banco XIAO.
-2. Scelta del produttore; con il DGT006 confermare impronta/piedinatura e aggiornare BOM e scheda.
-3. Eventuale alternativa al VM3011; datasheet del cicalino.
-4. Riformulare README e pagina da «AI recorder» a «open voice recorder with an open data layer (MCP)».
-5. Congelare Gerber, BOM e posizionamento; ordinare i pezzi fuori dal PCBA.
-6. Dopo l'approvazione di GitHub Sponsors: aggiungere `github: PZero` in `.github/FUNDING.yml` e il link nel README.
+1. Rispondere a MEMSensing; compilare il modulo Nordic.
+2. Aggiornare BOM e `kicad/` al DGT006 (codice LCSC da trovare); foro frontale 0,8–1,0 mm nei gusci.
+3. Preparare i post 3–6 (materiale già pronto) e programmarli a coppie ogni due settimane.
+4. Video demo e foto del banco XIAO (riprese dopo il 28/11).
+5. Scelta del produttore; congelare Gerber, BOM e posizionamento.
+6. Ko-fi: attivare la 2FA; link in bio Instagram dall'app.
+7. Dopo l'approvazione di GitHub Sponsors: `github: PZero` in `.github/FUNDING.yml`.
 
 ## In pausa
-- Firmware per la scheda v0.1 (Zephyr, E73, NAND, LC3). App nativa. Pre-order E73 su JLC (E03). Registrazione Find Hub e Apple Find My (MFi).
+- Firmware per la scheda v0.1 (Zephyr, E73, NAND, LC3). App nativa. Pre-order E73 su JLC. Find Hub / Find My.
+- Post Community su YouTube (il canale nuovo non li ha ancora).
 
 ## Abbandonato
 - Montaggio in casa; variante con XIAO.
 
 ## Costi
-- Stime precedenti: ~97 € per 2 schede montate (scheda del 21/11); pezzi fuori PCBA ~40–60 €. Da ricalcolare con la BOM del 24/11. Banco di prova: 0 €.
+- ~97 € per 2 schede montate (stima 21/11), pezzi fuori PCBA ~40–60 €: da ricalcolare con la BOM del 24/11. Social e strumenti: 0 €.

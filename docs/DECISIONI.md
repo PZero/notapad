@@ -96,3 +96,9 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 25/11/2026 | Il server MCP offrirà un flusso agentico preimpostato e un template di artefatto curato | Risultato bello e veloce con qualunque AI capace, meno token |
 | 25/11/2026 | Artefatti HTML/JS generati dall'AI e mostrati nell'app: non esclusi; in futuro validazione o regole verificabili per limitarne i rischi | Le sole pagine con dati strutturati sarebbero un limite troppo forte |
 | 25/11/2026 | Microfono frontale MK1: passaggio da MSM261DGT003 a MSM261DGT006 (il produttore indica il DGT006 come versione aggiornata), da verificare impronta e piedinatura | Il DGT003 è superato |
+| 25/11/2026 | Mail del progetto notapad.team@gmail.com; Ko-fi e tutti i social legati a questa mail | Non dipendere dalla mail personale; account condivisibili tra i due autori |
+| 25/11/2026 | Social con lo stesso nome ovunque: @notapadlabs su Instagram, YouTube e TikTok (notapad era preso su Instagram) | Coerenza e riconoscibilità; «team» va bene per la mail ma non per un profilo |
+| 25/11/2026 | Logo social: monogramma NªP con grazie (Georgia) su fondo scuro | Scelto tra sei varianti; leggibile anche a 40 px |
+| 25/11/2026 | Ritmo social: 1 Reel/Short (martedì) + 1 carosello (venerdì) a settimana, preparati a gruppi ogni due settimane; testi in inglese | Ritmo sostenibile per due persone; pubblico e sponsor internazionali |
+| 25/11/2026 | Un solo obiettivo di raccolta: 3–5 prototipi (~300 €), con individui (Ko-fi) e aziende che si sommano | Il README parlava di sponsor per 2–5 unità mentre Ko-fi chiedeva lo stesso ai singoli: testo incoerente |
+| 25/11/2026 | Niente QR code nei post Instagram: link nella didascalia, in bio e nelle Storie | Sul telefono un QR non si può inquadrare |
