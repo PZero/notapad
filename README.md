@@ -222,6 +222,8 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 **Contact:** [issue #1, "Looking for sponsors: first 2–5 notªpad units"](https://github.com/PZero/notapad/issues/1).
 
+**Individual support:** anyone can help with the first prototype boards on [Ko-fi](https://ko-fi.com/notapad). GitHub Sponsors is awaiting approval.
+
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
 1. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsorship application under review, nothing agreed.
