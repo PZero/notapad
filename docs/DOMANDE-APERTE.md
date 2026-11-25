@@ -56,4 +56,11 @@
 - Se il produttore monta anche J1–J4: servono target di catalogo (es. Mill-Max 19xx, coda 0,76 mm) o spedire i nostri 2,0 × 4,0 mm; ricalcolare l'altezza dei contatti rispetto ai 4,4 mm dietro la scheda.
 
 ## Comunicazione
-- README e pagina dicono «AI recorder»: riformulare come registratore aperto con uno strato di dati aperto (MCP)?
+- Sottotitolo aggiornato il 25/11 («An open wearable voice recorder… through an open MCP server»); restano da verificare altri punti che dicono «AI recorder».
+
+## Architettura software (nuova, 25/11)
+- Artefatti HTML/JS generati dall'AI e mostrati nell'app: come validarli o limitarli con regole verificabili (rischi: prompt injection da parlato altrui, login e cookie, WebKit su iPhone)?
+- Server centrale: dove ospitarlo, costi, autenticazione (token personale in fase 1, OAuth 2.1 in fase 2), isolamento tra utenti; opzione self-hosted.
+- Template agentico del server MCP: flusso, schema dei dati, uso del «sampling» solo dove il client lo supporta.
+- Integrazioni: oggi il comando vocale chiama Home Assistant direttamente dall'app di prova; portarlo dietro il server MCP.
+- MSM261DGT006: impronta e piedinatura uguali al DGT003? Foro acustico consigliato per un guscio in resina.
