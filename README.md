@@ -2,7 +2,7 @@
 
 # notªpad
 
-**An open wearable voice recorder. Continuous recording, your AI, through an open MCP server. A resin monolith you wear around your neck.**
+**An open wearable voice recorder with an open data layer. It records all day and keeps your recordings on devices you own; open, documented interfaces (files, JSON and an MCP server) let you choose which tools use them. A resin monolith you wear around your neck.**
 
 [![Status: v0.1 design](https://img.shields.io/badge/status-v0.1%20in%20design-orange)](#status-and-roadmap)
 [![Hardware: nRF52840](https://img.shields.io/badge/MCU-nRF52840-blue)](#electronics-v01)
@@ -39,10 +39,10 @@
 - [Authors](#authors)
 
 ## Overview
-notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. Two things set it apart: **continuous recording all day** and an **open MCP server**. It records all day, syncs over Bluetooth LE with a phone, and hands the audio to an **open MCP server**: transcription, summaries and note organisation are done by the AI the user picks, not by a closed service.
+notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. Two things set it apart: **continuous recording all day** and an **open MCP server**. It records all day, syncs over Bluetooth LE with a phone, and hands the audio to an **open MCP server**. The device itself only records: what happens next (playback, search, transcription, notes) is up to the tools the user picks, not a closed service.
 
 Design goals:
-- **Own your data.** Audio and notes stay with the user; the AI is a replaceable component.
+- **Own your data.** Audio and notes stay with the user; every tool that reads them is replaceable.
 - **No screen, no app to open.** Interaction is a squeeze gesture, three LEDs and a vibration motor.
 - **Buildable by a small team.** Off-the-shelf parts (an Ebyte E73 nRF52840 module), a 4-layer board assembled by a PCBA service, a resin shell cast in a silicone mould.
 
@@ -71,7 +71,7 @@ flowchart LR
   NRF --> OUT[3 RGB LEDs + vibration]
   NRF <-->|BLE| APP[Phone app]
   APP --> MCP[Open MCP server]
-  MCP --> AI[AI of the user's choice<br/>transcription and notes]
+  MCP --> AI[Tools of the user's choice<br/>players, notes, transcription]
 ```
 The real app and the MCP server are not started yet; a test app for a development board exists (see the roadmap).
 
@@ -81,7 +81,7 @@ Next / planned, defined on 25 Nov 2026 and not built yet. It is a loop, and day 
 flowchart LR
   DEV[notªpad] -->|Bluetooth LE| APP[App<br/>desktop and mobile, same data]
   APP --> SRV[notªpad server<br/>backend + MCP server]
-  SRV --> AI[Your AI<br/>any AI, preset agent template]
+  SRV --> AI[Your tools<br/>for example an AI assistant]
   AI --> ART[Artifact<br/>interactive page]
   ART --> APP
 ```
