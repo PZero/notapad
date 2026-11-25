@@ -88,3 +88,6 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 24/11/2026 | Nessuna mail di aggiornamento a PCBWay finché non rispondono (eventuale sollecito verso il 2–3/12 con l'aggiornamento sulle modifiche della scheda) | Il programma non dichiara tempi di revisione; hanno risposto in un giorno il 23/11, quindi non serve incalzarli. Un solo messaggio, quando c'è un motivo |
 | 24/11/2026 | Suite `verifica/` aggiornata (71 test, nuovi B15 accelerometro e D16 standby/I2C/cicalino) e rilanciata sulla nuova scheda | Gli errori costosi vanno trovati sul file: ha scovato la rotazione CPL sbagliata del VM3011 e l'impronta senza courtyard |
 
+| 25/11/2026 | Materiale sugli sponsor e sui finanziamenti solo in locale, fuori da git | Il repository è pubblico |
+| 25/11/2026 | Donazioni aperte con Ko-fi (attivo) e GitHub Sponsors (in approvazione); Open Collective rimandato | Commissioni basse e attivazione rapida; una cassa comune non serve ancora |
+| 25/11/2026 | Nessuna esclusiva di produzione per ora | Ricerca sponsor ancora aperta |

@@ -1,5 +1,12 @@
 # Changelog
 
+## 25/11/2026
+- repo: individual donations opened: Ko-fi page and the repository "Sponsor" button (`.github/FUNDING.yml`); GitHub Sponsors pending approval. Sponsor search ongoing, nothing agreed.
+- repo: sponsor outreach drafts are no longer tracked by git and stay local only.
+- docs: README and project page (#progress, #history) updated; `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md` updated.
+- electronics: no hardware change; availability of the VM3011 microphone is uncertain, an alternative may be evaluated.
+- firmware and app: no changes.
+
 ## 24/11/2026 (board revision)
 - electronics: board v0.1 regenerated (16.5 × 38 mm, 4 layers, ERC 0, DRC 0, parity 0, 130 vias): MK2 replaced by the Vesper VM3011 PDM microphone with acoustic wake-up (about 10 µA listening, metallised acoustic hole); new LIS2DH12 accelerometer on I2C; 4×4 mm buzzer on the back driven by Q4, now a DMN2004DWK dual MOSFET shared with the vibration motor; 5V from the contacts goes to the nRF52840 VBUS pin (R6/R7 and STAT read removed); P0.28/P0.07 are now I2C. Reason: acoustic standby and hardware groundwork for Google Find Hub and Apple Find My (DULT: sound emitter mandatory, motion sensor recommended).
 - electronics: JLC BOM, placement and Gerber exports regenerated in `kicad/fab_out/` and `jlc/`.

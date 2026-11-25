@@ -14,11 +14,8 @@
 - Corrente di carica: tenere R1 = 20 kΩ (50 mA) o passare a 33 kΩ (30 mA)? Con 470 Ω i LED verde e blu sono tenui (~1 mA).
 - Land pattern dei microfoni (MSM261 e VM3011, ereditati dalle impronte EasyEDA) da confrontare col disegno del datasheet; pin 1 dei LED da controllare col tester prima del reflow.
 
-## Sponsor
-- **PCBWay:** risposta e articolo inviati il 24/11, candidatura «in revisione» (tempi non dichiarati: attesi giorni o un paio di settimane; aggiornamento sulle modifiche della scheda solo con la risposta, oppure un sollecito verso il 2–3/12): attendere l'esito (credito, buono o schede?) e se 5 schede montate sono realistiche. Seeed: sconto 30% solo con moduli XIAO. Se uno sponsor accetta, ritirare le altre richieste.
-- Risposte da JLCPCB, Ebyte, PCBWay, Seeed, NextPCB ed Elecrow; se arrivano buoni, ricalcolare il preventivo.
-- Modulo online di Elecrow da compilare; proposta NLnet (scadenza probabile 3/1/2027, da verificare su nlnet.nl).
-- Ebyte: i moduli devono arrivare nel magazzino JLC, altrimenti serve uno sconto.
+## Sponsor e finanziamenti
+- Dettagli solo nei file privati. Domanda aperta: quale produttore scegliere.
 
 ## Produzione
 - Produttore non deciso: nessun ordine confermato (solo preventivo e verifica a carrello dell'E73). Dipende dallo sponsor.
@@ -50,10 +47,13 @@
 
 
 ## Revisione 24/11 (VM3011, LIS2DH12, cicalino)
-- VM3011: reperibilità (LCSC C7149370 esaurito; Digi-Key VM3011-U1) e stato di produzione dopo l'acquisizione Qorvo; datasheet solo preliminare (U0.0.8).
+- VM3011: reperibilità (LCSC C7149370 esaurito; Digi-Key VM3011-U1) e stato di produzione dopo l'acquisizione Qorvo; datasheet solo preliminare (U0.0.8). Quale alternativa con risveglio acustico per MK2, se serve?
 - Canalino acustico del VM3011: dal foro Ø0,8 (x 7,5, y 1,65) sul retro fino alla faccia superiore, tra i target J2 e J3 e sopra il motorino; da disegnare nei gusci.
 - Cicalino 4×4 (KLJ-4020 / FST-4020): leggere volume e altezza sul datasheet; serve ≥ 60 phon a 25 cm col foro nel guscio. Posizione sul retro tra motorino e batteria (piazzole BZ+ / BZ−) e foro di uscita da decidere.
 - Suite `verifica/`: aggiornare i test che controllano STAT, VBUS_SENSE, AO3400A e il vecchio MK2 prima del prossimo ordine.
 - Find Hub: registrazione nella Nearby Console di Google (modulo di proposta) per un progetto non commerciale; Apple Find My solo con MFi.
-- Disponibilità della BOM nel magazzino PCBWay: da verificare caricando la distinta sul loro sito (la scheda ora ha 10 Extended, prima 7).
-- Se PCBWay monta anche J1–J4: servono target di catalogo (es. Mill-Max 19xx, coda 0,76 mm) o spedire i nostri 2,0 × 4,0 mm; ricalcolare l'altezza dei contatti rispetto ai 4,4 mm dietro la scheda.
+- Disponibilità della BOM presso il produttore scelto: da verificare caricando la distinta (la scheda ora ha 10 Extended, prima 7).
+- Se il produttore monta anche J1–J4: servono target di catalogo (es. Mill-Max 19xx, coda 0,76 mm) o spedire i nostri 2,0 × 4,0 mm; ricalcolare l'altezza dei contatti rispetto ai 4,4 mm dietro la scheda.
+
+## Comunicazione
+- README e pagina dicono «AI recorder»: riformulare come registratore aperto con uno strato di dati aperto (MCP)?

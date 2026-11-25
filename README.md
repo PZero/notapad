@@ -91,11 +91,16 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Parts review.** E73 variant with only an external-antenna socket rejected; the 256 MB NAND confirmed after comparing alternatives; microphones rotated by 180 degrees in the placement file (checked in the assembler's preview). An alternative manufacturing variant was prepared and dropped for v0 (no microphone stock, higher quote).
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
+### Update, 25 Nov 2026
+- **No hardware change.** The v0.1 board of 24 Nov stays unfrozen. The VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.
+- **Support:** donations are open on [Ko-fi](https://ko-fi.com/notapad) and through the repository's Sponsor button; GitHub Sponsors is awaiting approval.
+- **Sponsor search ongoing; nothing agreed,** and no production exclusivity for now.
+
 ### Update, 24 Nov 2026
 - **Board regenerated, not frozen:** same 16.5 x 38 mm, 4 layers; now with the wake-on-sound microphone, the accelerometer and the buzzer described above (ERC 0, DRC 0, parity 0, 130 vias). Still under review: buzzer volume and sound outlet, the acoustic channel of the VM3011 through the shells, and VM3011 availability (out of stock at one distributor, preliminary datasheet). The final Gerber, bill of materials and placement files come after the review.
 - **Pins freed without losing functions:** 5V straight to VBUS, charger status read removed, I2C on two freed pins. Three RGB LEDs and gestures unchanged.
 - **Verification rerun on the new board:** 71 tests, 45 passed, 23 known warnings, 2 not verifiable, 1 to reconfirm (a component page to read again). It found and got fixed two real errors (placement rotation of the new microphone, a footprint without courtyard); a wrong charger code in the bill of materials for the manufacturers was corrected.
-- **Sponsorship:** an application with a technical article (PDF) was sent to one board manufacturer and is under review; nothing is agreed. The goal is a single production sponsor for the first 5 assembled boards, credited everywhere, including the silkscreen. The manufacturer is not decided.
+- **Sponsorship:** sponsor search ongoing; nothing agreed. The manufacturer is not decided.
 - **Figures corrected:** about 20 h on the 110 mAh cell (estimate); the 256 MB memory holds 11 to 12 h of continuous stereo.
 - **Test bench:** firmware 0.2.0 (records only on sound) and app 0.10.0 (full-precision Whisper on the device) published; next are the Android app and the architecture of the open MCP server.
 - **Non-commercial for now;** licences confirmed.
@@ -175,7 +180,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
-- Board v0.1 regenerated (24 Nov) with wake-on-sound microphone, accelerometer and buzzer, prepared in hardware for item-finding networks (no compatibility claimed); ERC 0, DRC 0, 130 vias; verification suite rerun (71 tests); not frozen. Sponsorship application sent to one manufacturer and under review; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
+- Board v0.1 regenerated (24 Nov) with wake-on-sound microphone, accelerometer and buzzer, prepared in hardware for item-finding networks (no compatibility claimed); ERC 0, DRC 0, 130 vias; verification suite rerun (71 tests); not frozen. Sponsor search ongoing, nothing agreed; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
 - Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
 - Test firmware run on a real XIAO nRF52840 Sense (22 Nov): Bluetooth connection, recording and audio download to the app work (16 kHz ADPCM, 4-minute flash ring).
@@ -188,18 +193,19 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Production files (Gerber, BOM, placement) for several fab houses in `kicad/fab_out/`.
 - Charger first changed to MCP73831, then to MCP73832 after the pre-order review; E73 socket-only variant rejected; NAND confirmed; purchase plan drafted.
 - First quote of about 97 EUR for 2 fully assembled and shipped boards (economy-tier PCBA, 5 bare boards, 2 assembled; estimate). The manufacturer is not final: we are looking for a sponsor. Other manufacturing routes were considered; a Seeed XIAO carrier variant and home assembly were dropped.
-- Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Sponsor requests sent; public issue #1 opened as contact channel.
+- Licences chosen (22 Nov): CERN-OHL-S-2.0 hardware, MIT software and documents. Public issue #1 opened as contact channel; Ko-fi donations open (25 Nov).
 
 **In progress**
 - Testing the bench with real speech: new transcription quality, the sound threshold of firmware 0.2.0, time per hour of audio, automatic sync at 80%, audio quality, download speed, battery, speaker recognition and command errors.
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Board review before freezing the production files (a few weeks): buzzer volume and outlet, acoustic channel and sourcing of the VM3011, item-finding networks (Google Find Hub target, Apple to be evaluated; nothing registered or certified).
-- Waiting for the sponsor reply; nothing is agreed. If the target of 5 assembled boards is realistic, the bill of materials may be adapted to the sponsor's stock.
+- Sponsor search ongoing; nothing is agreed.; the bill of materials may be adapted to the sponsor's stock.
+- Demo video of the test bench.
 - Parts outside the assembly service: shopping list in `acquisti/` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
 0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
-1. Read the buzzer datasheet and place its outlet; check where the VM3011 can be bought (or find an alternative); freeze Gerber, bill of materials and placement; then order once the manufacturer is decided.
+1. Read the buzzer datasheet and place its outlet; check where the VM3011 can be bought (or evaluate an alternative wake-on-sound microphone); freeze Gerber, bill of materials and placement; then order once the manufacturer is decided.
 2. Android app and architecture of the open MCP server.
 3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (acoustic channel for the top microphone, buzzer outlet, sealed microphone ports, ring bushing).
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
@@ -218,7 +224,7 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 **What sponsors get:** logo and "Sponsored by" credit on this README and on the presentation page, a public build diary with photos, and credit in every post and video.
 
-**Status:** several PCB and component manufacturers were contacted in November 2026; nothing is agreed yet.
+**Status:** sponsor search ongoing; nothing is agreed.
 
 **Contact:** [issue #1, "Looking for sponsors: first 2–5 notªpad units"](https://github.com/PZero/notapad/issues/1).
 
@@ -226,11 +232,11 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsorship application under review, nothing agreed.
-2. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
-3. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
-4. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
-5. 22 Nov: third verification run (41 passed, 1 failure left: assembly tier); charger changed to MCP73832; monolith set to 9 mm; contact holes widened to 1.1 mm.
+1. 25 Nov: Ko-fi donations and the Sponsor button opened; sponsor search ongoing, nothing agreed; no hardware change (an alternative to the VM3011 microphone will be evaluated).
+2. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsor search ongoing, nothing agreed.
+3. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
+4. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.
+5. 22 Nov: test firmware run on a real XIAO nRF52840 Sense (connection, recording and download work); the app now transcribes by itself with Whisper in the browser; all eight wallpapers approved and published.
 
 ## Repository layout
 | Path | Contents |
