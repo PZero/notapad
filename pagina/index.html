@@ -71,6 +71,11 @@ nav a:hover,nav a:focus-visible{color:var(--ink)}
 #benchsvg.off *{animation-play-state:paused!important}
 .findfig{margin-top:40px;aspect-ratio:2/1}
 #findsvg.off *{animation-play-state:paused!important}
+#archsvg.off *,#intsvg.off *{animation-play-state:paused!important}
+.archfig{margin-top:40px;aspect-ratio:800/470}
+.intfig{margin-top:40px;aspect-ratio:800/320}
+@keyframes chip{0%,100%{opacity:.4}50%{opacity:1}}
+.chip{animation:chip 4s ease-in-out infinite}
 svg text{font-family:Inter,sans-serif}
 .note{color:var(--mute);font-size:13px;margin-top:28px}
 footer{padding:48px max(5vw,16px) 64px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:12px 32px}
@@ -115,7 +120,7 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 #cap.pop{animation:cap .45s ease}
 @keyframes cap{from{opacity:0;transform:translateY(6px)}}
 @media(max-width:820px){#cap{display:block}.tag{display:none}.hero{padding-bottom:max(24px,env(safe-area-inset-bottom))}.hero h1{font-size:clamp(52px,16vw,72px)}.hero p{font-size:15px;line-height:1.5;margin-top:8px}.sw{margin-top:16px;gap:9px}.sw button{width:28px;height:28px}.sw output{flex-basis:100%;margin:2px 0 0;font-size:13px;color:var(--mute)}.card{padding:18px}.card h2{font-size:26px}}
-@media(max-width:820px){.card ul li:not(.hi){display:none}.card p{display:none}.mcpfig{aspect-ratio:360/470}.benchfig{aspect-ratio:360/540}.findfig{aspect-ratio:360/520}.row,.row.flip{grid-template-columns:minmax(0,1fr)}.row.flip>.txt{order:0}.panel{align-items:flex-end;padding-bottom:24px}nav a{display:none}}
+@media(max-width:820px){.card ul li:not(.hi){display:none}.card p{display:none}.mcpfig{aspect-ratio:360/470}.benchfig{aspect-ratio:360/540}.findfig{aspect-ratio:360/520}.archfig{aspect-ratio:360/540}.intfig{aspect-ratio:360/520}.row,.row.flip{grid-template-columns:minmax(0,1fr)}.row.flip>.txt{order:0}.panel{align-items:flex-end;padding-bottom:24px}nav a{display:none}}
 #verify .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-top:36px;background:var(--bg2);border:1px solid var(--line);transform-origin:left;animation:vbar 1.2s ease-out both}
 #verify .bar i{display:block;height:100%}
 @keyframes vbar{from{transform:scaleX(0)}}
@@ -134,12 +139,12 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
 <div id="tags" aria-hidden="true"></div>
 <div id="cap" aria-hidden="true"><b></b><span></span></div>
 
-<nav><strong>notªpad</strong><a href="#oggetto">Object</a><a href="#dentro">Inside</a><a href="#cosa">What it does</a><a href="#ai">Your AI</a><a href="#wallpapers">Wallpapers</a><a href="#bench">Test bench</a><a href="#find">Finding</a><a href="#progress">Progress</a><a href="#verify">Verification</a><a href="#sponsors">Sponsors</a><a href="#history">History</a></nav>
+<nav><strong>notªpad</strong><a href="#oggetto">Object</a><a href="#dentro">Inside</a><a href="#cosa">What it does</a><a href="#ai">Your AI</a><a href="#how">How it works</a><a href="#wallpapers">Wallpapers</a><a href="#bench">Test bench</a><a href="#find">Finding</a><a href="#progress">Progress</a><a href="#verify">Verification</a><a href="#sponsors">Sponsors</a><a href="#history">History</a></nav>
 
 <section id="oggetto" class="band">
   <div class="hero">
     <h1>notªpad</h1>
-    <p>A 41 × 17.5 × 9 mm resin monolith you wear around your neck. It listens, records and remembers: the AI of your choice does the rest.</p>
+    <p>An open wearable voice recorder. Continuous recording, your AI, through an open MCP server. A 41 × 17.5 × 9 mm resin monolith you wear around your neck.</p>
     <div class="sw" role="group" aria-label="Finish">
       <span id="swatches" style="display:contents"></span>
       <output id="fname">Forged carbon</output>
@@ -204,6 +209,13 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
   <p class="note">Concept v0.1: renders and features describe a project in development; runtime and capacity are estimates still to be verified on a prototype.</p>
 </section>
 
+<section id="how" class="band sec">
+  <h2>How it works</h2>
+  <p class="lead">Two things set it apart: it records continuously all day, and your notes reach the AI you choose through an open MCP server. <b style="color:var(--bronze)">Next / planned:</b> this software architecture is defined but not built yet.</p>
+  <div class="fig archfig"><svg id="archsvg" viewBox="0 0 800 470" role="img" aria-label="Planned architecture as a cycle: the notªpad sends audio to the app; the app sends transcripts to the notªpad server, which also runs an MCP server; the user's own AI reads them through MCP with a preset agent template and builds an interactive artifact; the artifact is shown in the app. Day to day, you only use the app."></svg></div>
+  <p class="note">The server is only a go-between: raw transcripts go to your AI and are then deleted from the server, and the data stays yours. The server could also be self-hosted. Planned design, nothing of this loop exists yet; the test bench below is the exploration phase.</p>
+</section>
+
 <section id="wallpapers" class="band sec">
   <h2>Wallpapers</h2>
   <p class="lead">Eight phone wallpapers, all approved. Download the full-size PNG for iPhone (1179 × 2556) or Android (1080 × 2400). The clock area is kept clear and a discreet "Sponsor" slot sits above the home bar.</p>
@@ -223,6 +235,12 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
   <h2>The test bench</h2>
   <p class="lead">An exploration phase, not the product: a development board and a local web app, built to learn which software features work. Accuracy and speed are still to be measured.</p>
   <div class="fig benchfig"><svg id="benchsvg" viewBox="0 0 800 400" role="img" aria-label="Test board records, syncs by Bluetooth to a local app that transcribes, separates speakers and recognises commands; next, these blocks move into the MCP server"></svg></div>
+</section>
+
+<section id="integrations" class="band sec">
+  <h2>Voice commands and integrations</h2>
+  <p class="lead">A spoken command can act on the outside world. Today this is one example in the test app; through MCP it is meant to grow.</p>
+  <div class="fig intfig"><svg id="intsvg" viewBox="0 0 800 320" role="img" aria-label="Working today in the test app: the spoken command 'turn on the kitchen light' turns on a lamp. Next: through MCP, your AI could act on calendar, tasks, notes, files and any MCP server."></svg></div>
 </section>
 
 <section id="find" class="band sec">
@@ -251,6 +269,8 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
       <li><b>Finding animation (24 Nov):</b> a concept scene, <a href="#find" style="color:var(--ink)">Finding a lost notªpad</a>, shows how an item-finding network would work; it is not a feature and nothing is registered.</li>
       <li><b>Pins freed without removing functions (24 Nov):</b> the 5V contact now goes straight to the VBUS pin of the nRF52840 (internal detection), so the charger status read and its divider are gone; the I2C bus uses two of the freed pins. The three RGB LEDs and the gestures are unchanged.</li>
       <li><b>Verification suite rerun on the new board (24 Nov):</b> 71 tests, 45 passed, 23 known warnings, 2 not verifiable and 1 to reconfirm (reading a component page again). It found and got fixed two real errors: the placement rotation of the new microphone and a footprint with no courtyard. A wrong charger code in the bill of materials sent to the manufacturers was also corrected.</li>
+      <li><b>Software architecture defined (25 Nov):</b> the app (desktop and mobile, same data), a notªpad server with an MCP server, your own AI with a preset agent template, and an interactive artifact shown back in the app. A plan, not built; see <a href="#how" style="color:var(--ink)">How it works</a>.</li>
+      <li><b>Front microphone updated (25 Nov):</b> the front part moves from the MSM261DGT003 to the MSM261DGT006, the updated version indicated by its manufacturer. Footprint and pinout still to be confirmed against the datasheet.</li>
       <li><b>Page and wallpapers:</b> animation flicker fixed, layout reworked for phones (checked at 375 to 1440 px, not on a real iPhone), eight wallpapers approved.</li>
     </ul></div>
     <div class="st now"><em>In progress</em><h3>Testing the bench with real speech</h3><p>See <a href="#bench" style="color:var(--ink)">The test bench</a>. Still to check with real conversations: the new transcription quality (the large model is a download of about 1.6 GB, once), the sound threshold of firmware 0.2.0, time needed per hour of audio, automatic sync at 80% of the memory, audio quality, download speed, battery behaviour, speaker recognition and command errors. Results will be reported here, good or bad.</p></div>
@@ -258,7 +278,7 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
     <div class="st now"><em>In progress</em><h3>Board review before freezing</h3><p>The wake-on-sound microphone, accelerometer and buzzer are now on the board; what remains to check is the volume the 4 × 4 mm buzzer takes and its sound outlet on the back, the acoustic channel of the VM3011 through the resin shells, and whether the VM3011 can be sourced (it is out of stock at one distributor and its datasheet is preliminary). Item-finding networks: Google Find Hub is the target, Apple's still to be evaluated; no compatibility is claimed. The final Gerber, bill of materials and placement files come after this review, in a few weeks (not a promise of dates).</p></div>
     <div class="st now"><em>In progress</em><h3>Sponsor search</h3><p>The sponsor search is ongoing and nothing is agreed. Nothing is promised.</p></div>
     <div class="st now"><em>In progress</em><h3>Parts outside the assembly service</h3><p>A shopping list is drafted: LiPo battery (381620 candidate, about 110 mAh, an estimate, to be confirmed), target contacts and single pogo pins, a 0820 coin vibration motor, a small epoxy kit, optionally an SWD probe and a magnetic pogo connector. Estimated 40 to 60 EUR; the whole v0 about 140 to 170 EUR (estimates).</p></div>
-    <div class="st"><em>Next</em><h3>Measure the bench, shells, bring-up and base</h3><p>Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold and compare the small and turbo models; measure the test bench (speed, command errors) and plan how its blocks move into the open MCP server, which is not built yet. Read the buzzer datasheet and decide its outlet and position on the back; check where the VM3011 can be bought and evaluate an alternative wake-on-sound microphone if it cannot be found; make a demo video of the test bench; choose the producer in early December; then freeze Gerber, bill of materials and placement; order once the manufacturer is decided; buy the battery (381620 with protection), 2.0 × 4.0 mm target contacts, motors and resin; design the two SLA half-shells at 9 mm, with a channel for the top microphone, sealed microphone ports and the ring bushing; fill in the online sponsor forms; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
+    <div class="st"><em>Next</em><h3>Measure the bench, shells, bring-up and base</h3><p>Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold and compare the small and turbo models; measure the test bench (speed, command errors) and plan how its blocks move into the open MCP server, which is not built yet. Read the buzzer datasheet and decide its outlet and position on the back; check where the VM3011 can be bought and evaluate an alternative wake-on-sound microphone if it cannot be found; a demo video of the test bench will follow later (no date promised); confirm the footprint and pinout of the MSM261DGT006 front microphone; define the server, the MCP tools and the agent template, then the desktop and mobile app; choose the producer in early December; then freeze Gerber, bill of materials and placement; order once the manufacturer is decided; buy the battery (381620 with protection), 2.0 × 4.0 mm target contacts, motors and resin; design the two SLA half-shells at 9 mm, with a channel for the top microphone, sealed microphone ports and the ring bushing; fill in the online sponsor forms; when the boards arrive, test power rails, SWD, LEDs, microphones, NAND and touch; then build the charging base.</p></div>
     <div class="st"><em>On hold</em><h3>Final firmware, phone app and module order</h3><p>The firmware for the v0.1 board (Zephyr is the option) waits until the board is settled. The phone app stays a web app for now (a native Android app, possibly with Capacitor, is only a proposal; Flutter is postponed). The test firmware uses Arduino with the Bluefruit library. The pinout is already documented. Also on hold: the order of the nRF52840 module (nothing is confirmed; it depends on the manufacturer). Also on hold: registering for Google Find Hub and joining Apple's Find My (which needs MFi); the board is only prepared in hardware. The standby firmware (clock stopped, I2C, the anti-tracking sound and motion behaviour) will be written with the board firmware.</p></div>
   </div>
   <p style="text-align:center"><img src="https://raw.githubusercontent.com/PZero/notapad/main/kicad/sbroglio.png" alt="Routing preview of the 4-layer v0.1 board, one panel per layer" style="max-width:100%;border-radius:8px"></p>
@@ -306,7 +326,10 @@ footer strong{color:var(--ink);font:600 16px "Inter Tight",sans-serif}
     <div class="day"><h3>25 November 2026</h3><ul>
       <li>Individual donations opened: a Ko-fi page and the repository's Sponsor button (GitHub Sponsors is awaiting approval). <a href="https://github.com/PZero/notapad/commit/6a8a9f7">commit</a></li>
       <li>Sponsor search ongoing; nothing is agreed and there is no production exclusivity for now.</li>
-      <li>No hardware change today. The v0.1 board of 24 November stays unfrozen; the VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.</li>
+      <li>Software architecture defined: an app for desktop and mobile with the same data, a notªpad server (backend plus MCP server, transcripts kept only temporarily), your own AI with a preset agent template that splits the day, summarises, links and shows, and an interactive artifact back in the app. Day to day you only use the app. Planned, not built; see <a href="#how">How it works</a>.</li>
+      <li>Voice commands: the page now shows what works today in the test app (a spoken command turning on a light) and what MCP is meant to add.</li>
+      <li>Front microphone changed from MSM261DGT003 to MSM261DGT006, the updated version indicated by its manufacturer; footprint and pinout to be confirmed. The v0.1 board of 24 November stays unfrozen; the VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.</li>
+      <li>The demo video of the test bench will come later; no date is promised.</li>
     </ul></div>
     <div class="day"><h3>24 November 2026</h3><ul>
       <li>Board v0.1 regenerated with a microphone that wakes on sound (Vesper VM3011, about 10 µA in standby), a 3-axis accelerometer and a 4 × 4 mm magnetic buzzer, so the hardware is prepared for item-finding networks (the Apple and Google anti-tracking specification asks for a sound emitter and recommends a motion sensor). Preparation only: no compatibility is claimed, since Google requires registration and certification and Apple requires MFi. Same size, checks at 0, 130 vias; still under review.</li>
@@ -831,7 +854,7 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
       left.forEach(([t,y])=>link(`M190 ${y}C260 ${y} 270 200 312 200`,'var(--led)',0));
       right.forEach(([t,y],i)=>link(`M488 200C520 200 550 ${y} 615 ${y}`,'var(--bronze)',-i*.3));
       left.forEach(([t,y])=>node(115,y,150,48,t,'',false,14));
-      node(400,200,176,48,'Server MCP','open, on your phone',true,14);
+      node(400,200,176,48,'MCP server','open standard',true,14);
       right.forEach(([t,y])=>node(690,y,150,48,t,'your subscription',false,14));
       q = svgEl('text',{x:400,y:372,'text-anchor':'middle','font-size':15,fill:'#efebe3'},s);
     } else {
@@ -841,7 +864,7 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
       top.forEach(([t,x])=>link(`M${x} 76C${x} 130 180 120 180 174`,'var(--led)',0));
       bot.forEach(([t,x],i)=>link(`M180 226C180 280 ${x} 270 ${x} 318`,'var(--bronze)',-i*.3));
       top.forEach(([t,x])=>node(x,54,108,44,t,'',false,13));
-      node(180,200,200,52,'Server MCP','open, on your phone',true,14);
+      node(180,200,200,52,'MCP server','open standard',true,14);
       bot.forEach(([t,x])=>node(x,340,82,44,t,'',false,12));
       const n = svgEl('text',{x:180,y:388,'text-anchor':'middle','font-size':11,fill:'#9a968e'},s); n.textContent = 'each with your own subscription';
       q = svgEl('text',{x:180,y:436,'text-anchor':'middle','font-size':13,fill:'#efebe3'},s);
@@ -1117,6 +1140,155 @@ const svgEl = (tag, attrs, parent) => {const e = document.createElementNS(NS, ta
         if (!await ok(4200)) return;
         show(warn,0); show(warnT,0); show(halo,0); show(pin,0);
         if (!await ok(600)) return;
+      }
+    };
+    run();
+  };
+  draw();
+  mq.addEventListener('change', draw);
+}
+
+/* ---------------- scene: planned architecture, a cycle with a travelling packet ---------------- */
+{
+  const s = $('#archsvg');
+  const mq = matchMedia('(max-width:820px)');
+  let visible = true, raf = 0, gen = 0;
+  if ('IntersectionObserver' in window) new IntersectionObserver(e=>{visible = e[e.length-1].isIntersecting; s.classList.toggle('off',!visible);}).observe(s);
+  const T = (p,x,y,str,fs,fill,anchor,w) => {const e = svgEl('text',{x,y,'text-anchor':anchor||'middle','font-size':fs,fill:fill||'#efebe3','font-weight':w||400},p); e.textContent = str; return e;};
+  const BR = 'var(--bronze)', LED = 'var(--led)';
+  const caps = [
+    ['1 · The app sends the day','Transcripts go to the notªpad server, which is only a go-between.'],
+    ['2 · Your AI reads it through MCP','Any AI you choose, with a preset agent template. The raw transcripts are then deleted from the server.'],
+    ['3 · It builds an artifact','The template splits the day into segments, summarises, links and shows: an interactive page.'],
+    ['4 · Back in the app','You read it on desktop or mobile, the same data. The server could also be self-hosted.']
+  ];
+  const draw = () => {
+    gen++; cancelAnimationFrame(raf); s.innerHTML = '';
+    const m = mq.matches, W = m ? 360 : 800, H = m ? 540 : 470;
+    s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    const cx = m ? 180 : 400, cy = m ? 250 : 205, rx = m ? 118 : 250, ry = m ? 130 : 135;
+    const nw = m ? 108 : 160, nh = m ? 46 : 50, fs = m ? 12.5 : 14;
+    const pos = th => [cx+rx*Math.sin(th), cy-ry*Math.cos(th)];
+    svgEl('ellipse',{cx,cy,rx,ry,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s);
+    svgEl('ellipse',{cx,cy,rx,ry,fill:'none',stroke:LED,'stroke-width':1.5,class:'flow','stroke-opacity':.7},s);
+    /* packet, under the nodes */
+    const pk = svgEl('g',{},s);
+    svgEl('circle',{r:12,fill:'rgba(95,211,200,.18)'},pk);
+    svgEl('circle',{r:5,fill:LED},pk);
+    const defs = [['App','desktop and mobile'],['notªpad server',m?'or self-hosted':'MCP server · or self-hosted'],['Your AI','any AI, agent template'],['Artifact','interactive page']];
+    const rects = defs.map(([t,sub],i)=>{
+      const [x,y] = pos(i*Math.PI/2), g = svgEl('g',{},s);
+      const r = svgEl('rect',{x:x-nw/2,y:y-nh/2,width:nw,height:nh,rx:12,fill:'#1d1d21',stroke:'#3a3a40','stroke-width':1},g);
+      T(g,x,y-2,t,fs,null,null,500); T(g,x,y+fs,sub,fs*(m?.74:.78),'#9a968e');
+      return r;
+    });
+    /* the notªpad enters the circle from outside, towards the app */
+    const ap = pos(0), dx = m ? 50 : 92, dy = m ? 44 : 52;
+    const dev = svgEl('g',{},s);
+    svgEl('rect',{x:dx-12,y:dy-20,width:24,height:40,rx:5,fill:'#24201b',stroke:BR,'stroke-width':1.6},dev);
+    svgEl('circle',{cx:dx,cy:dy-8,r:2.4,fill:LED},dev);
+    T(dev,dx,dy+34,'notªpad',m?11:12,'#efebe3');
+    const lp = m ? `M${dx+14} ${dy} H${ap[0]-nw/2-2}` : `M${dx+14} ${dy} H${ap[0]-nw/2-2}`;
+    svgEl('path',{d:lp,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s);
+    svgEl('path',{d:lp,fill:'none',stroke:BR,'stroke-width':2,class:'flow'},s);
+    T(s,(dx+14+ap[0]-nw/2)/2,dy-8,'Bluetooth',m?10:11,'#9a968e');
+    /* centre text and badge */
+    T(s,cx,cy-8,'Day to day,',m?12.5:15,'#efebe3',null,500);
+    T(s,cx,cy+(m?8:12),m?'you only use':'you only use the app',m?12.5:15,'#efebe3',null,500);
+    if (m) T(s,cx,cy+24,'the app',12.5,'#efebe3',null,500);
+    T(s,W-12,m?16:26,'NEXT · PLANNED, NOT BUILT',m?10:11,BR,'end',600);
+    /* captions */
+    const cy0 = m ? 466 : 408, t1 = T(s,W/2,cy0,'',m?14:16,'#efebe3','middle',600);
+    const t2 = T(s,W/2,cy0+22,'',m?11:13,'var(--mute)');
+    const t3 = T(s,W/2,cy0+40,'',m?11:13,'var(--mute)');
+    T(s,W/2,H-6,'Planned design. The data stays yours.',m?10:11,'var(--mute)');
+    const wrap = str => {const n = m?50:92; if (str.length <= n) return [str,'']; const i = str.lastIndexOf(' ',n); return [str.slice(0,i),str.slice(i+1)];};
+    const setCap = i => {t1.textContent = caps[i][0]; const w = wrap(caps[i][1]); t2.textContent = w[0]; t3.textContent = w[1];};
+    if (reduce){
+      pk.style.display = 'none';
+      t1.textContent = 'App, server, your AI, artifact, app';
+      const w = wrap('Raw transcripts go to your AI and are then deleted from the server.'); t2.textContent = w[0]; t3.textContent = w[1];
+      return;
+    }
+    const g0 = gen, SEG = 4200, MOVE = 3200;
+    let acc = 0, last = performance.now(), cur = -1;
+    const ease = u => u<.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2;
+    const tick = now => {
+      if (g0 !== gen) return;
+      if (visible) acc += Math.min(100,now-last); last = now;
+      const seg = Math.floor(acc/SEG)%4, u = Math.min(1,(acc%SEG)/MOVE);
+      const [x,y] = pos((seg+ease(u))*Math.PI/2);
+      pk.setAttribute('transform',`translate(${x},${y})`);
+      if (seg !== cur){
+        cur = seg; setCap(seg);
+        rects.forEach((r,i)=>{const a = i===(seg+1)%4; r.setAttribute('stroke',a?LED:'#3a3a40'); r.setAttribute('stroke-width',a?1.8:1); r.setAttribute('fill',a?'#18302f':'#1d1d21');});
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  };
+  draw();
+  mq.addEventListener('change', draw);
+}
+
+/* ---------------- scene: voice commands and integrations ---------------- */
+{
+  const s = $('#intsvg');
+  const mq = matchMedia('(max-width:820px)');
+  const wait = ms => new Promise(r=>setTimeout(r,ms));
+  let gen = 0, visible = true;
+  if ('IntersectionObserver' in window) new IntersectionObserver(e=>{visible = e[e.length-1].isIntersecting; s.classList.toggle('off',!visible);}).observe(s);
+  const step = async (g, ms) => {
+    let left = ms;
+    while (left > 0){ if (g !== gen) return false; await wait(100); if (visible) left -= 100; }
+    return g === gen;
+  };
+  const T = (p,x,y,str,fs,fill,anchor,w) => {const e = svgEl('text',{x,y,'text-anchor':anchor||'middle','font-size':fs,fill:fill||'#efebe3','font-weight':w||400},p); e.textContent = str; return e;};
+  const BR = 'var(--bronze)', LED = 'var(--led)', YEL = '#f2c94c';
+  const phrase = '“Command, turn on the kitchen light”';
+  const draw = () => {
+    gen++; const g = gen; s.innerHTML = '';
+    const m = mq.matches, W = m ? 360 : 800, H = m ? 520 : 320;
+    s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    const ax = m ? 180 : 200;
+    /* left: what works today */
+    svgEl('rect',{x:ax-170,y:28,width:340,height:42,rx:21,fill:'#1d1d21',stroke:'#3a3a40'},s);
+    const sp = T(s,ax,54,'',m?12:13.5,'#efebe3');
+    svgEl('path',{d:`M${ax} 74V128`,fill:'none',stroke:'#3a3a40','stroke-width':1.5},s);
+    svgEl('path',{d:`M${ax} 74V128`,fill:'none',stroke:LED,'stroke-width':2,class:'flow'},s);
+    const by = 168;
+    const glow = svgEl('circle',{cx:ax,cy:by,r:46,fill:'rgba(242,201,76,.16)'},s); glow.style.transition = 'opacity .4s'; glow.style.opacity = 0;
+    const bulb = svgEl('circle',{cx:ax,cy:by,r:20,fill:'#1d1d21',stroke:'#6c6962','stroke-width':2},s);
+    svgEl('rect',{x:ax-9,y:by+19,width:18,height:9,rx:2,fill:'#1d1d21',stroke:'#6c6962','stroke-width':1.5},s);
+    T(s,ax,by+58,'Working today in the test app',m?12.5:13.5,LED,null,600);
+    T(s,ax,by+78,'Home Assistant is called directly by the app',m?11:12,'var(--mute)');
+    /* right: next */
+    const hx = m ? 60 : 470, hy = m ? 410 : 190, cx = m ? 262 : 660;
+    if (m) svgEl('path',{d:'M20 270H340',stroke:'#2a2a2f'},s); else svgEl('path',{d:'M400 30V290',stroke:'#2a2a2f'},s);
+    T(s,m?180:cx-20,m?298:44,'NEXT · PLANNED',m?10.5:11,BR,null,600);
+    T(s,m?180:cx-20,m?318:64,'Through MCP, your AI could act on your tools',m?11.5:12.5,'var(--mute)');
+    const labels = ['Calendar','Tasks','Notes','Files','Any MCP server'];
+    const ys = m ? [350,386,422,458,494] : [100,145,190,235,280];
+    svgEl('rect',{x:hx-34,y:hy-20,width:68,height:40,rx:20,fill:'rgba(95,211,200,.1)',stroke:LED},s);
+    T(s,hx,hy+4,'Your AI',12,null,null,500);
+    labels.forEach((t,i)=>{
+      const d = `M${hx+34} ${hy}C${hx+80} ${hy} ${cx-100} ${ys[i]} ${cx-66} ${ys[i]}`;
+      svgEl('path',{d,fill:'none',stroke:'#3a3a40','stroke-width':1.2},s);
+      const gg = svgEl('g',{class:'chip',style:`animation-delay:${-i*.8}s`},s);
+      svgEl('rect',{x:cx-66,y:ys[i]-15,width:132,height:30,rx:15,fill:'#1b1b20',stroke:BR,'stroke-opacity':.7},gg);
+      T(gg,cx,ys[i]+4,t,12.5);
+    });
+    const on = v => {glow.style.opacity = v?1:0; bulb.setAttribute('fill',v?YEL:'#1d1d21'); bulb.setAttribute('stroke',v?YEL:'#6c6962');};
+    if (reduce){ sp.textContent = phrase; on(true); return; }
+    const run = async () => {
+      while (g === gen){
+        on(false); sp.textContent = '';
+        for (let i = 2; i < phrase.length+2; i += 2){ sp.textContent = phrase.slice(0,i); if (!await step(g,100)) return; }
+        if (!await step(g,500)) return;
+        on(true);
+        if (!await step(g,3200)) return;
+        on(false); sp.textContent = '';
+        if (!await step(g,1000)) return;
       }
     };
     run();

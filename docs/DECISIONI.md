@@ -91,3 +91,8 @@ Le decisioni precedenti al 21/11/2026 (oggetto, elettronica v0.1, colata) sono r
 | 25/11/2026 | Materiale sugli sponsor e sui finanziamenti solo in locale, fuori da git | Il repository è pubblico |
 | 25/11/2026 | Donazioni aperte con Ko-fi (attivo) e GitHub Sponsors (in approvazione); Open Collective rimandato | Commissioni basse e attivazione rapida; una cassa comune non serve ancora |
 | 25/11/2026 | Nessuna esclusiva di produzione per ora | Ricerca sponsor ancora aperta |
+| 25/11/2026 | Architettura software: server centrale (backend + server MCP) per vedere gli stessi dati da desktop e mobile; il server locale resta un'opzione | L'utente non vuole che tutto resti sull'app e vuole accedere da più dispositivi |
+| 25/11/2026 | Trascrizioni effimere: dopo il ritiro da parte dell'AI dell'utente vengono cancellate dal server; la rielaborazione è compito dell'AI dell'utente (il template agentico fornito la permetterà) | Non tenere il peso dei dati: il servizio fa da tramite, i dati diventano dell'utente |
+| 25/11/2026 | Il server MCP offrirà un flusso agentico preimpostato e un template di artefatto curato | Risultato bello e veloce con qualunque AI capace, meno token |
+| 25/11/2026 | Artefatti HTML/JS generati dall'AI e mostrati nell'app: non esclusi; in futuro validazione o regole verificabili per limitarne i rischi | Le sole pagine con dati strutturati sarebbero un limite troppo forte |
+| 25/11/2026 | Microfono frontale MK1: passaggio da MSM261DGT003 a MSM261DGT006 (il produttore indica il DGT006 come versione aggiornata), da verificare impronta e piedinatura | Il DGT003 è superato |

@@ -2,7 +2,7 @@
 
 # notªpad
 
-**A DIY wearable AI voice recorder: a resin monolith you wear around your neck. It records your day and leaves transcription and note-taking to the AI of your choice, through an open MCP server.**
+**An open wearable voice recorder. Continuous recording, your AI, through an open MCP server. A resin monolith you wear around your neck.**
 
 [![Status: v0.1 design](https://img.shields.io/badge/status-v0.1%20in%20design-orange)](#status-and-roadmap)
 [![Hardware: nRF52840](https://img.shields.io/badge/MCU-nRF52840-blue)](#electronics-v01)
@@ -20,6 +20,7 @@
 - [Overview](#overview)
 - [The object](#the-object)
 - [Architecture](#architecture)
+- [How it works (planned)](#how-it-works-planned)
 - [Electronics v0.1](#electronics-v01)
 - [Pre-order verification](#pre-order-verification)
 - [First firmware and app tests](#first-firmware-and-app-tests)
@@ -35,7 +36,7 @@
 - [Authors](#authors)
 
 ## Overview
-notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. It records all day, syncs over Bluetooth LE with a phone, and hands the audio to an **open MCP server**: transcription, summaries and note organisation are done by the AI the user picks, not by a closed service.
+notªpad is a wearable recorder in the spirit of Plaud and Omi, but open. Two things set it apart: **continuous recording all day** and an **open MCP server**. It records all day, syncs over Bluetooth LE with a phone, and hands the audio to an **open MCP server**: transcription, summaries and note organisation are done by the AI the user picks, not by a closed service.
 
 Design goals:
 - **Own your data.** Audio and notes stay with the user; the AI is a replaceable component.
@@ -71,10 +72,27 @@ flowchart LR
 ```
 The real app and the MCP server are not started yet; a test app for a development board exists (see the roadmap).
 
+### How it works (planned)
+Next / planned, defined on 25 Nov 2026 and not built yet. It is a loop, and day to day you only use the app. The animated version is on the [presentation page](https://pzero.github.io/notapad/#how).
+```mermaid
+flowchart LR
+  DEV[notªpad] -->|Bluetooth LE| APP[App<br/>desktop and mobile, same data]
+  APP --> SRV[notªpad server<br/>backend + MCP server]
+  SRV --> AI[Your AI<br/>any AI, preset agent template]
+  AI --> ART[Artifact<br/>interactive page]
+  ART --> APP
+```
+1. The notªpad syncs its audio to the app; the app sends transcripts to the notªpad server.
+2. The server is only a go-between (backend plus an open MCP server). Raw transcripts go to the user's own AI and are then deleted from the server; the data stays the user's. The server could also be self-hosted.
+3. The AI of the user's choice runs a preset agent template: it splits the day into segments, summarises, links and shows.
+4. The result is an interactive artifact, shown back in the app.
+
+**Voice commands and integrations.** Working today in the test app: a spoken "Command, turn on the kitchen light" turns on a light (the test app calls Home Assistant directly). Next / planned: through MCP, the user's AI could act on other tools (calendar, tasks, notes, files, any MCP server).
+
 ## Electronics v0.1
 - **Module:** Ebyte E73-2G4M08S1C (nRF52840), wire antenna at the board edge with keep-out.
 - **Storage:** W25N02KV QSPI NAND, 256 MB (about 10 to 11 h of stereo LC3 audio).
-- **Microphones:** the front one is an MSM261DGT003 (top-port PDM). Since 24 Nov the top one is a Vesper VM3011, a PDM microphone with acoustic wake-up: it listens with the clock stopped at about 10 uA (datasheet figure, preliminary) and wakes the processor when sound passes a self-adapting threshold. Stereo on a single data line.
+- **Microphones:** the front one is an MSM261DGT006 (top-port PDM). On 25 Nov it replaced the MSM261DGT003 with the updated version indicated by its manufacturer; footprint and pinout still to be confirmed against the datasheet. Since 24 Nov the top one is a Vesper VM3011, a PDM microphone with acoustic wake-up: it listens with the clock stopped at about 10 uA (datasheet figure, preliminary) and wakes the processor when sound passes a self-adapting threshold. Stereo on a single data line.
 - **Motion and sound emitter (24 Nov):** a 3-axis accelerometer (LIS2DH12, I2C) and a 4 x 4 mm magnetic buzzer on the back, driven by the second half of a dual MOSFET shared with the vibration motor. The joint Apple/Google specification against unwanted tracking (DULT) asks for a sound emitter (at least 60 phon at 25 cm) and recommends a motion sensor. **This is hardware preparation only, not compatibility:** Google requires registration and certification, and Apple requires its MFi programme, whose specifications are not public.
 - **Power:** ~110 mAh LiPo (381620 candidate) with protection circuit, MCP73832 charger at 50 mA, 3.3 V LDO, and a P-MOSFET latch that disconnects everything when the battery reaches 3.50 V (idle draw below ~5 uA). The 5V contact re-arms the latch, goes directly to the nRF52840 VBUS pin (internal detection; the charger status read was dropped to free pins) and resets the MCU ("reset by putting it on charge"). A watchdog is always on.
 - **Board:** 16.5 x 38 mm, 4 layers, 1.0 mm, ENIG or lead-free HASL (to be fixed at order), components on the top side only. Stackup: F.Cu signals, In1 continuous GND, In2 signals and power, B.Cu signals and GND; antenna keep-out on all layers. Zones: A (0-7 mm: pins, top microphone, charger, latch), B (7-20 mm: LEDs, touch ICs, LDO, passives), C (20-38 mm: E73 module and antenna). The motor and battery sit under the board.
@@ -83,7 +101,7 @@ The real app and the MCP server are not started yet; a test app for a developmen
 
 ### What changed during design review (21 Nov 2026)
 - **Pinout redone.** The E73 does not expose P0.11, P0.14, P0.16, P0.19, P0.21, P0.23, P0.25, P0.27 and P1.01, which the first pinout used. The new assignment is in [`docs/pinout_v0.1.md`](docs/pinout_v0.1.md); the 32 kHz crystal is dropped (firmware uses the internal LFRC).
-- **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock.
+- **Microphones replaced.** The first choice (LMD3526B261) is bottom-port; the MSM261DGT003 is top-port and in stock (replaced on 25 Nov by the updated MSM261DGT006, see the update below).
 - **Space savings.** One resistor per LED on the common anode instead of one per colour (LEDs multiplexed, one colour at a time); an extra 1 uF capacitor on the latch so a reset at low battery does not power the device off.
 - **Board closed on 4 layers.** With 2 layers 7 connections stayed open; the economy assembly tier does not accept 4 layers at 0.8 mm, so the board is 1.0 mm. Length fixed at 38 mm (at 35 mm 4 connections stayed open). Checks: ERC 0, DRC 0 violations, 0 unconnected, schematic-board parity 0.
 - **Charger changed to MCP73831** (50 mA), chosen at the time to keep the number of extra-fee components down. *Superseded on 22 Nov by the MCP73832, see the pre-order verification below.*
@@ -92,7 +110,9 @@ The real app and the MCP server are not started yet; a test app for a developmen
 - **Charger stays on the monolith** (not in the dock): unpowered contacts outside the dock, CHRG signal available, full 4.2 V charge.
 
 ### Update, 25 Nov 2026
-- **No hardware change.** The v0.1 board of 24 Nov stays unfrozen. The VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.
+- **Software architecture defined** (server, MCP server, preset agent template, desktop and mobile app): see [How it works (planned)](#how-it-works-planned). A plan, not built.
+- **Front microphone:** MK1 changes from the MSM261DGT003 to the MSM261DGT006, the updated version indicated by its manufacturer. Footprint and pinout to be confirmed before the production files are frozen.
+- **Board still unfrozen.** The v0.1 board of 24 Nov stays unfrozen. The VM3011 microphone may no longer be obtainable, so an alternative wake-on-sound microphone will be evaluated.
 - **Support:** donations are open on [Ko-fi](https://ko-fi.com/notapad) and through the repository's Sponsor button; GitHub Sponsors is awaiting approval.
 - **Sponsor search ongoing; nothing agreed,** and no production exclusivity for now.
 
@@ -180,6 +200,7 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 
 ## Status and roadmap
 **Done**
+- Software architecture defined (25 Nov): app (desktop and mobile), notªpad server with MCP server, the user's own AI with a preset agent template, interactive artifact; a plan, not built. Front microphone moved to the MSM261DGT006 (footprint and pinout to be confirmed).
 - Board v0.1 regenerated (24 Nov) with wake-on-sound microphone, accelerometer and buzzer, prepared in hardware for item-finding networks (no compatibility claimed); ERC 0, DRC 0, 130 vias; verification suite rerun (71 tests); not frozen. Sponsor search ongoing, nothing agreed; consumption and memory figures corrected (estimates); test firmware 0.2.0 and app 0.10.0 published.
 - Test bench, 23 Nov: app 0.10.0 with full-precision Whisper decoder (large-v3-turbo on a PC with WebGPU), pause-aligned windows, on-request transcription and offline model folder; test firmware 0.2.0 that records only on sound (compiled and uploaded, not yet tried with real sounds). Quality gains are by observation, not measured.
 - Test bench features (22 Nov): word-timed Whisper with speech detection, speaker labels ("Me", "Speaker 1..."), double and single tap gestures, first voice-command tests. First tests only; not measured.
@@ -200,13 +221,13 @@ Eight phone wallpapers, all approved. The clock area is kept clear and a discree
 - Android: same app as a PWA on a phone, which needs the page published over https (not done yet).
 - Board review before freezing the production files (a few weeks): buzzer volume and outlet, acoustic channel and sourcing of the VM3011, item-finding networks (Google Find Hub target, Apple to be evaluated; nothing registered or certified).
 - Sponsor search ongoing; nothing is agreed.; the bill of materials may be adapted to the sponsor's stock.
-- Demo video of the test bench.
+- Demo video of the test bench: it will follow later, no date promised.
 - Parts outside the assembly service: shopping list in `acquisti/` (381620 LiPo candidate, about 110 mAh, an estimate; target contacts and single pogo pins; 0820 coin vibration motor; small epoxy kit; optional SWD probe and magnetic pogo connector), estimated 40 to 60 EUR; whole v0 about 140 to 170 EUR (estimates).
 
 **Next**
 0. Try firmware 0.2.0 and app 0.10.0 with real speech, tune the sound threshold, compare the small and turbo models; measure the test bench (speed, command errors) and design how transcription, speaker recognition and commands move into the MCP server.
 1. Read the buzzer datasheet and place its outlet; check where the VM3011 can be bought (or evaluate an alternative wake-on-sound microphone); freeze Gerber, bill of materials and placement; then order once the manufacturer is decided.
-2. Android app and architecture of the open MCP server.
+2. Confirm the footprint and pinout of the MSM261DGT006; build the notªpad server with its MCP tools and the agent template; then the app for desktop and mobile (Android first as a PWA).
 3. Buy the parts outside the assembly service (381620 battery with protection, 2.0 x 4.0 mm target contacts, motors, resin) once the manufacturer is decided; design the two SLA half-shells at 9 mm (acoustic channel for the top microphone, buzzer outlet, sealed microphone ports, ring bushing).
 4. Bring-up when the boards arrive: power rails, SWD, LEDs, microphones, NAND and touch.
 5. Build the charging base.
@@ -232,7 +253,7 @@ We are looking for a sponsor to build the **first 2 to 5 working units**: fabric
 
 ## Project history
 Latest milestones (full timeline on the [presentation page](https://pzero.github.io/notapad/#history)):
-1. 25 Nov: Ko-fi donations and the Sponsor button opened; sponsor search ongoing, nothing agreed; no hardware change (an alternative to the VM3011 microphone will be evaluated).
+1. 25 Nov: software architecture defined (server, MCP server, agent template, desktop and mobile app; planned) with two new animated scenes on the page; front microphone changed to the MSM261DGT006; Ko-fi donations and the Sponsor button opened; sponsor search ongoing, nothing agreed; no hardware change (an alternative to the VM3011 microphone will be evaluated).
 2. 24 Nov: board v0.1 regenerated with a wake-on-sound microphone, accelerometer and buzzer (hardware prepared for item-finding networks, no compatibility claimed); verification suite rerun on it (71 tests); [test firmware 0.2.0 and app 0.10.0 published](https://github.com/PZero/notapad/commit/7bef9ee); sponsor search ongoing, nothing agreed.
 3. 23 Nov: more accurate transcription (full-precision decoder, pause-aligned windows, large-v3-turbo on a PC with WebGPU), transcription on request, offline model folder, and test firmware 0.2.0 that records only on sound (not yet tried with real sounds).
 4. 22 Nov (evening): test bench shown as one animated scene on the page (replacing six progress cards); defined as an exploration phase; word-timed Whisper with speech detection, speaker recognition, tap gestures and first voice-command tests.

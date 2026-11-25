@@ -1,6 +1,8 @@
 # Changelog
 
 ## 25/11/2026
+- docs: software architecture defined (planned): notªpad server with an open MCP server as a bridge, temporary transcripts handed to the user's own AI, ready-made agentic template, artifact back in the desktop and mobile app; integrations through MCP (voice command to home automation already working in the test app). New animated scenes `#how` and `#integrations` on the project page; README "How it works (planned)".
+- electronics: front microphone MK1 to move from MSM261DGT003 to MSM261DGT006 (updated part); footprint and pinout to be confirmed.
 - repo: individual donations opened: Ko-fi page and the repository "Sponsor" button (`.github/FUNDING.yml`); GitHub Sponsors pending approval. Sponsor search ongoing, nothing agreed.
 - repo: sponsor outreach drafts are no longer tracked by git and stay local only.
 - docs: README and project page (#progress, #history) updated; `docs/STATO.md`, `docs/DECISIONI.md`, `docs/DOMANDE-APERTE.md` updated.
