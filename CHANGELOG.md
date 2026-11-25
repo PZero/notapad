@@ -1,5 +1,12 @@
 # Changelog
 
+## 25/11/2026 (evening: subtitle, outreach and social schedule)
+- docs: README and project page subtitle is now "open wearable voice recorder with an open data layer"; the AI is presented as a tool chosen by the user.
+- docs: sample requests sent to component makers; no answers yet, nothing agreed.
+- docs: two hardware design contests selected for January 2027; one European call reviewed and dropped because its rules exclude AI-assisted development.
+- docs: social posts 3 to 7 prepared and scheduled until 5 December (posts in `social/post/`, calendar in `social/piano_editoriale.md`).
+- repo: `.gitignore` excludes `docs/sponsor_*.md` as a whole, so new sponsor drafts stay local.
+
 ## 25/11/2026 (project identity and social channels)
 - repo: project identity: public contact `notapad.team@gmail.com`; Ko-fi page moved to this address; social accounts with the same name `@notapadlabs` on Instagram, YouTube and TikTok; NªP monogram as logo.
 - repo: new `social/` folder: image generators (`genera_immagini.py`, `genera_monogramma.py`), logo, YouTube banner, monogram variants, social profile texts, editorial plan, and the first post drafts in `social/post/` (carousel "Meet notªpad" with slides and texts, reel ideas with script). Generated reel videos are git-ignored.

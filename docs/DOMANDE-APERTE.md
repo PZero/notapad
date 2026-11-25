@@ -16,6 +16,9 @@
 
 ## Sponsor e finanziamenti
 - Dettagli solo nei file privati. Domanda aperta: quale produttore scegliere.
+- Controllo della posta: verificare il primo giro con le nuove regole delle bozze e con la casella del progetto.
+- Omi (concorrente): la capacità di memoria del modello consumer non è confermata da fonti ufficiali; controllare prima di scrivere confronti pubblici.
+- Tindie × PCBWay: quali aggiunte sostanziali al banco XIAO si faranno prima del 31/1 per distinguerle dal lavoro già fatto.
 
 ## Produzione
 - Produttore non deciso: nessun ordine confermato (solo preventivo e verifica a carrello dell'E73). Dipende dallo sponsor.
@@ -56,7 +59,7 @@
 - Se il produttore monta anche J1–J4: servono target di catalogo (es. Mill-Max 19xx, coda 0,76 mm) o spedire i nostri 2,0 × 4,0 mm; ricalcolare l'altezza dei contatti rispetto ai 4,4 mm dietro la scheda.
 
 ## Comunicazione
-- Sottotitolo aggiornato il 25/11 («An open wearable voice recorder… through an open MCP server»); restano da verificare altri punti che dicono «AI recorder».
+- Sottotitolo aggiornato il 25/11 («An open wearable voice recorder with an open data layer…»): README pubblicato, `pagina/index.html` da committare; restano da verificare altri punti che dicono «AI recorder» (post social, testi dei profili).
 
 ## Architettura software (nuova, 25/11)
 - Artefatti HTML/JS generati dall'AI e mostrati nell'app: come validarli o limitarli con regole verificabili (rischi: prompt injection da parlato altrui, login e cookie, WebKit su iPhone)?
@@ -71,5 +74,8 @@
 
 ## Social
 - Gli account social li gestiamo in due? (accesso condiviso: Centro gestione account Meta, canale YouTube come account brand)
-- Pubblicazione Instagram automatica: oggi un'attività programmata via Chrome; più avanti Meta Business Suite (serve una pagina Facebook) o Buffer.
+- Pubblicazione Instagram automatica: oggi un'attività programmata via Chrome (dal 25/11 sceglie «Browser 1» perché con due Chrome collegati il post 1 si era fermato); più avanti Meta Business Suite (serve una pagina Facebook) o Buffer.
 
+## Finanziamenti (25/11 sera)
+- Pagina PCBWay9: pubblicarla subito (e aggiungere il video dopo) oppure aspettare le foto del banco? Verificare al primo accesso se la Community permette di modificarla dopo l'invio.
+- Sondaggio per i futuri utenti (modulo breve, link nel post 3 e in bio): farlo?

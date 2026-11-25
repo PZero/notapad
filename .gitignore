@@ -62,3 +62,5 @@ docs/finanziamenti/
 
 # Video dei post social (pesanti, si rigenerano con gli script in social/post/)
 social/post/**/*.mp4
+
+docs/sponsor_*.md
